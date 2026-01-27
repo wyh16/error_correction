@@ -349,11 +349,21 @@ def export_wrongbook(questions: List[Dict[str, Any]], selected_ids: List[str], o
                     formula_content = formula_content[1:-1].strip()
                 md_content += f"${formula_content}$ "
             elif block['block_type'] == 'image':
-                # 优先使用 block 的 content，如果为空则从 image_refs 获取
+                # 优先使用 block 的 content
                 image_path = block.get('content', '').strip()
+
+                # 如果为空，尝试从 image_refs 获取
                 if not image_path and image_ref_index < len(image_refs):
                     image_path = image_refs[image_ref_index]
                     image_ref_index += 1
+
+                # 如果还是空的，根据 bbox 生成图片路径
+                if not image_path and 'bbox' in block:
+                    bbox = block['bbox']
+                    struct_dir = os.getenv("STRUCT_DIR", "output/struct")
+                    # 使用相对路径，因为 wrongbook.md 在 results/ 目录下
+                    image_path = f"../{struct_dir}/imgs/img_in_image_box_{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}.jpg"
+
                 md_content += f"![图片]({image_path})\n\n"
 
         # 添加选项

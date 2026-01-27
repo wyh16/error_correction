@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题本生成系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-circle {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .step.active .step-label {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            background: #e8ebff;
+            border-color: #764ba2;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-area {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .status-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .status-box.success {
+            border-left-color: #4CAF50;
+            background: #f1f8f4;
+        }
+
+        .status-box.error {
+            border-left-color: #f44336;
+            background: #fff5f5;
+        }
+
+        .status-box.warning {
+            border-left-color: #ff9800;
+            background: #fff8f0;
+        }
+
+        .questions-preview {
+            margin-top: 20px;
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .question-id {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 15px;
+        }
+
+        .question-type {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .question-select {
+            margin-left: auto;
+        }
+
+        .question-content {
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .question-card.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .question-select {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .select-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .select-actions button {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            border-radius: 4px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .select-actions button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .select-actions span {
+            margin-left: 15px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .file-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .file-info-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .file-info-value {
+            color: #333;
+        }
+
+        .system-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 错题本生成系统</h1>
+            <p>智能识别、分割和导出试卷题目</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 系统状态 -->
+            <div class="system-status" id="systemStatus">
+                <strong>系统状态：</strong>
+                <span class="status-item status-ok" id="statusLoading">检查中...</span>
+            </div>
+
+            <!-- 步骤指示器 -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">上传文件</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">OCR解析</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">分割题目</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">预览导出</div>
+                </div>
+            </div>
+
+            <!-- 上传区域 -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">点击或拖拽文件到这里</div>
+                <div class="upload-hint">支持 PDF、PNG、JPG 等格式（最大 50MB）</div>
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp">
+            </div>
+
+            <!-- 文件信息 -->
+            <div class="file-info" id="fileInfo">
+                <div class="file-info-item">
+                    <span class="file-info-label">文件名：</span>
+                    <span class="file-info-value" id="fileName"></span>
+                </div>
+                <div class="file-info-item">
+                    <span class="file-info-label">图片数量：</span>
+                    <span class="file-info-value" id="imageCount"></span>
+                </div>
+                <div class="file-info-item">
+                    <span class="file-info-label">OCR结果：</span>
+                    <span class="file-info-value" id="ocrCount"></span>
+                </div>
+            </div>
+
+            <!-- 结果区域 -->
+            <div class="result-area" id="resultArea"></div>
+
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="splitBtn" disabled>
+                    🤖 开始分割题目
+                </button>
+                <button class="btn btn-success" id="exportBtn" disabled>
+                    📥 导出错题本
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    🔄 重新开始
+                </button>
+            </div>
+
+            <!-- 题目预览 -->
+            <div class="questions-preview" id="questionsPreview"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestions = [];
+        let selectedQuestions = new Set();
+
+        // 检查系统状态
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.status;
+                    let statusHTML = '';
+
+                    if (status.paddleocr_configured) {
+                        statusHTML += '<span class="status-item status-ok">✓ PaddleOCR</span>';
+                    } else {
+                        statusHTML += '<span class="status-item status-error">✗ PaddleOCR未配置</span>';
+                    }
+
+                    if (status.deepseek_configured) {
+                        statusHTML += '<span class="status-item status-ok">✓ DeepSeek</span>';
+                    } else {
+                        statusHTML += '<span class="status-item status-error">✗ DeepSeek未配置</span>';
+                    }
+
+                    if (status.langsmith_enabled) {
+                        statusHTML += '<span class="status-item status-ok">✓ LangSmith追踪</span>';
+                    }
+
+                    document.getElementById('systemStatus').innerHTML = '<strong>系统状态：</strong>' + statusHTML;
+                }
+            } catch (error) {
+                console.error('检查系统状态失败:', error);
+            }
+        }
+
+        // 上传区域事件
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFileUpload(file);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFileUpload(file);
+        });
+
+        // 处理文件上传
+        async function handleFileUpload(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // 显示加载状态
+            showLoading('正在上传和处理文件...');
+            setStep(2);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 显示成功信息
+                    showSuccess(`文件处理成功！识别到 ${data.result.image_count} 张图片`);
+
+                    // 更新文件信息
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('imageCount').textContent = data.result.image_count;
+                    document.getElementById('ocrCount').textContent = data.result.ocr_count;
+                    document.getElementById('fileInfo').style.display = 'block';
+
+                    // 启用分割按钮
+                    document.getElementById('splitBtn').disabled = false;
+
+                    setStep(3);
+                } else {
+                    showError(data.error || '文件处理失败');
+                }
+            } catch (error) {
+                showError('上传失败: ' + error.message);
+            }
+        }
+
+        // 分割题目
+        document.getElementById('splitBtn').addEventListener('click', async () => {
+            showLoading('正在调用AI分割题目，请稍候...');
+            setStep(3);
+
+            try {
+                const response = await fetch('/api/split', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentQuestions = data.questions;
+                    showSuccess(`成功分割 ${data.questions.length} 道题目`);
+                    displayQuestions(data.questions);
+
+                    // 启用导出按钮
+                    document.getElementById('exportBtn').disabled = false;
+                    setStep(4);
+                } else {
+                    showError(data.error || '题目分割失败');
+                }
+            } catch (error) {
+                showError('分割失败: ' + error.message);
+            }
+        });
+
+        // 导出错题本
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            if (selectedQuestions.size === 0) {
+                alert('请至少选择一道题目！');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/export', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        selected_ids: Array.from(selectedQuestions)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess(`错题本导出成功！已保存到: ${data.output_path}`);
+
+                    // 提供下载链接
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = '/download/wrongbook.md';
+                    downloadLink.download = 'wrongbook.md';
+                    downloadLink.textContent = '点击下载';
+
+                    const resultArea = document.getElementById('resultArea');
+                    resultArea.innerHTML += `<p style="margin-top: 10px;"><strong>下载：</strong> ${downloadLink.outerHTML}</p>`;
+                } else {
+                    showError(data.error || '导出失败');
+                }
+            } catch (error) {
+                showError('导出失败: ' + error.message);
+            }
+        });
+
+        // 重新开始
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            location.reload();
+        });
+
+        // 显示题目列表
+        function displayQuestions(questions) {
+            const preview = document.getElementById('questionsPreview');
+            preview.innerHTML = `
+                <h3 style="margin-bottom: 20px;">题目预览（点击选择需要导出的题目）</h3>
+                <div class="select-actions">
+                    <button onclick="selectAll()">全选</button>
+                    <button onclick="deselectAll()">取消全选</button>
+                    <span id="selectedCount">已选择 0 道题目</span>
+                </div>
+            `;
+
+            questions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.setAttribute('data-id', q.question_id);
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-id">题目 ${q.question_id}</span>
+                        <span class="question-type">${q.question_type}</span>
+                        <input type="checkbox" class="question-select" data-id="${q.question_id}">
+                    </div>
+                    <div class="question-content">
+                        ${formatQuestionContent(q)}
+                    </div>
+                `;
+
+                const checkbox = card.querySelector('.question-select');
+
+                // 点击卡片切换选中状态
+                card.addEventListener('click', (e) => {
+                    // 避免点击 checkbox 时触发两次
+                    if (e.target.type === 'checkbox') return;
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+
+                // checkbox 变化时更新状态和样式
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        selectedQuestions.add(q.question_id);
+                        card.classList.add('selected');
+                    } else {
+                        selectedQuestions.delete(q.question_id);
+                        card.classList.remove('selected');
+                    }
+                    updateSelectedCount();
+                });
+
+                preview.appendChild(card);
+            });
+        }
+
+        // 全选
+        function selectAll() {
+            document.querySelectorAll('.question-card').forEach(card => {
+                const checkbox = card.querySelector('.question-select');
+                if (!checkbox.checked) {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        // 取消全选
+        function deselectAll() {
+            document.querySelectorAll('.question-card').forEach(card => {
+                const checkbox = card.querySelector('.question-select');
+                if (checkbox.checked) {
+                    checkbox.checked = false;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        // 更新已选数量
+        function updateSelectedCount() {
+            const countEl = document.getElementById('selectedCount');
+            if (countEl) {
+                countEl.textContent = `已选择 ${selectedQuestions.size} 道题目`;
+            }
+        }
+
+        // 格式化题目内容
+        function formatQuestionContent(question) {
+            let html = '';
+
+            // 显示内容块
+            if (question.content_blocks && question.content_blocks.length > 0) {
+                question.content_blocks.forEach(block => {
+                    if (block.block_type === 'text') {
+                        html += `<p>${block.content}</p>`;
+                    } else if (block.block_type === 'display_formula') {
+                        html += `<div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace;">${block.content}</div>`;
+                    } else if (block.block_type === 'image') {
+                        html += `<p style="color: #ff9800;">📷 图片: ${block.content || '图片资源'}</p>`;
+                    }
+                });
+            }
+
+            // 显示选项
+            if (question.options && question.options.length > 0) {
+                html += '<div style="margin-top: 10px;">';
+                question.options.forEach(option => {
+                    html += `<div style="margin: 5px 0;">${option}</div>`;
+                });
+                html += '</div>';
+            }
+
+            return html || '<p style="color: #999;">（内容为空）</p>';
+        }
+
+        // 工具函数
+        function showLoading(message) {
+            const resultArea = document.getElementById('resultArea');
+            resultArea.style.display = 'block';
+            resultArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showSuccess(message) {
+            const resultArea = document.getElementById('resultArea');
+            resultArea.style.display = 'block';
+            resultArea.innerHTML = `
+                <div class="status-box success">
+                    ✓ ${message}
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const resultArea = document.getElementById('resultArea');
+            resultArea.style.display = 'block';
+            resultArea.innerHTML = `
+                <div class="status-box error">
+                    ✗ ${message}
+                </div>
+            `;
+        }
+
+        function setStep(stepNumber) {
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                if (i < stepNumber) {
+                    step.className = 'step completed';
+                } else if (i === stepNumber) {
+                    step.className = 'step active';
+                } else {
+                    step.className = 'step';
+                }
+            }
+        }
+
+        // 页面加载时检查系统状态
+        window.addEventListener('load', checkSystemStatus);
+    </script>
+</body>
+</html>

@@ -81,7 +81,27 @@ LANGSMITH_PROJECT=error-correction
 python test_paddleocr.py
 ```
 
-### 3. 运行工作流
+### 3. 使用Web界面（推荐） 🌟
+
+最简单的使用方式，提供可视化界面：
+
+```bash
+# 启动Web应用
+python web_app.py
+
+```
+
+然后访问 **http://localhost:5001**
+
+**功能**:
+- ✅ 拖拽上传PDF/图片
+- ✅ 自动OCR解析和题目分割
+- ✅ 可视化预览所有题目
+- ✅ 勾选需要的题目并导出
+
+详细使用说明请查看 [WEB_APP_GUIDE.md](WEB_APP_GUIDE.md)
+
+### 4. 命令行使用
 
 #### 方式1: 不使用Agent（仅测试步骤1-2）
 

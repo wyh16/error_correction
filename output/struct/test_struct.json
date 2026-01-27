@@ -156,7 +156,7 @@
           },
           {
             "block_label": "text",
-            "block_content": "①两组对边分别相等的四边形是平行四边形",
+            "block_content": "① 两组对边分别相等的四边形是平行四边形",
             "block_bbox": [
               177,
               1052,
@@ -247,7 +247,7 @@
           },
           {
             "block_label": "text",
-            "block_content": "6. 矩形的定义：有一个角是直角的平行四边形.\n7. 矩形的性质：矩形的四个角都是直角；矩形的对角线平分且相等. AC = BD",
+            "block_content": "6. 矩形的定义：有一个角是直角的平行四边形.\n7. 矩形的性质：矩形的四个角都是直角；矩形的对角线平分且相等，AC=BD",
             "block_bbox": [
               135,
               1492,
@@ -342,7 +342,7 @@
             {
               "cls_id": 12,
               "label": "header",
-              "score": 0.9596233367919922,
+              "score": 0.9596254229545593,
               "coordinate": [
                 1040,
                 115,
@@ -354,7 +354,7 @@
             {
               "cls_id": 17,
               "label": "paragraph_title",
-              "score": 0.9641768932342529,
+              "score": 0.9641559720039368,
               "coordinate": [
                 142,
                 297,
@@ -366,7 +366,7 @@
             {
               "cls_id": 17,
               "label": "paragraph_title",
-              "score": 0.9610074162483215,
+              "score": 0.9610241651535034,
               "coordinate": [
                 144,
                 364,
@@ -378,7 +378,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9728075265884399,
+              "score": 0.9727953672409058,
               "coordinate": [
                 148,
                 490,
@@ -390,7 +390,7 @@
             {
               "cls_id": 14,
               "label": "image",
-              "score": 0.9797122478485107,
+              "score": 0.9797072410583496,
               "coordinate": [
                 252,
                 552,
@@ -402,7 +402,7 @@
             {
               "cls_id": 5,
               "label": "display_formula",
-              "score": 0.9597427845001221,
+              "score": 0.9597523808479309,
               "coordinate": [
                 666,
                 556,
@@ -414,7 +414,7 @@
             {
               "cls_id": 5,
               "label": "display_formula",
-              "score": 0.9622885584831238,
+              "score": 0.9622863531112671,
               "coordinate": [
                 663,
                 612,
@@ -426,7 +426,7 @@
             {
               "cls_id": 5,
               "label": "display_formula",
-              "score": 0.9610578417778015,
+              "score": 0.9610621333122253,
               "coordinate": [
                 659,
                 670,
@@ -438,7 +438,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9848836064338684,
+              "score": 0.9848752617835999,
               "coordinate": [
                 136,
                 806,
@@ -450,7 +450,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9637353420257568,
+              "score": 0.9636772274971008,
               "coordinate": [
                 138,
                 991,
@@ -462,7 +462,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9687408804893494,
+              "score": 0.9687245488166809,
               "coordinate": [
                 177,
                 1052,
@@ -474,7 +474,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9696594476699829,
+              "score": 0.9696487784385681,
               "coordinate": [
                 177,
                 1117,
@@ -486,7 +486,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9700086712837219,
+              "score": 0.9700021743774414,
               "coordinate": [
                 177,
                 1180,
@@ -498,7 +498,7 @@
             {
               "cls_id": 14,
               "label": "image",
-              "score": 0.9798648357391357,
+              "score": 0.9798575043678284,
               "coordinate": [
                 803,
                 1067,
@@ -510,7 +510,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9706153273582458,
+              "score": 0.9705995917320251,
               "coordinate": [
                 174,
                 1242,
@@ -522,7 +522,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9748313426971436,
+              "score": 0.9748176336288452,
               "coordinate": [
                 133,
                 1367,
@@ -534,7 +534,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9735643267631531,
+              "score": 0.9735525846481323,
               "coordinate": [
                 134,
                 1429,
@@ -546,7 +546,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9741854667663574,
+              "score": 0.9741846919059753,
               "coordinate": [
                 135,
                 1492,
@@ -558,7 +558,7 @@
             {
               "cls_id": 14,
               "label": "image",
-              "score": 0.976398229598999,
+              "score": 0.976417064666748,
               "coordinate": [
                 949,
                 1325,
@@ -570,7 +570,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9739132523536682,
+              "score": 0.9739059209823608,
               "coordinate": [
                 137,
                 1555,
@@ -582,7 +582,7 @@
             {
               "cls_id": 15,
               "label": "inline_formula",
-              "score": 0.9123378396034241,
+              "score": 0.9123092889785767,
               "coordinate": [
                 994,
                 1568,
@@ -594,7 +594,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9714536070823669,
+              "score": 0.971464216709137,
               "coordinate": [
                 137,
                 1616,
@@ -606,7 +606,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.969968855381012,
+              "score": 0.9699555039405823,
               "coordinate": [
                 185,
                 1676,
@@ -618,7 +618,7 @@
             {
               "cls_id": 22,
               "label": "text",
-              "score": 0.9701886177062988,
+              "score": 0.9701823592185974,
               "coordinate": [
                 186,
                 1739,
@@ -630,7 +630,7 @@
             {
               "cls_id": 16,
               "label": "number",
-              "score": 0.9447341561317444,
+              "score": 0.9447402954101562,
               "coordinate": [
                 654,
                 1852,
@@ -643,17 +643,17 @@
         }
       },
       "markdown": {
-        "text": "## 第四章 四边形\n\n## 知识概念\n\n1. 平行四边形定义：有两组对边分别平行的四边形叫做平行四边形.\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_252_552_568_745.jpg\" alt=\"Image\" width=\"22%\" /></div>\n\n\n $$ A B//C D,A D//B C $$ \n\n $$ A B=C D,A D//B C $$ \n\n $$ \\angle A=\\angle C,\\angle B=\\angle D $$ \n\n2. 平行四边形的性质：平行四边形的对边相等；平行四边形的对角相等。平行四边形的对角线互相平分。\n\n3. 平行四边形的判定\n\n①两组对边分别相等的四边形是平行四边形\n\n②对角线互相平分的四边形是平行四边形；\n\n③两组对角分别相等的四边形是平行四边形：\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_803_1067_1089_1252.jpg\" alt=\"Image\" width=\"20%\" /></div>\n\n\n④一组对边平行且相等的四边形是平行四边形。\n\n4.三角形中位线平行于三角形的第三边，且等于第三边的一半。\n\n5. 直角三角形斜边上的中线等于斜边的一半。\n\n6. 矩形的定义：有一个角是直角的平行四边形.\n\n7. 矩形的性质：矩形的四个角都是直角；矩形的对角线平分且相等. AC = BD\n\n\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_949_1325_1123_1505.jpg\" alt=\"Image\" width=\"12%\" /></div>\n\n\n8. 矩形判定定理：\n\n①有一个角是直角的平行四边形叫做矩形.\n\n② 对角线相等的平行四边形是矩形.",
+        "text": "## 第四章 四边形\n\n## 知识概念\n\n1. 平行四边形定义：有两组对边分别平行的四边形叫做平行四边形.\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_252_552_568_745.jpg\" alt=\"Image\" width=\"22%\" /></div>\n\n\n $$ A B//C D,A D//B C $$ \n\n $$ A B=C D,A D//B C $$ \n\n $$ \\angle A=\\angle C,\\angle B=\\angle D $$ \n\n2. 平行四边形的性质：平行四边形的对边相等；平行四边形的对角相等。平行四边形的对角线互相平分。\n\n3. 平行四边形的判定\n\n① 两组对边分别相等的四边形是平行四边形\n\n②对角线互相平分的四边形是平行四边形；\n\n③两组对角分别相等的四边形是平行四边形：\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_803_1067_1089_1252.jpg\" alt=\"Image\" width=\"20%\" /></div>\n\n\n④一组对边平行且相等的四边形是平行四边形。\n\n4.三角形中位线平行于三角形的第三边，且等于第三边的一半。\n\n5. 直角三角形斜边上的中线等于斜边的一半。\n\n6. 矩形的定义：有一个角是直角的平行四边形.\n\n7. 矩形的性质：矩形的四个角都是直角；矩形的对角线平分且相等，AC=BD\n\n\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_949_1325_1123_1505.jpg\" alt=\"Image\" width=\"12%\" /></div>\n\n\n8. 矩形判定定理：\n\n①有一个角是直角的平行四边形叫做矩形.\n\n② 对角线相等的平行四边形是矩形.",
         "images": {
-          "imgs/img_in_image_box_252_552_568_745.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/markdown_0/imgs/img_in_image_box_252_552_568_745.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2F6625a8485cbd0a4f0685478b300fad9396b78bed479b3745b3a32237e7e7fe30",
-          "imgs/img_in_image_box_803_1067_1089_1252.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/markdown_0/imgs/img_in_image_box_803_1067_1089_1252.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2F0f12962febed03642f4488edf270e5337474ada4724bf49b0a8aaec22b5ad276",
-          "imgs/img_in_image_box_949_1325_1123_1505.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/markdown_0/imgs/img_in_image_box_949_1325_1123_1505.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2Fe2f89c58da96444ca4813f83bf361b71e7fdc864d40a85ac4cc983227d9d8d04"
+          "imgs/img_in_image_box_252_552_568_745.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/markdown_0/imgs/img_in_image_box_252_552_568_745.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2F7e519043851bb5d5a5c5648eb442d54ddaf36449602cd7b367c359ebd3b13cff",
+          "imgs/img_in_image_box_803_1067_1089_1252.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/markdown_0/imgs/img_in_image_box_803_1067_1089_1252.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2F2adb1b17704b49d16baf4174a30285a056acad7836b217a182d80ce1b35ca071",
+          "imgs/img_in_image_box_949_1325_1123_1505.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/markdown_0/imgs/img_in_image_box_949_1325_1123_1505.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2F26afcdcca632fcd2117f889dde9dadbc0487adb5a1a1ede02ac41c9a3e040bfd"
         }
       },
       "outputImages": {
-        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/layout_det_res_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2F625aceba2c2767fa893426127a25932b7125b0735169fe7c39605cfb2ab122b4"
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/layout_det_res_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2Fe0d70e02e1b458b2a8b3352bbbc2676d4a91870042fd409383095652ba0d4c71"
       },
-      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/input_img_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2Fff2766d45072b7ad3fc1d6de4186413bc17dc3d255fc521f4b721e3cf303d893"
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/input_img_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2F70d1edf0f9af31cf09c8997c877c20872b7b06503ddc17b6f30ac67ee8e331e2"
     }
   ],
   "dataInfo": {
@@ -662,6 +662,6 @@
     "type": "image"
   },
   "preprocessedImages": [
-    "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//a56ac1d1-ec53-4ffd-b591-1234b9705b17/preprocessed_img_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-26T06%3A26%3A48Z%2F-1%2F%2Fe66d4dddb303ea12cb9e7c0a331ffb1d583f632cd246aea4ee95c72b11853cc9"
+    "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl//bc0cb233-3fb4-4a6c-9d0a-30717be554de/preprocessed_img_0.jpg?authorization=bce-auth-v1%2FALTAKzReLNvew3ySINYJ0fuAMN%2F2026-01-27T17%3A23%3A04Z%2F-1%2F%2Fda6043c5dfcf4b9e7c3f836b0c88dc4c370037924a49df8ba6f6cb7f19c415fc"
   ]
 }

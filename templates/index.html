@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>错题本生成系统</title>
+    <!-- MathJax 配置和加载 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
     <style>
         * {
             margin: 0;
@@ -305,6 +318,26 @@
         .select-actions span {
             margin-left: 15px;
             color: #666;
+        }
+
+        .formula-block {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #667eea;
+            overflow-x: auto;
+        }
+
+        .options-list {
+            margin-top: 15px;
+            padding-left: 10px;
+        }
+
+        .option-item {
+            margin: 8px 0;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
         }
 
         .loading {
@@ -692,6 +725,11 @@
 
                 preview.appendChild(card);
             });
+
+            // 触发 MathJax 重新渲染公式
+            if (window.MathJax) {
+                MathJax.typesetPromise([preview]).catch(err => console.log('MathJax error:', err));
+            }
         }
 
         // 全选
@@ -734,18 +772,36 @@
                     if (block.block_type === 'text') {
                         html += `<p>${block.content}</p>`;
                     } else if (block.block_type === 'display_formula') {
-                        html += `<div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace;">${block.content}</div>`;
+                        // 确保公式被正确包裹用于 MathJax 渲染
+                        let formula = block.content.trim();
+                        if (!formula.startsWith('$$')) {
+                            formula = '$$' + formula + '$$';
+                        }
+                        html += `<div class="formula-block">${formula}</div>`;
+                    } else if (block.block_type === 'inline_formula') {
+                        // 行内公式
+                        let formula = block.content.trim();
+                        if (!formula.startsWith('$')) {
+                            formula = '$' + formula + '$';
+                        }
+                        html += `<span>${formula}</span>`;
                     } else if (block.block_type === 'image') {
-                        html += `<p style="color: #ff9800;">📷 图片: ${block.content || '图片资源'}</p>`;
+                        // 显示图片
+                        const imgPath = block.content || '';
+                        if (imgPath) {
+                            html += `<img src="${imgPath}" style="max-width: 100%; margin: 10px 0;">`;
+                        } else {
+                            html += `<p style="color: #ff9800;">📷 图片资源</p>`;
+                        }
                     }
                 });
             }
 
-            // 显示选项
+            // 显示选项（选项中可能包含公式）
             if (question.options && question.options.length > 0) {
-                html += '<div style="margin-top: 10px;">';
+                html += '<div class="options-list">';
                 question.options.forEach(option => {
-                    html += `<div style="margin: 5px 0;">${option}</div>`;
+                    html += `<div class="option-item">${option}</div>`;
                 });
                 html += '</div>';
             }

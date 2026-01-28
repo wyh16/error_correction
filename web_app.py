@@ -5,12 +5,12 @@
 
 import os
 import json
-from pathlib import Path
+import uuid
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
-from src.workflow import ErrorCorrectionWorkflow
+from src.workflow import build_workflow
 
 # 加载环境变量
 load_dotenv()
@@ -27,8 +27,9 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
 # 确保上传目录存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# 全局工作流实例（用于保存状态）
-current_workflow = None
+# 全局工作流图（带 MemorySaver，通过 thread_id 管理会话状态）
+workflow_graph = build_workflow()
+current_thread_id = None
 
 
 def allowed_file(filename):
@@ -46,7 +47,9 @@ def index():
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
     """
-    处理文件上传和工作流执行
+    处理文件上传并执行预处理
+
+    图执行: prepare_input → ocr_parse → [中断]
 
     Returns:
         JSON响应，包含处理结果
@@ -64,26 +67,25 @@ def upload_file():
         return jsonify({'error': f'不支持的文件格式。支持: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
 
     try:
-        global current_workflow
+        global current_thread_id
+        current_thread_id = str(uuid.uuid4())
 
         # 保存文件
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
-        # 创建新的工作流实例
-        current_workflow = ErrorCorrectionWorkflow()
-
-        # 执行步骤1-2（准备和OCR）
-        result = current_workflow.run(filepath, auto_split=False)
+        # 启动图：prepare_input → ocr_parse → 在 split_questions 前中断
+        config = {"configurable": {"thread_id": current_thread_id}}
+        state = workflow_graph.invoke({"file_path": filepath}, config=config)
 
         return jsonify({
             'success': True,
             'message': '文件处理成功',
             'result': {
-                'image_count': len(result['image_paths']),
-                'ocr_count': len(result['ocr_results']),
-                'image_paths': result['image_paths'],
+                'image_count': len(state.get('image_paths', [])),
+                'ocr_count': len(state.get('ocr_results', [])),
+                'image_paths': state.get('image_paths', []),
             }
         })
 
@@ -97,33 +99,27 @@ def upload_file():
 @app.route('/api/split', methods=['POST'])
 def split_questions():
     """
-    调用Agent分割题目
+    恢复图执行 Agent 分割题目
 
-    Expects:
-        JSON body (可选，用于指定特定的OCR结果)
+    图执行: split_questions → [中断]
 
     Returns:
         JSON响应，包含分割后的题目
     """
     try:
-        global current_workflow
+        global current_thread_id
 
-        # 检查是否已上传文件
-        if current_workflow is None:
+        if current_thread_id is None:
             return jsonify({
                 'success': False,
                 'error': '请先上传文件'
             }), 400
 
-        # 检查是否有OCR结果
-        if not current_workflow.ocr_results:
-            return jsonify({
-                'success': False,
-                'error': '请先完成OCR解析'
-            }), 400
+        # 恢复图：执行 split_questions → 在 export 前中断
+        config = {"configurable": {"thread_id": current_thread_id}}
+        state = workflow_graph.invoke(None, config=config)
 
-        # 调用Agent分割
-        questions = current_workflow.split_questions_with_agent()
+        questions = state.get('questions', [])
 
         return jsonify({
             'success': True,
@@ -141,16 +137,15 @@ def split_questions():
 @app.route('/api/export', methods=['POST'])
 def export_wrongbook():
     """
-    导出错题本
+    注入选中题目 ID 并恢复图执行导出
 
-    Expects:
-        JSON body with selected_ids: List[str]
+    图执行: export → END
 
     Returns:
         JSON响应，包含导出文件路径
     """
     try:
-        global current_workflow
+        global current_thread_id
 
         data = request.get_json()
         selected_ids = data.get('selected_ids', [])
@@ -161,20 +156,24 @@ def export_wrongbook():
                 'error': '未选择任何题目'
             }), 400
 
-        # 检查是否已分割题目
-        if current_workflow is None or not current_workflow.questions:
+        if current_thread_id is None:
             return jsonify({
                 'success': False,
                 'error': '请先分割题目'
             }), 400
 
-        # 导出
-        output_path = current_workflow.export_selected(selected_ids)
+        config = {"configurable": {"thread_id": current_thread_id}}
+
+        # 将用户选中的题目 ID 注入图状态
+        workflow_graph.update_state(config, {"selected_ids": selected_ids})
+
+        # 恢复图：执行 export → END
+        state = workflow_graph.invoke(None, config=config)
 
         return jsonify({
             'success': True,
             'message': '错题本导出成功',
-            'output_path': output_path
+            'output_path': state.get('output_path', '')
         })
 
     except Exception as e:

@@ -106,6 +106,11 @@ SYSTEM_PROMPT = """# 错题本题目分割专家
    - 使用 `save_questions` 工具保存分割结果
    - 遇到问题可以使用 `log_issue` 记录
 
+5. **选项与内容不能重复**
+   - 对于选择题，如果你已经把选项提取到 `options` 数组中，则必须从 `content_blocks` 的文本中移除选项部分
+   - `content_blocks` 只保留题干（题目正文），不包含选项文本
+   - 例如原始文本为 "下列说法正确的是（）\nA. xxx B. yyy"，则 content_blocks 中的 text 只保留 "下列说法正确的是（）"，选项 "A. xxx"、"B. yyy" 放入 options 数组
+
 ## 示例
 
 输入（简化的OCR结果）：

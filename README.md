@@ -133,16 +133,6 @@ questions = workflow.split_questions_with_agent()
 workflow.export_selected(["1", "2", "3"])
 ```
 
-或使用测试脚本:
-
-```bash
-# 测试步骤1-2
-python test_workflow.py
-
-# 测试完整流程（包含Agent）
-python test_workflow.py --with-agent
-```
-
 ## Agent工具说明
 
 ### 1. save_questions

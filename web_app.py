@@ -22,10 +22,20 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'bmp', 'tiff', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
+MAX_FILE_SIZE_MB = 50
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE_MB * 1024 * 1024
 
 # 确保上传目录存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    """文件大小超出Flask限制"""
+    return jsonify({
+        'success': False,
+        'error': f'文件大小超出限制，最大允许 {MAX_FILE_SIZE_MB}MB'
+    }), 413
+
 
 # 全局工作流图（带 MemorySaver，通过 thread_id 管理会话状态）
 workflow_graph = build_workflow()
@@ -65,6 +75,22 @@ def upload_file():
 
     if not allowed_file(file.filename):
         return jsonify({'error': f'不支持的文件格式。支持: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+
+    # 检查文件大小
+    file.seek(0, 2)  # 移动到文件末尾
+    file_size = file.tell()  # 获取文件大小（字节）
+    file.seek(0)  # 重置到文件开头
+    file_size_mb = file_size / (1024 * 1024)
+
+    if file_size_mb > MAX_FILE_SIZE_MB:
+        return jsonify({
+            'error': f'文件大小为 {file_size_mb:.1f}MB，超出最大限制 {MAX_FILE_SIZE_MB}MB'
+        }), 400
+
+    if file_size == 0:
+        return jsonify({
+            'error': '上传的文件为空，请重新选择文件'
+        }), 400
 
     try:
         global current_thread_id

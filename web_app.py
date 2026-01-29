@@ -37,6 +37,24 @@ def request_entity_too_large(error):
     }), 413
 
 
+@app.errorhandler(404)
+def not_found(error):
+    """页面未找到"""
+    return jsonify({
+        'success': False,
+        'error': '请求的资源不存在'
+    }), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    """服务器内部错误"""
+    return jsonify({
+        'success': False,
+        'error': '服务器内部错误，请稍后重试'
+    }), 500
+
+
 # 全局工作流图（带 MemorySaver，通过 thread_id 管理会话状态）
 workflow_graph = build_workflow()
 current_thread_id = None
@@ -115,10 +133,15 @@ def upload_file():
             }
         })
 
+    except FileNotFoundError:
+        return jsonify({
+            'success': False,
+            'error': '文件保存失败，请重新上传'
+        }), 500
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'文件处理失败：{str(e)}'
         }), 500
 
 
@@ -156,7 +179,7 @@ def split_questions():
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'题目分割失败：{str(e)}'
         }), 500
 
 
@@ -205,7 +228,7 @@ def export_wrongbook():
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'导出失败：{str(e)}'
         }), 500
 
 
@@ -236,10 +259,15 @@ def get_questions():
             'questions': questions
         })
 
+    except json.JSONDecodeError:
+        return jsonify({
+            'success': False,
+            'error': '题目数据文件格式错误，请重新分割题目'
+        }), 500
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'获取题目列表失败：{str(e)}'
         }), 500
 
 
@@ -293,7 +321,7 @@ def get_status():
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'获取系统状态失败：{str(e)}'
         }), 500
 
 

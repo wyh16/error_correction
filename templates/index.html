@@ -152,13 +152,15 @@
 
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
+            // 将 FileList 转为 Array，避免部分浏览器在事件结束后清空 DataTransfer
+            const files = Array.from(e.dataTransfer.files);
             if (files.length > 0) handleFileUpload(files);
         });
 
         fileInput.addEventListener('change', (e) => {
-            const files = e.target.files;
+            const files = Array.from(e.target.files);
             if (files.length > 0) handleFileUpload(files);
         });
 

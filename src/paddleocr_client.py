@@ -114,22 +114,24 @@ class PaddleOCRClient:
             console.print(f"[green]结构化结果已保存到: {output_path}[/green]")
 
             # 下载并保存图片资源
-            self._save_images(result, output_dir)
+            file_prefix = Path(image_path).stem
+            self._save_images(result, output_dir, file_prefix)
 
         return result
 
-    def _save_images(self, result: Dict[str, Any], output_dir: str):
+    def _save_images(self, result: Dict[str, Any], output_dir: str, file_prefix: str = ""):
         """下载并保存结果中的图片资源
 
         Args:
             result: PaddleOCR 返回结果
             output_dir: 输出目录
+            file_prefix: 文件名前缀（用于区分不同图片的输出）
         """
         for i, res in enumerate(result.get("layoutParsingResults", [])):
             # 保存 Markdown 文档
             markdown_text = res.get("markdown", {}).get("text", "")
             if markdown_text:
-                md_filename = os.path.join(output_dir, f"doc_{i}.md")
+                md_filename = os.path.join(output_dir, f"{file_prefix}_doc_{i}.md")
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(markdown_text)
                 console.print(f"[green]Markdown 已保存: {md_filename}[/green]")
@@ -157,7 +159,7 @@ class PaddleOCRClient:
                 try:
                     img_response = requests.get(img_url)
                     if img_response.status_code == 200:
-                        filename = os.path.join(output_dir, f"{img_name}_{i}.jpg")
+                        filename = os.path.join(output_dir, f"{img_name}_{file_prefix}_{i}.jpg")
                         with open(filename, "wb") as f:
                             f.write(img_response.content)
                         console.print(f"[green]输出图片已保存: {filename}[/green]")
@@ -309,7 +311,8 @@ class PaddleOCRClient:
 
             console.print(f"[green]结构化结果已保存到: {output_path}[/green]")
 
-            await self._async_save_images(session, result, output_dir)
+            file_prefix = Path(image_path).stem
+            await self._async_save_images(session, result, output_dir, file_prefix)
 
         return result
 
@@ -337,14 +340,22 @@ class PaddleOCRClient:
         self,
         session: aiohttp.ClientSession,
         result: Dict[str, Any],
-        output_dir: str
+        output_dir: str,
+        file_prefix: str = ""
     ):
-        """异步下载并保存结果中的所有图片资源"""
+        """异步下载并保存结果中的所有图片资源
+
+        Args:
+            session: aiohttp 会话
+            result: PaddleOCR 返回结果
+            output_dir: 输出目录
+            file_prefix: 文件名前缀（用于区分不同图片的输出，避免并发写入冲突）
+        """
         for i, res in enumerate(result.get("layoutParsingResults", [])):
             # 保存 Markdown 文档（同步文件写入）
             markdown_text = res.get("markdown", {}).get("text", "")
             if markdown_text:
-                md_filename = os.path.join(output_dir, f"doc_{i}.md")
+                md_filename = os.path.join(output_dir, f"{file_prefix}_doc_{i}.md")
                 with open(md_filename, "w", encoding="utf-8") as md_file:
                     md_file.write(markdown_text)
                 console.print(f"[green]Markdown 已保存: {md_filename}[/green]")
@@ -361,7 +372,7 @@ class PaddleOCRClient:
 
             output_images = res.get("outputImages", {})
             for img_name, img_url in output_images.items():
-                filename = os.path.join(output_dir, f"{img_name}_{i}.jpg")
+                filename = os.path.join(output_dir, f"{img_name}_{file_prefix}_{i}.jpg")
                 download_tasks.append(
                     self._async_download_image(session, img_url, filename)
                 )

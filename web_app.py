@@ -75,59 +75,69 @@ def index():
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
     """
-    处理文件上传并执行预处理
+    处理文件上传并执行预处理（支持多文件）
 
     图执行: prepare_input → ocr_parse → [中断]
 
     Returns:
         JSON响应，包含处理结果
     """
-    # 检查文件
-    if 'file' not in request.files:
+    # 支持多文件：前端用 'files' 字段发送，兼容单文件 'file' 字段
+    files = request.files.getlist('files')
+    if not files:
+        files = request.files.getlist('file')
+    if not files or all(f.filename == '' for f in files):
         return jsonify({'error': '没有上传文件'}), 400
 
-    file = request.files['file']
+    # 校验每个文件
+    for file in files:
+        if file.filename == '':
+            continue
 
-    if file.filename == '':
-        return jsonify({'error': '未选择文件'}), 400
+        if not allowed_file(file.filename):
+            return jsonify({
+                'error': f'不支持的文件格式: {file.filename}。支持: {", ".join(ALLOWED_EXTENSIONS)}'
+            }), 400
 
-    if not allowed_file(file.filename):
-        return jsonify({'error': f'不支持的文件格式。支持: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+        file.seek(0, 2)
+        file_size = file.tell()
+        file.seek(0)
+        file_size_mb = file_size / (1024 * 1024)
 
-    # 检查文件大小
-    file.seek(0, 2)  # 移动到文件末尾
-    file_size = file.tell()  # 获取文件大小（字节）
-    file.seek(0)  # 重置到文件开头
-    file_size_mb = file_size / (1024 * 1024)
+        if file_size_mb > MAX_FILE_SIZE_MB:
+            return jsonify({
+                'error': f'{file.filename} 大小为 {file_size_mb:.1f}MB，超出最大限制 {MAX_FILE_SIZE_MB}MB'
+            }), 400
 
-    if file_size_mb > MAX_FILE_SIZE_MB:
-        return jsonify({
-            'error': f'文件大小为 {file_size_mb:.1f}MB，超出最大限制 {MAX_FILE_SIZE_MB}MB'
-        }), 400
-
-    if file_size == 0:
-        return jsonify({
-            'error': '上传的文件为空，请重新选择文件'
-        }), 400
+        if file_size == 0:
+            return jsonify({
+                'error': f'{file.filename} 为空文件，请重新选择'
+            }), 400
 
     try:
         global current_thread_id
         current_thread_id = str(uuid.uuid4())
 
-        # 保存文件（使用uuid生成文件名，支持中文文件名上传）
-        original_ext = file.filename.rsplit('.', 1)[1].lower()
-        filename = f"{uuid.uuid4().hex}.{original_ext}"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        # 保存所有文件
+        filepaths = []
+        for file in files:
+            if file.filename == '':
+                continue
+            original_ext = file.filename.rsplit('.', 1)[1].lower()
+            filename = f"{uuid.uuid4().hex}.{original_ext}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            filepaths.append(filepath)
 
         # 启动图：prepare_input → ocr_parse → 在 split_questions 前中断
         config = {"configurable": {"thread_id": current_thread_id}}
-        state = workflow_graph.invoke({"file_path": filepath}, config=config)
+        state = workflow_graph.invoke({"file_paths": filepaths}, config=config)
 
         return jsonify({
             'success': True,
             'message': '文件处理成功',
             'result': {
+                'file_count': len(filepaths),
                 'image_count': len(state.get('image_paths', [])),
                 'ocr_count': len(state.get('ocr_results', [])),
                 'image_paths': state.get('image_paths', []),

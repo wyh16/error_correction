@@ -7,6 +7,7 @@ import os
 import json
 import logging
 import time
+import asyncio
 from typing import List, Dict, Any, TypedDict
 from dotenv import load_dotenv
 from rich.console import Console
@@ -58,14 +59,15 @@ def prepare_input_node(state: WorkflowState) -> dict:
 
 
 def ocr_parse_node(state: WorkflowState) -> dict:
-    """节点: PaddleOCR 解析"""
+    """节点: PaddleOCR 解析（异步并发）"""
     console.print("[bold yellow]步骤 2: PaddleOCR 解析[/bold yellow]")
     step_start = time.time()
     client = PaddleOCRClient()
-    results = []
-    for image_path in state["image_paths"]:
-        result = client.parse_image(image_path, save_output=True)
-        results.append(result)
+    image_paths = state["image_paths"]
+
+    # 使用异步并发解析所有图片
+    results = asyncio.run(client.parse_images_async(image_paths, save_output=True))
+
     logger.info(f"步骤2完成: OCR解析，共 {len(results)} 个结果，耗时 {time.time() - step_start:.2f}s")
     console.print(f"[green]✓ 成功解析 {len(results)} 张图片[/green]")
     return {"ocr_results": results}

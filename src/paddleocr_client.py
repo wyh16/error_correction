@@ -6,9 +6,11 @@ PaddleOCR 文档解析客户端
 import os
 import json
 import base64
+import asyncio
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import requests
+import aiohttp
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -239,6 +241,162 @@ class PaddleOCRClient:
             self._save_images(result, output_dir)
 
         return result
+
+    # ── 异步方法 ──────────────────────────────────────────────
+
+    async def async_parse_image(
+        self,
+        session: aiohttp.ClientSession,
+        image_path: str,
+        save_output: bool = True,
+        output_dir: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """异步解析单张图片
+
+        Args:
+            session: aiohttp 会话（由调用方管理生命周期）
+            image_path: 图片文件路径
+            save_output: 是否保存输出结果
+            output_dir: 输出目录
+
+        Returns:
+            Dict: PaddleOCR API 返回的结构化结果
+        """
+        if output_dir is None:
+            output_dir = os.getenv("STRUCT_DIR", "output/struct")
+
+        console.print(f"[cyan]正在解析图片: {image_path}[/cyan]")
+
+        # 读取图片并转为 base64
+        with open(image_path, "rb") as file:
+            file_bytes = file.read()
+            file_data = base64.b64encode(file_bytes).decode("ascii")
+
+        headers = {
+            "Authorization": f"token {self.token}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "file": file_data,
+            "fileType": 1,
+            "useDocOrientationClassify": self.use_doc_orientation,
+            "useDocUnwarping": self.use_doc_unwarping,
+            "useChartRecognition": self.use_chart_recognition,
+        }
+
+        async with session.post(self.api_url, json=payload, headers=headers) as response:
+            if response.status != 200:
+                text = await response.text()
+                console.print(f"[red]API 调用失败: HTTP {response.status}[/red]")
+                console.print(f"[red]响应内容: {text}[/red]")
+                raise Exception(f"PaddleOCR API 调用失败: {response.status}")
+
+            data = await response.json()
+            result = data["result"]
+
+        console.print(f"[green]✓ 解析成功: {image_path}[/green]")
+
+        # 保存结果
+        if save_output:
+            os.makedirs(output_dir, exist_ok=True)
+
+            filename = Path(image_path).stem + "_struct.json"
+            output_path = os.path.join(output_dir, filename)
+
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+
+            console.print(f"[green]结构化结果已保存到: {output_path}[/green]")
+
+            await self._async_save_images(session, result, output_dir)
+
+        return result
+
+    async def _async_download_image(
+        self,
+        session: aiohttp.ClientSession,
+        url: str,
+        save_path: str
+    ):
+        """异步下载单张图片"""
+        try:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    content = await response.read()
+                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                    with open(save_path, "wb") as f:
+                        f.write(content)
+                    console.print(f"[green]图片已保存: {save_path}[/green]")
+                else:
+                    console.print(f"[yellow]图片下载失败: {save_path}[/yellow]")
+        except Exception as e:
+            console.print(f"[yellow]图片下载出错: {save_path} - {e}[/yellow]")
+
+    async def _async_save_images(
+        self,
+        session: aiohttp.ClientSession,
+        result: Dict[str, Any],
+        output_dir: str
+    ):
+        """异步下载并保存结果中的所有图片资源"""
+        for i, res in enumerate(result.get("layoutParsingResults", [])):
+            # 保存 Markdown 文档（同步文件写入）
+            markdown_text = res.get("markdown", {}).get("text", "")
+            if markdown_text:
+                md_filename = os.path.join(output_dir, f"doc_{i}.md")
+                with open(md_filename, "w", encoding="utf-8") as md_file:
+                    md_file.write(markdown_text)
+                console.print(f"[green]Markdown 已保存: {md_filename}[/green]")
+
+            # 收集所有图片下载任务
+            download_tasks = []
+
+            images = res.get("markdown", {}).get("images", {})
+            for img_path, img_url in images.items():
+                full_img_path = os.path.join(output_dir, img_path)
+                download_tasks.append(
+                    self._async_download_image(session, img_url, full_img_path)
+                )
+
+            output_images = res.get("outputImages", {})
+            for img_name, img_url in output_images.items():
+                filename = os.path.join(output_dir, f"{img_name}_{i}.jpg")
+                download_tasks.append(
+                    self._async_download_image(session, img_url, filename)
+                )
+
+            # 并发下载所有图片
+            if download_tasks:
+                await asyncio.gather(*download_tasks)
+
+    async def parse_images_async(
+        self,
+        image_paths: List[str],
+        save_output: bool = True,
+        output_dir: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """异步并发解析多张图片
+
+        Args:
+            image_paths: 图片路径列表
+            save_output: 是否保存输出结果
+            output_dir: 输出目录
+
+        Returns:
+            List[Dict]: 每张图片的结构化结果（顺序与输入一致）
+        """
+        console.print(f"[bold cyan]异步并发解析 {len(image_paths)} 张图片...[/bold cyan]")
+
+        async with aiohttp.ClientSession() as session:
+            tasks = [
+                self.async_parse_image(session, path, save_output, output_dir)
+                for path in image_paths
+            ]
+            results = await asyncio.gather(*tasks)
+
+        console.print(f"[bold green]✓ 全部 {len(results)} 张图片解析完成[/bold green]")
+        return list(results)
 
 
 def main():

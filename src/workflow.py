@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 class WorkflowState(TypedDict, total=False):
     """工作流全局状态"""
-    file_path: str                       # 输入文件路径
+    file_paths: List[str]                # 输入文件路径列表（支持多文件）
     image_paths: List[str]               # 标准化后的图片路径列表
     ocr_results: List[Dict[str, Any]]    # OCR 解析结果
     questions: List[Dict[str, Any]]      # 分割后的题目列表
@@ -50,12 +50,34 @@ class WorkflowState(TypedDict, total=False):
 
 
 def prepare_input_node(state: WorkflowState) -> dict:
-    """节点: 准备输入（PDF/图片 → 标准化图片列表）"""
+    """节点: 准备输入（PDF/图片 → 标准化图片列表），支持多文件"""
     console.print("[bold yellow]步骤 1: 准备输入文件[/bold yellow]")
     step_start = time.time()
-    image_paths = prepare_input(state["file_path"])
-    logger.info(f"步骤1完成: 准备输入文件，共 {len(image_paths)} 张图片，耗时 {time.time() - step_start:.2f}s")
-    return {"image_paths": image_paths}
+
+    file_paths = state["file_paths"]
+    all_image_paths = []
+    for fp in file_paths:
+        all_image_paths.extend(prepare_input(fp))
+
+    logger.info(f"步骤1完成: 准备输入文件，共 {len(all_image_paths)} 张图片（来自 {len(file_paths)} 个文件），耗时 {time.time() - step_start:.2f}s")
+    return {"image_paths": all_image_paths}
+
+
+def _run_async(coro):
+    """安全地运行异步协程，兼容已有事件循环的场景（如 LangGraph 内部）"""
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # 已有事件循环在运行，无法直接 asyncio.run()
+        # 在新线程中创建独立事件循环来执行
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            return pool.submit(asyncio.run, coro).result()
+    else:
+        return asyncio.run(coro)
 
 
 def ocr_parse_node(state: WorkflowState) -> dict:
@@ -65,8 +87,8 @@ def ocr_parse_node(state: WorkflowState) -> dict:
     client = PaddleOCRClient()
     image_paths = state["image_paths"]
 
-    # 使用异步并发解析所有图片
-    results = asyncio.run(client.parse_images_async(image_paths, save_output=True))
+    # 使用异步并发解析所有图片（兼容已有事件循环）
+    results = _run_async(client.parse_images_async(image_paths, save_output=True))
 
     logger.info(f"步骤2完成: OCR解析，共 {len(results)} 个结果，耗时 {time.time() - step_start:.2f}s")
     console.print(f"[green]✓ 成功解析 {len(results)} 张图片[/green]")
@@ -89,27 +111,31 @@ def split_questions_node(state: WorkflowState) -> dict:
     logger.info("开始调用Agent分割题目")
     agent = create_question_split_agent()
 
-    # 简化 OCR 结果为 Agent 友好格式
+    # 简化 OCR 结果为 Agent 友好格式，附带页码索引
     simplified_results = []
+    page_index = 0
     for result in state["ocr_results"]:
         if "layoutParsingResults" in result:
             for page in result["layoutParsingResults"]:
                 if "prunedResult" in page:
                     parsing_res = page["prunedResult"].get("parsing_res_list", [])
                     simplified_results.append({
+                        "page_index": page_index,
                         "blocks": parsing_res,
                         "block_order": page.get("block_order", [])
                     })
+                    page_index += 1
 
     prompt = f"""请分析以下OCR识别结果，将其分割为独立的题目。
 
-OCR结果包含 {len(simplified_results)} 页内容。
+OCR结果包含 {len(simplified_results)} 页内容，请严格按照 page_index 从小到大的顺序处理。
 
 每页的数据结构：
+- page_index: 页码索引（从0开始），决定全局阅读顺序
 - blocks: 包含所有识别的内容块（文本、公式、图片等）
-- block_order: 推荐的阅读顺序
+- block_order: 该页内部推荐的阅读顺序
 
-请仔细分析题号、内容结构，将题目准确分割，并使用 save_questions 工具保存结果。
+请先按 page_index 顺序处理每一页，再在每页内部按 block_order 顺序处理各 block，仔细分析题号、内容结构，将题目准确分割，并使用 save_questions 工具保存结果。
 
 如果遇到不确定的情况，请使用 log_issue 工具记录。
 """

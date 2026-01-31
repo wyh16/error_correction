@@ -57,6 +57,12 @@ error_correction/
 
 ### 1. 环境配置
 
+解释器配置，python=3.11
+
+```bash
+pip install -r requirements.txt
+```
+
 复制 `.env.example` 为 `.env` 并填写配置:
 
 ```bash

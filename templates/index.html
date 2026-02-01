@@ -29,6 +29,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+    <style>
+        :root {
+            view-transition-name: root;
+        }
+
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+        }
+
+        ::view-transition-old(root) {
+            z-index: 1;
+        }
+
+        ::view-transition-new(root) {
+            z-index: 2;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
     <div class="container mx-auto max-w-5xl px-4 py-8">
@@ -217,10 +236,50 @@
             apply(initial);
 
             if (!btn) return;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 const next = root.classList.contains('dark') ? 'light' : 'dark';
                 localStorage.setItem('theme', next);
-                apply(next);
+
+                const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const canTransition = !prefersReduce && typeof document.startViewTransition === 'function';
+
+                if (!canTransition) {
+                    apply(next);
+                    return;
+                }
+
+                const rect = btn.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const endRadius = Math.hypot(
+                    Math.max(x, window.innerWidth - x),
+                    Math.max(y, window.innerHeight - y)
+                );
+
+                const transition = document.startViewTransition(() => {
+                    apply(next);
+                });
+
+                try {
+                    await transition.ready;
+
+                    const duration = 1000;
+                    const grow = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`];
+
+                    document.documentElement.animate(
+                        { clipPath: grow },
+                        { duration, easing: 'cubic-bezier(0.2, 0, 0, 1)', pseudoElement: '::view-transition-new(root)' }
+                    );
+
+                    document.documentElement.animate(
+                        { opacity: [1, 0.98] },
+                        { duration, easing: 'linear', pseudoElement: '::view-transition-old(root)' }
+                    );
+
+                    await transition.finished;
+                } catch (e) {
+                    apply(next);
+                }
             });
         }
 
@@ -306,12 +365,15 @@
                 fileNames.push(files[i].name);
             }
 
+            uploadArea.classList.add('hidden');
+            fileInput.value = '';
+
             // 显示进度条和加载状态
             const fileLabel = files.length > 1 ? `${files.length} 个文件` : fileNames[0];
             const progressContainer = document.getElementById('progressContainer');
             const progressBarFill = document.getElementById('progressBarFill');
             const progressText = document.getElementById('progressText');
-            progressContainer.style.display = 'block';
+            progressContainer.classList.remove('hidden');
             progressBarFill.style.width = '0%';
             progressText.textContent = '0%';
             showLoading(`正在上传和处理 ${fileLabel}...`);
@@ -328,7 +390,7 @@
             });
 
             xhr.addEventListener('load', () => {
-                progressContainer.style.display = 'none';
+                progressContainer.classList.add('hidden');
                 try {
                     const data = JSON.parse(xhr.responseText);
                     if (data.success) {
@@ -336,19 +398,22 @@
                         document.getElementById('fileName').textContent = fileNames.join('、');
                         document.getElementById('imageCount').textContent = data.result.image_count;
                         document.getElementById('ocrCount').textContent = data.result.ocr_count;
-                        document.getElementById('fileInfo').style.display = 'block';
+                        document.getElementById('fileInfo').classList.remove('hidden');
                         document.getElementById('splitBtn').disabled = false;
                         setStep(3);
                     } else {
+                        uploadArea.classList.remove('hidden');
                         showError(data.error || '文件处理失败');
                     }
                 } catch (e) {
+                    uploadArea.classList.remove('hidden');
                     showError('上传失败: 服务器响应异常');
                 }
             });
 
             xhr.addEventListener('error', () => {
-                progressContainer.style.display = 'none';
+                progressContainer.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
                 showError('上传失败: 网络错误');
             });
 

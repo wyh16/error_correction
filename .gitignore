@@ -10,3 +10,6 @@ output/
 uploads/
 printed-vs-handwritten/
 workflow.log
+.venv/
+.idea/
+__pycache__/

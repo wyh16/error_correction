@@ -119,14 +119,19 @@ def split_questions_node(state: WorkflowState) -> dict:
             for page in result["layoutParsingResults"]:
                 if "prunedResult" in page:
                     parsing_res = page["prunedResult"].get("parsing_res_list", [])
-                    slim_blocks = [
-                        {
+                    slim_blocks = []
+                    for b in parsing_res:
+                        content = b.get("block_content", "")
+                        # 图片 block 的 content 始终为空，用 bbox 构造实际图片路径
+                        if b.get("block_label") == "image" and not content:
+                            bbox = b.get("block_bbox")
+                            if bbox:
+                                content = f"/images/img_in_image_box_{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}.jpg"
+                        slim_blocks.append({
                             "block_label": b.get("block_label"),
-                            "block_content": b.get("block_content"),
+                            "block_content": content,
                             "block_order": b.get("block_order"),
-                        }
-                        for b in parsing_res
-                    ]
+                        })
                     simplified_results.append({
                         "page_index": page_index,
                         "blocks": slim_blocks,

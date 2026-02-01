@@ -303,6 +303,13 @@ def download_file(filename):
     return send_from_directory(results_dir, filename, as_attachment=True)
 
 
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    """提供 OCR 解析出的图片资源"""
+    struct_dir = os.getenv("STRUCT_DIR", "output/struct")
+    return send_from_directory(os.path.join(struct_dir, "imgs"), filename)
+
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """

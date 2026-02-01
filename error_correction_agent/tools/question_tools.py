@@ -4,12 +4,14 @@
 
 import os
 import json
+import logging
 from typing import List, Dict, Any
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 @tool(parse_docstring=True)
@@ -25,6 +27,7 @@ def save_questions(questions: List[Dict[str, Any]], output_path: str = None) -> 
     Returns:
         保存成功的文件路径
     """
+    logger.info(f"save_questions called: {len(questions)} questions")
     try:
         # 使用默认路径
         if output_path is None:
@@ -45,10 +48,14 @@ def save_questions(questions: List[Dict[str, Any]], output_path: str = None) -> 
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(all_questions, f, ensure_ascii=False, indent=2)
 
-        return f"成功保存 {len(questions)} 道题目（总计 {len(all_questions)} 道）到: {output_path}"
+        msg = f"成功保存 {len(questions)} 道题目（总计 {len(all_questions)} 道）到: {output_path}"
+        logger.info(f"save_questions done: {msg}")
+        return msg
 
     except Exception as e:
-        return f"保存失败: {str(e)}"
+        msg = f"保存失败: {str(e)}"
+        logger.error(f"save_questions error: {msg}")
+        return msg
 
 
 @tool(parse_docstring=True)

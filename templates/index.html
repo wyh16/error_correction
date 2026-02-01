@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>错题本生成系统</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        };
+    </script>
+
     <!-- MathJax 配置和加载 -->
     <script>
         MathJax = {
@@ -17,103 +25,204 @@
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>📝 错题本生成系统</h1>
-            <p>智能识别、分割和导出试卷题目</p>
+<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+    <div class="container mx-auto max-w-5xl px-4 py-8">
+        <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    <i class="fa-solid fa-file-circle-check mr-2 text-slate-700 dark:text-slate-200"></i>
+                    错题本生成系统
+                </h1>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">智能识别、分割和导出试卷题目</p>
+            </div>
+            <button id="themeToggleBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+                <i id="themeToggleIcon" class="fa-solid fa-moon"></i>
+                <span id="themeToggleLabel">深色</span>
+            </button>
         </header>
 
-        <div class="main-content">
+        <div class="main-content rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
             <!-- 系统状态 -->
-            <div class="system-status" id="systemStatus">
-                <strong>系统状态：</strong>
-                <span class="status-item status-ok" id="statusLoading">检查中...</span>
+            <div id="systemStatus" class="mb-6 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200">
+                <span class="font-semibold text-slate-900 dark:text-slate-100">系统状态</span>
+                <span id="statusLoading" class="inline-flex items-center gap-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-slate-500"></span>
+                    检查中...
+                </span>
             </div>
 
-            <!-- 步骤指示器 -->
-            <div class="step-indicator">
-                <div class="step active" id="step1">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">上传文件</div>
-                </div>
-                <div class="step" id="step2">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">OCR解析</div>
-                </div>
-                <div class="step" id="step3">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">分割题目</div>
-                </div>
-                <div class="step" id="step4">
-                    <div class="step-circle">4</div>
-                    <div class="step-label">预览导出</div>
-                </div>
+            <!-- 步骤指示器（Flowbite stepper 风格：图标 + 标题 + 副标题） -->
+            <div class="mb-8">
+                <ol class="items-center w-full space-y-4 sm:flex sm:justify-between sm:space-x-0 sm:space-y-0 rtl:space-x-reverse" aria-label="处理步骤">
+                    <li id="step1" class="step flex items-center space-x-3 rtl:space-x-reverse text-blue-700 dark:text-blue-300">
+                        <span class="step-circle flex items-center justify-center w-10 h-10 bg-blue-100 text-blue-700 rounded-full lg:h-12 lg:w-12 shrink-0 dark:bg-blue-900/30 dark:text-blue-200">
+                            <svg class="step-icon w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v10m0-10 4 4m-4-4-4 4"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>
+                            </svg>
+                            <svg class="step-check hidden w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                            </svg>
+                        </span>
+                        <span>
+                            <h3 class="step-label font-medium leading-tight">上传文件</h3>
+                            <p class="step-desc text-sm text-slate-600 dark:text-slate-300">选择 PDF / 图片并上传</p>
+                        </span>
+                    </li>
+                    <li id="step2" class="step flex items-center space-x-3 rtl:space-x-reverse text-slate-600 dark:text-slate-300">
+                        <span class="step-circle flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full lg:h-12 lg:w-12 shrink-0 dark:bg-slate-800 dark:text-slate-300">
+                            <svg class="step-icon w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h6M7 15h4"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-4 4v-4H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+                            </svg>
+                            <svg class="step-check hidden w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                            </svg>
+                        </span>
+                        <span>
+                            <h3 class="step-label font-medium leading-tight">OCR解析</h3>
+                            <p class="step-desc text-sm text-slate-600 dark:text-slate-300">结构化识别题干/图片</p>
+                        </span>
+                    </li>
+                    <li id="step3" class="step flex items-center space-x-3 rtl:space-x-reverse text-slate-600 dark:text-slate-300">
+                        <span class="step-circle flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full lg:h-12 lg:w-12 shrink-0 dark:bg-slate-800 dark:text-slate-300">
+                            <svg class="step-icon w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h10M4 17h7"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l4 4-4 4"/>
+                            </svg>
+                            <svg class="step-check hidden w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                            </svg>
+                        </span>
+                        <span>
+                            <h3 class="step-label font-medium leading-tight">分割题目</h3>
+                            <p class="step-desc text-sm text-slate-600 dark:text-slate-300">AI 识别题号并拆分</p>
+                        </span>
+                    </li>
+                    <li id="step4" class="step flex items-center space-x-3 rtl:space-x-reverse text-slate-600 dark:text-slate-300">
+                        <span class="step-circle flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full lg:h-12 lg:w-12 shrink-0 dark:bg-slate-800 dark:text-slate-300">
+                            <svg class="step-icon w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0 4-4m-4 4-4-4"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/>
+                            </svg>
+                            <svg class="step-check hidden w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                            </svg>
+                        </span>
+                        <span>
+                            <h3 class="step-label font-medium leading-tight">预览导出</h3>
+                            <p class="step-desc text-sm text-slate-600 dark:text-slate-300">勾选题目并导出</p>
+                        </span>
+                    </li>
+                </ol>
             </div>
 
             <!-- 上传区域 -->
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📄</div>
-                <div class="upload-text">点击或拖拽文件到这里</div>
-                <div class="upload-hint">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
-                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp" multiple>
+            <div id="uploadArea" class="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950/40 dark:hover:border-slate-600 dark:hover:bg-slate-950/60">
+                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                    <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
+                </div>
+                <div class="text-base font-semibold text-slate-900 dark:text-slate-100">点击或拖拽文件到这里</div>
+                <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp" multiple>
             </div>
 
             <!-- 上传进度条 -->
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progressBarFill"></div>
+            <div id="progressContainer" class="mt-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm font-medium text-slate-700 dark:text-slate-200">上传进度</div>
+                    <div class="text-sm tabular-nums text-slate-500 dark:text-slate-300" id="progressText">0%</div>
                 </div>
-                <div class="progress-text" id="progressText">0%</div>
+                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+                    <div class="h-full w-0 rounded-full bg-slate-900 transition-[width] dark:bg-slate-100" id="progressBarFill"></div>
+                </div>
             </div>
 
             <!-- 文件信息 -->
-            <div class="file-info" id="fileInfo">
-                <div class="file-info-item">
-                    <span class="file-info-label">文件名：</span>
-                    <span class="file-info-value" id="fileName"></span>
+            <div id="fileInfo" class="mt-4 hidden rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
+                    <span class="font-medium text-slate-600 dark:text-slate-300">文件名</span>
+                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="fileName"></span>
                 </div>
-                <div class="file-info-item">
-                    <span class="file-info-label">图片数量：</span>
-                    <span class="file-info-value" id="imageCount"></span>
+                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
+                    <span class="font-medium text-slate-600 dark:text-slate-300">图片数量</span>
+                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="imageCount"></span>
                 </div>
-                <div class="file-info-item">
-                    <span class="file-info-label">OCR结果：</span>
-                    <span class="file-info-value" id="ocrCount"></span>
+                <div class="flex items-start justify-between gap-4 py-2">
+                    <span class="font-medium text-slate-600 dark:text-slate-300">OCR结果</span>
+                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="ocrCount"></span>
                 </div>
             </div>
 
             <!-- 结果区域 -->
-            <div class="result-area" id="resultArea"></div>
+            <div id="resultArea" class="mt-6 hidden"></div>
 
             <!-- 操作按钮 -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="splitBtn" disabled>
-                    🤖 开始分割题目
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <button id="splitBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    开始分割题目
                 </button>
-                <button class="btn btn-success" id="exportBtn" disabled>
-                    📥 导出错题本
+                <button id="exportBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:cursor-not-allowed disabled:opacity-50">
+                    <i class="fa-solid fa-download"></i>
+                    导出错题本
                 </button>
-                <button class="btn btn-secondary" id="resetBtn">
-                    🔄 重新开始
+                <button id="resetBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                    重新开始
                 </button>
             </div>
 
             <!-- 题目预览 -->
-            <div class="questions-preview" id="questionsPreview"></div>
+            <div id="questionsPreview" class="mt-8"></div>
         </div>
     </div>
 
     <!-- 图片预览模态框 -->
-    <div class="img-modal" id="imgModal">
-        <img id="imgModalContent" src="" alt="预览">
+    <div class="img-modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4" id="imgModal">
+        <img id="imgModalContent" class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl" src="" alt="预览">
     </div>
+
+    <div id="toastRegion" class="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(420px,calc(100vw-2rem))] flex-col gap-2"></div>
 
     <script>
         let currentQuestions = [];
         let selectedQuestions = new Set();
+
+        function initThemeToggle() {
+            const root = document.documentElement;
+            const btn = document.getElementById('themeToggleBtn');
+            const icon = document.getElementById('themeToggleIcon');
+            const label = document.getElementById('themeToggleLabel');
+
+            const apply = (theme) => {
+                if (theme === 'dark') {
+                    root.classList.add('dark');
+                    if (icon) icon.className = 'fa-solid fa-sun';
+                    if (label) label.textContent = '浅色';
+                } else {
+                    root.classList.remove('dark');
+                    if (icon) icon.className = 'fa-solid fa-moon';
+                    if (label) label.textContent = '深色';
+                }
+            };
+
+            const saved = localStorage.getItem('theme');
+            const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            apply(initial);
+
+            if (!btn) return;
+            btn.addEventListener('click', () => {
+                const next = root.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', next);
+                apply(next);
+            });
+        }
 
         // 检查系统状态
         async function checkSystemStatus() {
@@ -125,23 +234,27 @@
                     const status = data.status;
                     let statusHTML = '';
 
+                    const pillBase = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold';
+                    const okPill = `${pillBase} bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200`;
+                    const errPill = `${pillBase} bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200`;
+
                     if (status.paddleocr_configured) {
-                        statusHTML += '<span class="status-item status-ok">✓ PaddleOCR</span>';
+                        statusHTML += `<span class="${okPill}"><i class="fa-solid fa-circle-check"></i>PaddleOCR</span>`;
                     } else {
-                        statusHTML += '<span class="status-item status-error">✗ PaddleOCR未配置</span>';
+                        statusHTML += `<span class="${errPill}"><i class="fa-solid fa-circle-xmark"></i>PaddleOCR未配置</span>`;
                     }
 
                     if (status.deepseek_configured) {
-                        statusHTML += '<span class="status-item status-ok">✓ DeepSeek</span>';
+                        statusHTML += `<span class="${okPill}"><i class="fa-solid fa-circle-check"></i>DeepSeek</span>`;
                     } else {
-                        statusHTML += '<span class="status-item status-error">✗ DeepSeek未配置</span>';
+                        statusHTML += `<span class="${errPill}"><i class="fa-solid fa-circle-xmark"></i>DeepSeek未配置</span>`;
                     }
 
                     if (status.langsmith_enabled) {
-                        statusHTML += '<span class="status-item status-ok">✓ LangSmith追踪</span>';
+                        statusHTML += `<span class="${okPill}"><i class="fa-solid fa-circle-check"></i>LangSmith追踪</span>`;
                     }
 
-                    document.getElementById('systemStatus').innerHTML = '<strong>系统状态：</strong>' + statusHTML;
+                    document.getElementById('systemStatus').innerHTML = `<span class="font-semibold text-slate-900 dark:text-slate-100">系统状态</span>${statusHTML}`;
                 }
             } catch (error) {
                 console.error('检查系统状态失败:', error);
@@ -154,19 +267,26 @@
 
         uploadArea.addEventListener('click', () => fileInput.click());
 
+        function setUploadHover(active) {
+            const on = ['ring-2', 'ring-slate-400', 'border-slate-400', 'bg-slate-100', 'dark:bg-slate-950/60'];
+            const off = ['ring-2', 'ring-slate-400', 'border-slate-400', 'bg-slate-100', 'dark:bg-slate-950/60'];
+            uploadArea.classList.remove(...off);
+            if (active) uploadArea.classList.add(...on);
+        }
+
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('dragover');
+            setUploadHover(true);
         });
 
         uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
+            setUploadHover(false);
         });
 
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            uploadArea.classList.remove('dragover');
+            setUploadHover(false);
             // 将 FileList 转为 Array，避免部分浏览器在事件结束后清空 DataTransfer
             const files = Array.from(e.dataTransfer.files);
             if (files.length > 0) handleFileUpload(files);
@@ -294,10 +414,11 @@
                     const downloadLink = document.createElement('a');
                     downloadLink.href = '/download/wrongbook.md';
                     downloadLink.download = 'wrongbook.md';
-                    downloadLink.textContent = '点击下载';
+                    downloadLink.textContent = '下载 wrongbook.md';
+                    downloadLink.className = 'inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800';
 
                     const resultArea = document.getElementById('resultArea');
-                    resultArea.innerHTML += `<p style="margin-top: 10px;"><strong>下载：</strong> ${downloadLink.outerHTML}</p>`;
+                    resultArea.innerHTML += `<div class="mt-3"><span class="mr-2 text-sm font-medium text-slate-700 dark:text-slate-200">下载</span>${downloadLink.outerHTML}</div>`;
                 } else {
                     showError(data.error || '导出失败');
                 }
@@ -315,23 +436,44 @@
         function displayQuestions(questions) {
             const preview = document.getElementById('questionsPreview');
             preview.innerHTML = `
-                <h3 style="margin-bottom: 20px;">题目预览（点击选择需要导出的题目）</h3>
-                <div class="select-actions">
-                    <button onclick="selectAll()">全选</button>
-                    <button onclick="deselectAll()">取消全选</button>
-                    <span id="selectedCount">已选择 0 道题目</span>
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">题目预览</h3>
+                            <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">点击卡片选择需要导出的题目</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="selectAll()">
+                                <i class="fa-solid fa-check-double"></i>
+                                全选
+                            </button>
+                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="deselectAll()">
+                                <i class="fa-solid fa-xmark"></i>
+                                取消全选
+                            </button>
+                            <span id="selectedCount" class="ml-2 text-sm text-slate-600 dark:text-slate-300">已选择 0 道题目</span>
+                        </div>
+                    </div>
+                    <div id="questionList" class="mt-4 grid grid-cols-1 gap-3"></div>
                 </div>
             `;
 
+            const list = document.getElementById('questionList');
+
+            const selectedCardClasses = ['ring-2', 'ring-slate-400', 'bg-slate-50', 'dark:bg-slate-950/50'];
+
             questions.forEach(q => {
                 const card = document.createElement('div');
-                card.className = 'question-card';
+                card.className = 'question-card relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-950/30';
                 card.setAttribute('data-id', q.question_id);
                 card.innerHTML = `
-                    <div class="question-header">
-                        <span class="question-id">题目 ${q.question_id}</span>
-                        <span class="question-type">${q.question_type}</span>
-                        <input type="checkbox" class="question-select" data-id="${q.question_id}">
+                    <div class="mb-3 flex items-center gap-3 border-b border-slate-100 pb-3 dark:border-slate-800">
+                        <span class="text-base font-semibold text-slate-900 dark:text-slate-100">题目 ${q.question_id}</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">${q.question_type}</span>
+                        <label class="ml-auto inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                            <input type="checkbox" class="question-select h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" data-id="${q.question_id}">
+                            选择
+                        </label>
                     </div>
                     <div class="question-content">
                         ${formatQuestionContent(q)}
@@ -342,7 +484,6 @@
 
                 // 点击卡片切换选中状态
                 card.addEventListener('click', (e) => {
-                    // 避免点击 checkbox 时触发两次
                     if (e.target.type === 'checkbox') return;
                     checkbox.checked = !checkbox.checked;
                     checkbox.dispatchEvent(new Event('change'));
@@ -352,18 +493,17 @@
                 checkbox.addEventListener('change', (e) => {
                     if (e.target.checked) {
                         selectedQuestions.add(q.question_id);
-                        card.classList.add('selected');
+                        card.classList.add(...selectedCardClasses);
                     } else {
                         selectedQuestions.delete(q.question_id);
-                        card.classList.remove('selected');
+                        card.classList.remove(...selectedCardClasses);
                     }
                     updateSelectedCount();
                 });
 
-                preview.appendChild(card);
+                list.appendChild(card);
             });
 
-            // 触发 MathJax 重新渲染公式
             if (window.MathJax) {
                 MathJax.typesetPromise([preview]).catch(err => console.log('MathJax error:', err));
             }
@@ -407,28 +547,27 @@
             if (question.content_blocks && question.content_blocks.length > 0) {
                 question.content_blocks.forEach(block => {
                     if (block.block_type === 'text') {
-                        html += `<p>${block.content}</p>`;
+                        html += `<p class="my-2 leading-7 text-slate-800 dark:text-slate-100">${block.content}</p>`;
                     } else if (block.block_type === 'image') {
                         const imgPath = block.content || '';
                         if (imgPath) {
-                            html += `<img src="${imgPath}" style="max-width: 100%; margin: 10px 0; cursor: zoom-in;" onclick="showImagePreview(this.src)">`;
+                            html += `<img src="${imgPath}" class="my-3 max-w-full cursor-zoom-in rounded-lg border border-slate-200 shadow-sm dark:border-slate-800" onclick="showImagePreview(this.src)">`;
                         } else {
-                            html += `<p style="color: #ff9800;">📷 图片资源</p>`;
+                            html += `<p class="my-2 text-sm font-semibold text-amber-600 dark:text-amber-400"><i class="fa-regular fa-image mr-2"></i>图片资源</p>`;
                         }
                     }
                 });
             }
 
-            // 显示选项（选项中可能包含公式）
             if (question.options && question.options.length > 0) {
-                html += '<div class="options-list">';
+                html += '<div class="mt-4 grid gap-2">';
                 question.options.forEach(option => {
-                    html += `<div class="option-item">${option}</div>`;
+                    html += `<div class="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800 dark:bg-slate-900 dark:text-slate-100">${option}</div>`;
                 });
                 html += '</div>';
             }
 
-            return html || '<p style="color: #999;">（内容为空）</p>';
+            return html || '<p class="text-sm text-slate-500 dark:text-slate-300">（内容为空）</p>';
         }
 
         // 工具函数
@@ -436,9 +575,9 @@
             const resultArea = document.getElementById('resultArea');
             resultArea.style.display = 'block';
             resultArea.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>${message}</p>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-950/40">
+                    <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900 dark:border-slate-700 dark:border-t-slate-100"></div>
+                    <p class="text-sm font-medium text-slate-700 dark:text-slate-200">${message}</p>
                 </div>
             `;
         }
@@ -447,8 +586,11 @@
             const resultArea = document.getElementById('resultArea');
             resultArea.style.display = 'block';
             resultArea.innerHTML = `
-                <div class="status-box success">
-                    ✓ ${message}
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-semibold text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-100">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-check mt-0.5"></i>
+                        <div>${message}</div>
+                    </div>
                 </div>
             `;
         }
@@ -457,21 +599,54 @@
             const resultArea = document.getElementById('resultArea');
             resultArea.style.display = 'block';
             resultArea.innerHTML = `
-                <div class="status-box error">
-                    ✗ ${message}
+                <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm font-semibold text-rose-900 shadow-sm dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-100">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-xmark mt-0.5"></i>
+                        <div>${message}</div>
+                    </div>
                 </div>
             `;
         }
 
         function setStep(stepNumber) {
+            const activeItem = ['text-blue-700', 'dark:text-blue-300'];
+            const doneItem = ['text-emerald-700', 'dark:text-emerald-300'];
+            const todoItem = ['text-slate-600', 'dark:text-slate-300'];
+
+            const activeCircle = ['bg-blue-100', 'text-blue-700', 'dark:bg-blue-900/30', 'dark:text-blue-200'];
+            const doneCircle = ['bg-emerald-100', 'text-emerald-700', 'dark:bg-emerald-900/30', 'dark:text-emerald-200'];
+            const todoCircle = ['bg-slate-100', 'text-slate-500', 'dark:bg-slate-800', 'dark:text-slate-300'];
+
             for (let i = 1; i <= 4; i++) {
                 const step = document.getElementById(`step${i}`);
+                if (!step) continue;
+
+                const circle = step.querySelector('.step-circle');
+                const label = step.querySelector('.step-label');
+                const icon = step.querySelector('.step-icon');
+                const check = step.querySelector('.step-check');
+
+                step.classList.remove(...activeItem, ...doneItem, ...todoItem);
+
+                if (i < stepNumber) step.classList.add(...doneItem);
+                else if (i === stepNumber) step.classList.add(...activeItem);
+                else step.classList.add(...todoItem);
+
+                if (circle) {
+                    circle.classList.remove(...activeCircle, ...doneCircle, ...todoCircle);
+                    if (i < stepNumber) circle.classList.add(...doneCircle);
+                    else if (i === stepNumber) circle.classList.add(...activeCircle);
+                    else circle.classList.add(...todoCircle);
+                }
+
+                if (label) label.classList.toggle('font-semibold', i === stepNumber);
+
                 if (i < stepNumber) {
-                    step.className = 'step completed';
-                } else if (i === stepNumber) {
-                    step.className = 'step active';
+                    if (icon) icon.classList.add('hidden');
+                    if (check) check.classList.remove('hidden');
                 } else {
-                    step.className = 'step';
+                    if (check) check.classList.add('hidden');
+                    if (icon) icon.classList.remove('hidden');
                 }
             }
         }
@@ -479,18 +654,24 @@
         // 图片预览
         function showImagePreview(src) {
             const modal = document.getElementById('imgModal');
-            document.getElementById('imgModalContent').src = src;
-            modal.classList.add('active');
+            const img = document.getElementById('imgModalContent');
+            img.src = src;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         document.getElementById('imgModal').addEventListener('click', () => {
-            document.getElementById('imgModal').classList.remove('active');
+            const modal = document.getElementById('imgModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         });
 
         // 键盘快捷键：Ctrl+A 全选题目，ESC 关闭预览
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                document.getElementById('imgModal').classList.remove('active');
+                const modal = document.getElementById('imgModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
             }
             if ((e.ctrlKey || e.metaKey) && e.key === 'a' && currentQuestions.length > 0) {
                 e.preventDefault();
@@ -498,8 +679,11 @@
             }
         });
 
-        // 页面加载时检查系统状态
-        window.addEventListener('load', checkSystemStatus);
+        // 页面加载
+        window.addEventListener('load', () => {
+            initThemeToggle();
+            checkSystemStatus();
+        });
     </script>
 </body>
 </html>

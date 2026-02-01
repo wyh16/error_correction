@@ -59,7 +59,7 @@
                 </h1>
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">智能识别、分割和导出试卷题目</p>
             </div>
-            <button id="themeToggleBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <button id="themeToggleBtn" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800">
                 <i id="themeToggleIcon" class="fa-solid fa-moon"></i>
                 <span id="themeToggleLabel">深色</span>
             </button>
@@ -143,39 +143,31 @@
 
             <!-- 上传区域 -->
             <div id="uploadArea" class="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950/40 dark:hover:border-slate-600 dark:hover:bg-slate-950/60">
-                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-                    <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
+                <div id="uploadPanelIdle">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                        <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
+                    </div>
+                    <div class="text-base font-semibold text-slate-900 dark:text-slate-100">点击或拖拽文件到这里</div>
+                    <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
                 </div>
-                <div class="text-base font-semibold text-slate-900 dark:text-slate-100">点击或拖拽文件到这里</div>
-                <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
+
+                <div id="uploadPanelBusy" class="hidden">
+                    <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900 dark:border-slate-700 dark:border-t-slate-100"></div>
+                    <p id="uploadBusyText" class="text-sm font-medium text-slate-700 dark:text-slate-200">正在上传...</p>
+                </div>
+
+                <div id="uploadPanelDone" class="hidden">
+                    <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <p id="uploadDoneText" class="text-sm font-medium text-slate-700 dark:text-slate-200">已处理</p>
+                    <button id="changeFilesBtn" type="button" class="mt-3 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        更换文件
+                    </button>
+                </div>
+
                 <input type="file" id="fileInput" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp" multiple>
-            </div>
-
-            <!-- 上传进度条 -->
-            <div id="progressContainer" class="mt-4 hidden">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm font-medium text-slate-700 dark:text-slate-200">上传进度</div>
-                    <div class="text-sm tabular-nums text-slate-500 dark:text-slate-300" id="progressText">0%</div>
-                </div>
-                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                    <div class="h-full w-0 rounded-full bg-slate-900 transition-[width] dark:bg-slate-100" id="progressBarFill"></div>
-                </div>
-            </div>
-
-            <!-- 文件信息 -->
-            <div id="fileInfo" class="mt-4 hidden rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">文件名</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="fileName"></span>
-                </div>
-                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">图片数量</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="imageCount"></span>
-                </div>
-                <div class="flex items-start justify-between gap-4 py-2">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">OCR结果</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="ocrCount"></span>
-                </div>
             </div>
 
             <!-- 结果区域 -->
@@ -183,15 +175,15 @@
 
             <!-- 操作按钮 -->
             <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <button id="splitBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+                <button id="splitBtn" disabled type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900/50">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     开始分割题目
                 </button>
-                <button id="exportBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:cursor-not-allowed disabled:opacity-50">
+                <button id="exportBtn" disabled type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:focus:ring-emerald-900/50">
                     <i class="fa-solid fa-download"></i>
                     导出错题本
                 </button>
-                <button id="resetBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+                <button id="resetBtn" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800">
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                     重新开始
                 </button>
@@ -323,10 +315,51 @@
         // 上传区域事件
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
+        const uploadPanelIdle = document.getElementById('uploadPanelIdle');
+        const uploadPanelBusy = document.getElementById('uploadPanelBusy');
+        const uploadPanelDone = document.getElementById('uploadPanelDone');
+        const uploadBusyText = document.getElementById('uploadBusyText');
+        const uploadDoneText = document.getElementById('uploadDoneText');
+        const changeFilesBtn = document.getElementById('changeFilesBtn');
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+        function isUploadBusy() {
+            return uploadArea.dataset.busy === '1';
+        }
+
+        function setUploadPanel(state, text) {
+            uploadPanelIdle.classList.add('hidden');
+            uploadPanelBusy.classList.add('hidden');
+            uploadPanelDone.classList.add('hidden');
+
+            uploadArea.classList.toggle('cursor-wait', state === 'busy');
+            uploadArea.classList.toggle('pointer-events-none', state === 'busy');
+
+            if (state === 'busy') {
+                uploadPanelBusy.classList.remove('hidden');
+                if (uploadBusyText && text) uploadBusyText.textContent = text;
+            } else if (state === 'done') {
+                uploadPanelDone.classList.remove('hidden');
+                if (uploadDoneText && text) uploadDoneText.textContent = text;
+            } else {
+                uploadPanelIdle.classList.remove('hidden');
+            }
+        }
+
+        uploadArea.addEventListener('click', () => {
+            if (isUploadBusy()) return;
+            fileInput.click();
+        });
+
+        if (changeFilesBtn) {
+            changeFilesBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (isUploadBusy()) return;
+                fileInput.click();
+            });
+        }
 
         function setUploadHover(active) {
+            if (isUploadBusy()) return;
             const on = ['ring-2', 'ring-slate-400', 'border-slate-400', 'bg-slate-100', 'dark:bg-slate-950/60'];
             const off = ['ring-2', 'ring-slate-400', 'border-slate-400', 'bg-slate-100', 'dark:bg-slate-950/60'];
             uploadArea.classList.remove(...off);
@@ -334,30 +367,37 @@
         }
 
         uploadArea.addEventListener('dragover', (e) => {
+            if (isUploadBusy()) return;
             e.preventDefault();
             setUploadHover(true);
         });
 
         uploadArea.addEventListener('dragleave', () => {
+            if (isUploadBusy()) return;
             setUploadHover(false);
         });
 
         uploadArea.addEventListener('drop', (e) => {
+            if (isUploadBusy()) return;
             e.preventDefault();
             e.stopPropagation();
             setUploadHover(false);
-            // 将 FileList 转为 Array，避免部分浏览器在事件结束后清空 DataTransfer
             const files = Array.from(e.dataTransfer.files);
             if (files.length > 0) handleFileUpload(files);
         });
 
         fileInput.addEventListener('change', (e) => {
+            if (isUploadBusy()) return;
             const files = Array.from(e.target.files);
             if (files.length > 0) handleFileUpload(files);
         });
 
         // 处理文件上传（支持多文件，带进度条）
         function handleFileUpload(files) {
+            if (isUploadBusy()) return;
+
+            uploadArea.dataset.busy = '1';
+
             const formData = new FormData();
             const fileNames = [];
             for (let i = 0; i < files.length; i++) {
@@ -365,55 +405,40 @@
                 fileNames.push(files[i].name);
             }
 
-            uploadArea.classList.add('hidden');
             fileInput.value = '';
 
-            // 显示进度条和加载状态
             const fileLabel = files.length > 1 ? `${files.length} 个文件` : fileNames[0];
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBarFill = document.getElementById('progressBarFill');
-            const progressText = document.getElementById('progressText');
-            progressContainer.classList.remove('hidden');
-            progressBarFill.style.width = '0%';
-            progressText.textContent = '0%';
-            showLoading(`正在上传和处理 ${fileLabel}...`);
+
+            setUploadPanel('busy', `正在上传和处理 ${fileLabel}...`);
             setStep(2);
 
             const xhr = new XMLHttpRequest();
 
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBarFill.style.width = percent + '%';
-                    progressText.textContent = percent + '%';
-                }
-            });
-
             xhr.addEventListener('load', () => {
-                progressContainer.classList.add('hidden');
                 try {
                     const data = JSON.parse(xhr.responseText);
                     if (data.success) {
+                        uploadArea.dataset.busy = '0';
+                        setUploadPanel('done', `已处理 ${fileLabel}，识别到 ${data.result.image_count} 张图片`);
+
                         showSuccess(`文件处理成功！共 ${data.result.file_count} 个文件，识别到 ${data.result.image_count} 张图片`);
-                        document.getElementById('fileName').textContent = fileNames.join('、');
-                        document.getElementById('imageCount').textContent = data.result.image_count;
-                        document.getElementById('ocrCount').textContent = data.result.ocr_count;
-                        document.getElementById('fileInfo').classList.remove('hidden');
                         document.getElementById('splitBtn').disabled = false;
                         setStep(3);
                     } else {
-                        uploadArea.classList.remove('hidden');
+                        uploadArea.dataset.busy = '0';
+                        setUploadPanel('idle');
                         showError(data.error || '文件处理失败');
                     }
                 } catch (e) {
-                    uploadArea.classList.remove('hidden');
+                    uploadArea.dataset.busy = '0';
+                    setUploadPanel('idle');
                     showError('上传失败: 服务器响应异常');
                 }
             });
 
             xhr.addEventListener('error', () => {
-                progressContainer.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
+                uploadArea.dataset.busy = '0';
+                setUploadPanel('idle');
                 showError('上传失败: 网络错误');
             });
 
@@ -422,7 +447,15 @@
         }
 
         // 分割题目
-        document.getElementById('splitBtn').addEventListener('click', async () => {
+        const splitBtn = document.getElementById('splitBtn');
+        splitBtn.addEventListener('click', async () => {
+            if (splitBtn.dataset.busy === '1') return;
+
+            splitBtn.dataset.busy = '1';
+            const originalHTML = splitBtn.innerHTML;
+            splitBtn.disabled = true;
+            splitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 正在分割...';
+
             showLoading('正在调用AI分割题目，请稍候...');
             setStep(3);
 
@@ -441,13 +474,19 @@
                     showSuccess(`成功分割 ${data.questions.length} 道题目`);
                     displayQuestions(data.questions);
 
-                    // 启用导出按钮
                     document.getElementById('exportBtn').disabled = false;
+                    splitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> 已完成分割';
                     setStep(4);
                 } else {
+                    splitBtn.dataset.busy = '0';
+                    splitBtn.disabled = false;
+                    splitBtn.innerHTML = originalHTML;
                     showError(data.error || '题目分割失败');
                 }
             } catch (error) {
+                splitBtn.dataset.busy = '0';
+                splitBtn.disabled = false;
+                splitBtn.innerHTML = originalHTML;
                 showError('分割失败: ' + error.message);
             }
         });
@@ -480,7 +519,7 @@
                     downloadLink.href = '/download/wrongbook.md';
                     downloadLink.download = 'wrongbook.md';
                     downloadLink.textContent = '下载 wrongbook.md';
-                    downloadLink.className = 'inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800';
+                    downloadLink.className = 'inline-flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition-colors duration-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-blue-900/40 dark:bg-slate-900 dark:text-blue-200 dark:hover:bg-slate-800 dark:focus:ring-blue-900/30';
 
                     const resultArea = document.getElementById('resultArea');
                     resultArea.innerHTML += `<div class="mt-3"><span class="mr-2 text-sm font-medium text-slate-700 dark:text-slate-200">下载</span>${downloadLink.outerHTML}</div>`;
@@ -508,11 +547,11 @@
                             <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">点击卡片选择需要导出的题目</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="selectAll()">
+                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800" onclick="selectAll()">
                                 <i class="fa-solid fa-check-double"></i>
                                 全选
                             </button>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="deselectAll()">
+                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800" onclick="deselectAll()">
                                 <i class="fa-solid fa-xmark"></i>
                                 取消全选
                             </button>

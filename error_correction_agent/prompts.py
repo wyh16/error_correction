@@ -76,9 +76,7 @@ SYSTEM_PROMPT = """# 错题本题目分割专家
   "content_blocks": [
     {
       "block_type": "text 或 image",
-      "content": "文本内容（公式用 LaTeX 标记嵌入，行内 $...$，独占行 $$...$$）",
-      "bbox": [x1, y1, x2, y2],
-      "block_id": 原始block_id
+      "content": "文本内容（公式用 LaTeX 标记嵌入，行内 $...$，独占行 $$...$$）"
     }
   ],
   "options": ["A. ...", "B. ...", "C. ...", "D. ..."],  // 仅选择题

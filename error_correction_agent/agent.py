@@ -1,14 +1,16 @@
 """
 错题本题目分割Agent
+使用 LangChain create_agent + ToolStrategy 实现结构化输出
 """
 
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
-from deepagents import create_deep_agent
+from langchain.agents import create_agent
+from langchain.agents.structured_output import ToolStrategy
 
 from .prompts import SYSTEM_PROMPT
-from .tools import save_questions, log_issue, download_image, read_ocr_result
+from .schemas import QuestionSplitResult
 
 load_dotenv()
 
@@ -16,7 +18,8 @@ load_dotenv()
 def create_question_split_agent():
     """创建题目分割Agent
 
-    使用DeepSeek模型和定义的工具创建一个专门用于分割题目的Agent。
+    使用 DeepSeek 模型 + ToolStrategy 结构化输出，
+    直接返回 Pydantic 验证后的题目列表，无需通过工具保存文件。
 
     Returns:
         配置好的Agent实例
@@ -27,19 +30,15 @@ def create_question_split_agent():
         temperature=0.1,  # 低温度以获得更确定性的输出
     )
 
-    # 定义工具列表
-    tools = [
-        save_questions,
-        log_issue,
-        download_image,
-        read_ocr_result,
-    ]
-
-    # 创建Agent
-    agent = create_deep_agent(
+    # 创建Agent：使用 ToolStrategy 强制结构化输出
+    agent = create_agent(
         model=model,
-        tools=tools,
+        tools=[],  # 不需要工具，结构化输出由 ToolStrategy 处理
         system_prompt=SYSTEM_PROMPT,
+        response_format=ToolStrategy(
+            schema=QuestionSplitResult,
+            handle_errors=True,  # 自动重试校验错误
+        ),
     )
 
     return agent
@@ -52,4 +51,3 @@ agent = create_question_split_agent()
 if __name__ == "__main__":
     # 测试Agent创建
     print("Agent创建成功!")
-    print(f"工具列表: {[tool.name for tool in agent.tools]}")

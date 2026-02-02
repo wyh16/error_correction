@@ -100,11 +100,8 @@ def split_questions_node(state: WorkflowState) -> dict:
     console.print("[bold yellow]步骤 3: Agent 分割题目[/bold yellow]")
     step_start = time.time()
 
-    # 清除上一次的结果文件，避免 Agent 失败时读到旧数据
     results_dir = os.getenv("RESULTS_DIR", "results")
-    questions_file = os.path.join(results_dir, "questions.json")
-    if os.path.exists(questions_file):
-        os.remove(questions_file)
+    os.makedirs(results_dir, exist_ok=True)
 
     from error_correction_agent.agent import create_question_split_agent
 
@@ -152,12 +149,10 @@ OCR结果包含 {len(simplified_results)} 页内容，请严格按照 page_index
 - page_index: 页码索引（从0开始），决定全局阅读顺序
 - blocks: 包含所有识别的内容块，每个 block 有三个字段：
   - block_label: 类型（text / image / doc_title / paragraph_title 等）
-  - block_content: 文本内容（公式用 LaTeX 标记）
+  - block_content: 文本内容（公式用 LaTeX 标记）或图片路径
   - block_order: 该 block 在页内的阅读顺序
 
-请按 page_index 顺序处理每一页，再在每页内部按 block_order 顺序处理各 block，仔细分析题号、内容结构，将题目准确分割，并使用 save_questions 工具保存结果。
-
-如果遇到不确定的情况，请使用 log_issue 工具记录。
+请按 page_index 顺序处理每一页，再在每页内部按 block_order 顺序处理各 block，仔细分析题号、内容结构，将题目准确分割，返回结构化的题目列表。
 """
 
     console.print(f"[cyan]Agent 输入: {len(simplified_results)} 页, 共 {sum(len(r.get('blocks', [])) for r in simplified_results)} 个 block[/cyan]")
@@ -172,26 +167,23 @@ OCR结果包含 {len(simplified_results)} 页内容，请严格按照 page_index
         config={"recursion_limit": 50},
     )
 
-    # 打印 Agent 响应摘要，便于排查
-    if response and "messages" in response:
-        for msg in response["messages"]:
-            role = getattr(msg, "type", "unknown")
-            content = getattr(msg, "content", "")
-            if role != "human":
-                preview = str(content)[:200] if content else "(empty)"
-                console.print(f"[dim]  [{role}] {preview}[/dim]")
-
-    # 从文件读取 Agent 保存的结果（路径已在函数开头定义）
+    # 从 structured_response 获取结构化结果
     questions = []
-    if os.path.exists(questions_file):
-        with open(questions_file, 'r', encoding='utf-8') as f:
-            questions = json.load(f)
+    structured = response.get("structured_response")
+    if structured is not None:
+        # Pydantic 模型 → dict 列表
+        questions = [q.model_dump() for q in structured.questions]
+
+        # 保存到文件供后续步骤和前端使用
+        questions_file = os.path.join(results_dir, "questions.json")
+        with open(questions_file, 'w', encoding='utf-8') as f:
+            json.dump(questions, f, ensure_ascii=False, indent=2)
+
         logger.info(f"Agent分割完成: 共 {len(questions)} 道题目，耗时 {time.time() - step_start:.2f}s")
-        console.print(f"[green]✓ 成功加载 {len(questions)} 道题目[/green]")
+        console.print(f"[green]✓ 成功分割 {len(questions)} 道题目[/green]")
     else:
-        logger.warning("Agent未保存题目，请检查执行日志")
-        console.print("[yellow]⚠ Agent未保存题目，请检查执行日志[/yellow]")
-        console.print("[yellow]  可能原因: Agent 未调用 save_questions 工具，或工具调用失败[/yellow]")
+        logger.warning("Agent未返回结构化结果，请检查执行日志")
+        console.print("[yellow]⚠ Agent未返回结构化结果[/yellow]")
 
     return {"questions": questions}
 

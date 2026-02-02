@@ -47,6 +47,52 @@
         ::view-transition-new(root) {
             z-index: 2;
         }
+
+        @property --p {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0;
+        }
+
+        .file-chip {
+            position: relative;
+            border-radius: 0.75rem;
+            --p: 0;
+            --ring: rgb(37 99 235);
+            transition: --p 240ms linear;
+        }
+
+        .file-chip::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: conic-gradient(from -90deg, var(--ring) calc(var(--p) * 1%), rgba(148, 163, 184, 0) 0);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 120ms ease;
+        }
+
+        .file-chip.file-chip--progress::before {
+            opacity: 1;
+        }
+
+        mjx-container[jax="SVG"] {
+            display: inline-block;
+        }
+
+        mjx-container[jax="SVG"][display="true"] {
+            display: block;
+            margin: 0.75rem 0;
+        }
+
+        mjx-container[jax="SVG"] > svg {
+            display: inline;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
@@ -59,7 +105,7 @@
                 </h1>
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">智能识别、分割和导出试卷题目</p>
             </div>
-            <button id="themeToggleBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <button id="themeToggleBtn" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800">
                 <i id="themeToggleIcon" class="fa-solid fa-moon"></i>
                 <span id="themeToggleLabel">深色</span>
             </button>
@@ -141,64 +187,45 @@
                 </ol>
             </div>
 
+            <div id="pendingFilesBox" class="mb-6 hidden">
+                <div id="pendingFilesList" class="flex flex-wrap items-center gap-2"></div>
+            </div>
+
             <!-- 上传区域 -->
             <div id="uploadArea" class="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-400 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950/40 dark:hover:border-slate-600 dark:hover:bg-slate-950/60">
-                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-                    <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
+                <div id="uploadPanelIdle">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                        <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
+                    </div>
+                    <div class="text-base font-semibold text-slate-900 dark:text-slate-100">点击或拖拽添加文件</div>
+                    <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
                 </div>
-                <div class="text-base font-semibold text-slate-900 dark:text-slate-100">点击或拖拽文件到这里</div>
-                <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">支持 PDF、PNG、JPG 等格式，可同时选择多个文件（单文件最大 50MB）</div>
+
+
                 <input type="file" id="fileInput" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.webp" multiple>
-            </div>
-
-            <!-- 上传进度条 -->
-            <div id="progressContainer" class="mt-4 hidden">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm font-medium text-slate-700 dark:text-slate-200">上传进度</div>
-                    <div class="text-sm tabular-nums text-slate-500 dark:text-slate-300" id="progressText">0%</div>
-                </div>
-                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                    <div class="h-full w-0 rounded-full bg-slate-900 transition-[width] dark:bg-slate-100" id="progressBarFill"></div>
-                </div>
-            </div>
-
-            <!-- 文件信息 -->
-            <div id="fileInfo" class="mt-4 hidden rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">文件名</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="fileName"></span>
-                </div>
-                <div class="flex items-start justify-between gap-4 border-b border-slate-100 py-2 last:border-b-0 dark:border-slate-800">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">图片数量</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="imageCount"></span>
-                </div>
-                <div class="flex items-start justify-between gap-4 py-2">
-                    <span class="font-medium text-slate-600 dark:text-slate-300">OCR结果</span>
-                    <span class="text-right font-semibold text-slate-900 dark:text-slate-100" id="ocrCount"></span>
-                </div>
             </div>
 
             <!-- 结果区域 -->
             <div id="resultArea" class="mt-6 hidden"></div>
 
+            <!-- 题目预览 -->
+            <div id="questionsPreview" class="mt-8"></div>
+
             <!-- 操作按钮 -->
             <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <button id="splitBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+                <button id="splitBtn" disabled type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900/50">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     开始分割题目
                 </button>
-                <button id="exportBtn" disabled type="button" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:cursor-not-allowed disabled:opacity-50">
+                <button id="exportBtn" disabled type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:focus:ring-emerald-900/50">
                     <i class="fa-solid fa-download"></i>
                     导出错题本
                 </button>
-                <button id="resetBtn" type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+                <button id="resetBtn" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800">
                     <i class="fa-solid fa-arrow-rotate-right"></i>
                     重新开始
                 </button>
             </div>
-
-            <!-- 题目预览 -->
-            <div id="questionsPreview" class="mt-8"></div>
         </div>
     </div>
 
@@ -207,11 +234,12 @@
         <img id="imgModalContent" class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl" src="" alt="预览">
     </div>
 
-    <div id="toastRegion" class="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(420px,calc(100vw-2rem))] flex-col gap-2"></div>
+    <div id="toastRegion" class="pointer-events-none fixed left-1/2 top-4 z-50 flex w-[min(420px,calc(100vw-2rem))] -translate-x-1/2 flex-col gap-2"></div>
 
     <script>
         let currentQuestions = [];
         let selectedQuestions = new Set();
+        let splitBtnDefaultHTML = null;
 
         function initThemeToggle() {
             const root = document.documentElement;
@@ -323,8 +351,346 @@
         // 上传区域事件
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
+        const uploadPanelIdle = document.getElementById('uploadPanelIdle');
+        const pendingFilesBox = document.getElementById('pendingFilesBox');
+        const pendingFilesList = document.getElementById('pendingFilesList');
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+        let pendingFiles = [];
+        let pendingFileKeys = new Set();
+        let fileProgress = new Map();
+        let fileElsByKey = new Map();
+
+        let fakeProgressTimer = null;
+        let fakeProgressKeys = [];
+
+        let activeUploadXhr = null;
+        let cancellingSession = false;
+        let uploadQueue = [];
+        let waitingFileKeys = new Set();
+        let splittingInProgress = false;
+        let splitCompleted = false;
+
+        const removeHoverClasses = ['hover:bg-slate-100', 'hover:text-slate-700', 'dark:hover:bg-slate-800', 'dark:hover:text-slate-100'];
+        function setRemoveButtonsDisabled(disabled) {
+            if (!pendingFilesList) return;
+            const btns = pendingFilesList.querySelectorAll('button[data-remove-btn="1"]');
+            for (const btn of btns) {
+                btn.disabled = !!disabled;
+                if (disabled) {
+                    btn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+                    btn.classList.remove(...removeHoverClasses);
+                } else {
+                    btn.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+                    btn.classList.add(...removeHoverClasses);
+                }
+            }
+        }
+
+        function enqueueUpload(files) {
+            const list = Array.from(files || []);
+            if (list.length === 0) return;
+            if (isUploadBusy()) {
+                for (const f of list) {
+                    const k = fileKey(f);
+                    waitingFileKeys.add(k);
+                    applyProgressToFileEl(fileElsByKey.get(k), fileProgress.get(k) || 0);
+                }
+                uploadQueue.push(list);
+                return;
+            }
+            handleFileUpload(list);
+        }
+
+        function pumpUploadQueue() {
+            if (isUploadBusy()) return;
+            if (!uploadQueue.length) return;
+            const next = uploadQueue.shift();
+            if (next && next.length) handleFileUpload(next);
+        }
+
+        function applyProgressToFileEl(el, progress) {
+            if (!el) return;
+            const p = Math.max(0, Math.min(100, Number(progress) || 0));
+            el.style.setProperty('--p', String(p));
+            el.classList.toggle('file-chip--progress', isUploadBusy() || uploadArea.dataset.ready === '1');
+            const label = el.querySelector('[data-progress-label]');
+            if (label) {
+                const k = el.dataset.fileKey;
+                label.textContent = (k && waitingFileKeys.has(k) && isUploadBusy() && p === 0) ? '等待中...' : `${Math.round(p)}%`;
+            }
+        }
+
+        function setFileProgress(key, progress) {
+            fileProgress.set(key, Math.max(0, Math.min(100, Number(progress) || 0)));
+            applyProgressToFileEl(fileElsByKey.get(key), fileProgress.get(key));
+        }
+
+        function stopFakeProgress() {
+            if (fakeProgressTimer) {
+                window.clearInterval(fakeProgressTimer);
+                fakeProgressTimer = null;
+            }
+            fakeProgressKeys = [];
+        }
+
+        function startFakeProgress(keys) {
+            stopFakeProgress();
+            fakeProgressKeys = Array.from(keys || []);
+
+            const tick = () => {
+                if (!isUploadBusy()) {
+                    stopFakeProgress();
+                    return;
+                }
+
+                for (const key of fakeProgressKeys) {
+                    const current = Number(fileProgress.get(key) || 0);
+                    const cap = 82;
+                    if (current >= cap) continue;
+
+                    let inc = 0;
+                    if (current < 55) inc = 1 + Math.random() * 3;
+                    else if (current < 75) inc = 0.4 + Math.random() * 1.1;
+                    else inc = 0.08 + Math.random() * 0.25;
+
+                    setFileProgress(key, Math.min(cap, current + inc));
+                }
+            };
+
+            tick();
+            fakeProgressTimer = window.setInterval(tick, 360);
+        }
+
+        function resetFileProgressFor(files) {
+            for (const f of files) {
+                fileProgress.set(fileKey(f), 0);
+            }
+        }
+
+        function fileKey(file) {
+            return `${file.name}|${file.size}|${file.lastModified}`;
+        }
+
+        function updateSplitAvailability() {
+            const splitBtn = document.getElementById('splitBtn');
+            if (!splitBtn || splitBtn.dataset.busy === '1') return;
+
+            const ready = uploadArea.dataset.ready === '1';
+            splitBtn.disabled = isUploadBusy() || !ready;
+        }
+
+        function renderPendingFiles() {
+            const hasPending = pendingFiles.length > 0;
+
+            if (pendingFilesBox) pendingFilesBox.classList.toggle('hidden', !hasPending);
+            if (!pendingFilesList) {
+                updateSplitAvailability();
+                return;
+            }
+
+            pendingFilesList.innerHTML = '';
+            fileElsByKey = new Map();
+
+            for (const f of pendingFiles) {
+                const key = fileKey(f);
+                const ext = (f.name || '').split('.').pop()?.toLowerCase();
+
+                const item = document.createElement('div');
+                item.className = 'file-chip inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100';
+                item.dataset.fileKey = key;
+                fileElsByKey.set(key, item);
+
+                const icon = document.createElement('i');
+                if (ext === 'pdf') {
+                    icon.className = 'fa-regular fa-file-pdf text-rose-600 dark:text-rose-300';
+                } else if (['png', 'jpg', 'jpeg', 'bmp', 'tiff', 'webp'].includes(ext)) {
+                    icon.className = 'fa-regular fa-file-image text-slate-600 dark:text-slate-300';
+                } else {
+                    icon.className = 'fa-regular fa-file-lines text-slate-600 dark:text-slate-300';
+                }
+
+                const name = document.createElement('span');
+                name.className = 'max-w-[260px] truncate';
+                name.title = f.name;
+                name.textContent = f.name;
+
+                const progressLabel = document.createElement('span');
+                progressLabel.className = 'ml-1 text-xs font-semibold tabular-nums text-slate-500 dark:text-slate-300';
+                progressLabel.setAttribute('data-progress-label', '1');
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'ml-1 inline-flex h-6 w-6 flex-none items-center justify-center rounded-md text-slate-500 transition focus:outline-none focus:ring-4 focus:ring-slate-200 dark:text-slate-300 dark:focus:ring-slate-800';
+                remove.setAttribute('aria-label', `移除 ${f.name}`);
+                remove.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                remove.setAttribute('data-remove-btn', '1');
+
+                remove.classList.add(...removeHoverClasses);
+                remove.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (splittingInProgress || splitCompleted) return;
+
+                    const locked = isUploadBusy() || uploadArea.dataset.ready === '1';
+                    if (locked) {
+                        await cancelFile(key);
+                        return;
+                    }
+
+                    pendingFiles = pendingFiles.filter(x => fileKey(x) !== key);
+                    pendingFileKeys.delete(key);
+                    fileProgress.delete(key);
+                    waitingFileKeys.delete(key);
+                    if (uploadQueue && uploadQueue.length) {
+                        uploadQueue = uploadQueue
+                            .map(batch => (batch || []).filter(f => fileKey(f) !== key))
+                            .filter(batch => batch.length > 0);
+                    }
+                    renderPendingFiles();
+                });
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                item.appendChild(progressLabel);
+                item.appendChild(remove);
+                pendingFilesList.appendChild(item);
+
+                const p = fileProgress.has(key) ? fileProgress.get(key) : (uploadArea.dataset.ready === '1' ? 100 : 0);
+                applyProgressToFileEl(item, p);
+            }
+
+            setRemoveButtonsDisabled(splittingInProgress || splitCompleted);
+            updateSplitAvailability();
+        }
+
+        function resetForNewUpload() {
+            uploadArea.dataset.ready = '0';
+            splitCompleted = false;
+
+            const splitBtn = document.getElementById('splitBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            if (splitBtn) splitBtn.disabled = true;
+            if (exportBtn) exportBtn.disabled = true;
+            currentQuestions = [];
+            selectedQuestions = new Set();
+            const preview = document.getElementById('questionsPreview');
+            if (preview) preview.innerHTML = '';
+            clearResultArea();
+            setStep(1);
+        }
+
+        function addPendingFiles(files) {
+            const newlyAdded = [];
+
+            for (const f of files) {
+                const key = fileKey(f);
+                if (pendingFileKeys.has(key)) continue;
+                pendingFileKeys.add(key);
+                pendingFiles.push(f);
+                newlyAdded.push(f);
+                if (!fileProgress.has(key)) fileProgress.set(key, 0);
+            }
+
+            fileInput.value = '';
+
+            if (newlyAdded.length === 0) {
+                renderPendingFiles();
+                return;
+            }
+
+            const wasBusy = isUploadBusy();
+            if (!wasBusy) setUploadPanel('idle');
+            resetForNewUpload();
+            if (wasBusy) setStep(2);
+            renderPendingFiles();
+
+            enqueueUpload(newlyAdded);
+        }
+
+        renderPendingFiles();
+
+        function isUploadBusy() {
+            return uploadArea.dataset.busy === '1';
+        }
+
+        function setUploadPanel(state) {
+            uploadArea.classList.remove('cursor-wait');
+        }
+
+        async function cancelFile(key) {
+            if (!key) return;
+            if (cancellingSession) return;
+            cancellingSession = true;
+
+            try {
+                if (fakeProgressKeys && fakeProgressKeys.length) {
+                    fakeProgressKeys = fakeProgressKeys.filter(k => k !== key);
+                    if (fakeProgressKeys.length === 0) stopFakeProgress();
+                }
+
+                const resp = await fetch('/api/cancel_file', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_key: key })
+                });
+                const data = await resp.json().catch(() => null);
+
+                if (data && data.success) {
+                    pendingFiles = pendingFiles.filter(x => fileKey(x) !== key);
+                    pendingFileKeys.delete(key);
+                    fileProgress.delete(key);
+                    renderPendingFiles();
+
+                    const exportBtn = document.getElementById('exportBtn');
+                    if (exportBtn) exportBtn.disabled = true;
+                    currentQuestions = [];
+                    selectedQuestions = new Set();
+                    const preview = document.getElementById('questionsPreview');
+                    if (preview) preview.innerHTML = '';
+                    clearResultArea();
+
+                    if (pendingFiles.length === 0) {
+                        uploadArea.dataset.ready = '0';
+                        resetForNewUpload();
+                        setUploadPanel('idle');
+                        showSuccess(data.message || '已撤销');
+
+                        if (isUploadBusy() && activeUploadXhr) {
+                            try {
+                                activeUploadXhr.abort();
+                            } catch (_) {
+                            }
+                        }
+
+                        return;
+                    }
+
+                    setStep(3);
+                    if (typeof splitBtnDefaultHTML === 'string') {
+                        const splitBtn = document.getElementById('splitBtn');
+                        if (splitBtn) {
+                            splitBtn.dataset.busy = '0';
+                            splitBtn.innerHTML = splitBtnDefaultHTML;
+                        }
+                    }
+                    updateSplitAvailability();
+
+                    showSuccess(data.message || '已撤销');
+                } else if (data && data.error) {
+                    showError(data.error);
+                } else {
+                    showError('撤销失败');
+                }
+            } catch (e) {
+                showError('撤销失败: 网络错误');
+            } finally {
+                cancellingSession = false;
+            }
+        }
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
 
         function setUploadHover(active) {
             const on = ['ring-2', 'ring-slate-400', 'border-slate-400', 'bg-slate-100', 'dark:bg-slate-950/60'];
@@ -346,83 +712,156 @@
             e.preventDefault();
             e.stopPropagation();
             setUploadHover(false);
-            // 将 FileList 转为 Array，避免部分浏览器在事件结束后清空 DataTransfer
             const files = Array.from(e.dataTransfer.files);
-            if (files.length > 0) handleFileUpload(files);
+            if (files.length > 0) addPendingFiles(files);
         });
 
         fileInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            if (files.length > 0) handleFileUpload(files);
+            if (files.length > 0) addPendingFiles(files);
+            fileInput.value = '';
         });
 
-        // 处理文件上传（支持多文件，带进度条）
+        // 处理文件上传（支持多文件）
         function handleFileUpload(files) {
-            const formData = new FormData();
-            const fileNames = [];
-            for (let i = 0; i < files.length; i++) {
-                formData.append('files', files[i]);
-                fileNames.push(files[i].name);
+            if (isUploadBusy()) return Promise.resolve(false);
+
+            for (const f of Array.from(files || [])) {
+                waitingFileKeys.delete(fileKey(f));
             }
 
-            uploadArea.classList.add('hidden');
+            uploadArea.dataset.busy = '1';
+            uploadArea.dataset.ready = '0';
+            resetFileProgressFor(files);
+            renderPendingFiles();
+
+            const formData = new FormData();
+            const fileNames = [];
+            const fileSizes = [];
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+                formData.append('file_key', fileKey(files[i]));
+                fileNames.push(files[i].name);
+                fileSizes.push(files[i].size || 0);
+            }
+
+            const totalBytes = fileSizes.reduce((a, b) => a + b, 0);
+            const fileOffsets = [];
+            let acc = 0;
+            for (const s of fileSizes) {
+                fileOffsets.push(acc);
+                acc += s;
+            }
+
             fileInput.value = '';
 
-            // 显示进度条和加载状态
             const fileLabel = files.length > 1 ? `${files.length} 个文件` : fileNames[0];
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBarFill = document.getElementById('progressBarFill');
-            const progressText = document.getElementById('progressText');
-            progressContainer.classList.remove('hidden');
-            progressBarFill.style.width = '0%';
-            progressText.textContent = '0%';
-            showLoading(`正在上传和处理 ${fileLabel}...`);
+
+            setUploadPanel('busy');
             setStep(2);
 
             const xhr = new XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBarFill.style.width = percent + '%';
-                    progressText.textContent = percent + '%';
-                }
+            activeUploadXhr = xhr;
+            xhr.addEventListener('loadend', () => {
+                if (activeUploadXhr === xhr) activeUploadXhr = null;
             });
 
-            xhr.addEventListener('load', () => {
-                progressContainer.classList.add('hidden');
-                try {
-                    const data = JSON.parse(xhr.responseText);
-                    if (data.success) {
-                        showSuccess(`文件处理成功！共 ${data.result.file_count} 个文件，识别到 ${data.result.image_count} 张图片`);
-                        document.getElementById('fileName').textContent = fileNames.join('、');
-                        document.getElementById('imageCount').textContent = data.result.image_count;
-                        document.getElementById('ocrCount').textContent = data.result.ocr_count;
-                        document.getElementById('fileInfo').classList.remove('hidden');
-                        document.getElementById('splitBtn').disabled = false;
-                        setStep(3);
-                    } else {
-                        uploadArea.classList.remove('hidden');
-                        showError(data.error || '文件处理失败');
+            const uploadKeys = files.map(fileKey);
+            startFakeProgress(uploadKeys);
+
+            return new Promise((resolve) => {
+                const fail = (msg) => {
+                    stopFakeProgress();
+                    uploadArea.dataset.busy = '0';
+                    uploadArea.dataset.ready = '0';
+                    renderPendingFiles();
+                    setUploadPanel('idle');
+                    if (msg) showError(msg);
+                    window.setTimeout(pumpUploadQueue, 0);
+                    resolve(false);
+                };
+
+                xhr.addEventListener('load', () => {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        if (data.success) {
+                            stopFakeProgress();
+
+                            uploadArea.dataset.busy = '0';
+                            uploadArea.dataset.ready = pendingFiles.length > 0 ? '1' : '0';
+
+                            if (pendingFiles.length === 0) {
+                                renderPendingFiles();
+                                setUploadPanel('idle');
+                                setStep(1);
+                                updateSplitAvailability();
+                                showSuccess('文件处理完成（已全部撤销）');
+                                window.setTimeout(pumpUploadQueue, 0);
+                                resolve(true);
+                                return;
+                            }
+
+                            setUploadPanel('idle');
+
+                            for (const key of uploadKeys) {
+                                if (pendingFileKeys.has(key)) setFileProgress(key, 100);
+                            }
+
+                            showSuccess(`文件处理成功！本次新增 ${data.result.file_count} 个文件，总共有 ${data.result.image_count} 张图片`);
+
+                            const splitBtn = document.getElementById('splitBtn');
+                            if (splitBtn && splitBtn.dataset.busy !== '1') splitBtn.disabled = false;
+                            setStep(3);
+                            window.setTimeout(pumpUploadQueue, 0);
+                            resolve(true);
+                        } else {
+                            fail(data.error || '文件处理失败');
+                        }
+                    } catch (e) {
+                        fail('上传失败: 服务器响应异常');
                     }
-                } catch (e) {
-                    uploadArea.classList.remove('hidden');
-                    showError('上传失败: 服务器响应异常');
-                }
-            });
+                });
 
-            xhr.addEventListener('error', () => {
-                progressContainer.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
-                showError('上传失败: 网络错误');
-            });
+                xhr.addEventListener('error', () => {
+                    fail('上传失败: 网络错误');
+                });
 
-            xhr.open('POST', '/api/upload');
-            xhr.send(formData);
+                xhr.addEventListener('abort', () => {
+                    stopFakeProgress();
+                    uploadArea.dataset.busy = '0';
+                    uploadArea.dataset.ready = '0';
+                    renderPendingFiles();
+                    setUploadPanel('idle');
+                    window.setTimeout(pumpUploadQueue, 0);
+                    resolve(false);
+                });
+
+                xhr.open('POST', '/api/upload');
+                xhr.send(formData);
+            });
         }
 
         // 分割题目
-        document.getElementById('splitBtn').addEventListener('click', async () => {
+        const splitBtn = document.getElementById('splitBtn');
+        splitBtnDefaultHTML = splitBtn ? splitBtn.innerHTML : null;
+        splitBtn.addEventListener('click', async () => {
+            if (splitBtn.dataset.busy === '1') return;
+
+            if (uploadArea.dataset.ready !== '1') {
+                showError('请先上传文件');
+                return;
+            }
+
+            uploadArea.classList.add('hidden');
+
+            splittingInProgress = true;
+            setRemoveButtonsDisabled(true);
+
+            splitBtn.dataset.busy = '1';
+            const originalHTML = splitBtn.innerHTML;
+            splitBtn.disabled = true;
+            splitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 正在分割...';
+
             showLoading('正在调用AI分割题目，请稍候...');
             setStep(3);
 
@@ -441,21 +880,36 @@
                     showSuccess(`成功分割 ${data.questions.length} 道题目`);
                     displayQuestions(data.questions);
 
-                    // 启用导出按钮
                     document.getElementById('exportBtn').disabled = false;
+                    splitCompleted = true;
+                    setRemoveButtonsDisabled(true);
+                    splitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> 已完成分割';
                     setStep(4);
                 } else {
+                    uploadArea.classList.remove('hidden');
+                    splitBtn.dataset.busy = '0';
+                    splitBtn.disabled = false;
+                    splitBtn.innerHTML = originalHTML;
+                    updateSplitAvailability();
                     showError(data.error || '题目分割失败');
                 }
             } catch (error) {
+                uploadArea.classList.remove('hidden');
+                splitBtn.dataset.busy = '0';
+                splitBtn.disabled = false;
+                splitBtn.innerHTML = originalHTML;
+                updateSplitAvailability();
                 showError('分割失败: ' + error.message);
+            } finally {
+                splittingInProgress = false;
+                setRemoveButtonsDisabled(splittingInProgress || splitCompleted);
             }
         });
 
         // 导出错题本
         document.getElementById('exportBtn').addEventListener('click', async () => {
             if (selectedQuestions.size === 0) {
-                alert('请至少选择一道题目！');
+                showError('请至少选择一道题目！');
                 return;
             }
 
@@ -473,17 +927,26 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    setStep(5);
                     showSuccess(`错题本导出成功！已保存到: ${data.output_path}`);
 
-                    // 提供下载链接
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = '/download/wrongbook.md';
-                    downloadLink.download = 'wrongbook.md';
-                    downloadLink.textContent = '下载 wrongbook.md';
-                    downloadLink.className = 'inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800';
+                    let filename = 'wrongbook.md';
+                    if (data.output_path) {
+                        const parts = String(data.output_path).split(/[/\\]/);
+                        const last = parts[parts.length - 1];
+                        if (last) filename = last;
+                    }
 
-                    const resultArea = document.getElementById('resultArea');
-                    resultArea.innerHTML += `<div class="mt-3"><span class="mr-2 text-sm font-medium text-slate-700 dark:text-slate-200">下载</span>${downloadLink.outerHTML}</div>`;
+                    const downloadUrl = `/download/${encodeURIComponent(filename)}?t=${Date.now()}`;
+
+                    const auto = document.createElement('a');
+                    auto.href = downloadUrl;
+                    auto.download = filename;
+                    auto.style.display = 'none';
+                    document.body.appendChild(auto);
+                    auto.click();
+                    auto.remove();
+
                 } else {
                     showError(data.error || '导出失败');
                 }
@@ -508,11 +971,11 @@
                             <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">点击卡片选择需要导出的题目</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="selectAll()">
+                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800" onclick="selectAll()">
                                 <i class="fa-solid fa-check-double"></i>
                                 全选
                             </button>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800" onclick="deselectAll()">
+                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800" onclick="deselectAll()">
                                 <i class="fa-solid fa-xmark"></i>
                                 取消全选
                             </button>
@@ -636,6 +1099,85 @@
         }
 
         // 工具函数
+        function clearResultArea() {
+            const resultArea = document.getElementById('resultArea');
+            if (!resultArea) return;
+            resultArea.innerHTML = '';
+            resultArea.style.display = 'none';
+        }
+
+        function showToast(type, message, opts = {}) {
+            const region = document.getElementById('toastRegion');
+            if (!region) return;
+
+            const duration = typeof opts.duration === 'number'
+                ? opts.duration
+                : (type === 'error' ? 4500 : 2500);
+
+            const theme = {
+                success: {
+                    icon: 'fa-circle-check',
+                    wrap: 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-100',
+                    iconColor: 'text-emerald-700 dark:text-emerald-200',
+                    btn: 'text-emerald-900/60 hover:text-emerald-900 dark:text-emerald-100/60 dark:hover:text-emerald-100'
+                },
+                error: {
+                    icon: 'fa-circle-xmark',
+                    wrap: 'border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-100',
+                    iconColor: 'text-rose-700 dark:text-rose-200',
+                    btn: 'text-rose-900/60 hover:text-rose-900 dark:text-rose-100/60 dark:hover:text-rose-100'
+                },
+                info: {
+                    icon: 'fa-circle-info',
+                    wrap: 'border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100',
+                    iconColor: 'text-slate-600 dark:text-slate-300',
+                    btn: 'text-slate-900/60 hover:text-slate-900 dark:text-slate-100/60 dark:hover:text-slate-100'
+                }
+            };
+
+            const t = theme[type] || theme.info;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium leading-5 shadow-sm transition duration-200 ${t.wrap}`;
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-6px)';
+
+            const msg = document.createElement('div');
+            msg.className = 'min-w-0 flex-1 break-words leading-5';
+            msg.textContent = String(message || '');
+
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${t.icon} ${t.iconColor}`;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = `ml-2 inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg transition ${t.btn}`;
+            closeBtn.setAttribute('aria-label', '关闭通知');
+            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+            toast.appendChild(icon);
+            toast.appendChild(msg);
+            toast.appendChild(closeBtn);
+            region.prepend(toast);
+
+            const dismiss = () => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-6px)';
+                window.setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 220);
+            };
+
+            closeBtn.addEventListener('click', dismiss);
+
+            window.requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            });
+
+            if (duration > 0) window.setTimeout(dismiss, duration);
+        }
+
         function showLoading(message) {
             const resultArea = document.getElementById('resultArea');
             resultArea.style.display = 'block';
@@ -648,29 +1190,13 @@
         }
 
         function showSuccess(message) {
-            const resultArea = document.getElementById('resultArea');
-            resultArea.style.display = 'block';
-            resultArea.innerHTML = `
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-semibold text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-100">
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-check mt-0.5"></i>
-                        <div>${message}</div>
-                    </div>
-                </div>
-            `;
+            clearResultArea();
+            showToast('success', message);
         }
 
         function showError(message) {
-            const resultArea = document.getElementById('resultArea');
-            resultArea.style.display = 'block';
-            resultArea.innerHTML = `
-                <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm font-semibold text-rose-900 shadow-sm dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-100">
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-circle-xmark mt-0.5"></i>
-                        <div>${message}</div>
-                    </div>
-                </div>
-            `;
+            clearResultArea();
+            showToast('error', message);
         }
 
         function setStep(stepNumber) {

@@ -111,7 +111,7 @@ def split_questions_node(state: WorkflowState) -> dict:
     logger.info("开始调用Agent分割题目")
     agent = create_question_split_agent()
 
-    # 简化 OCR 结果为 Agent 友好格式，附带页码索引
+    # 简化 OCR 结果：只保留 Agent 分割题目所需的字段
     simplified_results = []
     page_index = 0
     for result in state["ocr_results"]:
@@ -119,12 +119,30 @@ def split_questions_node(state: WorkflowState) -> dict:
             for page in result["layoutParsingResults"]:
                 if "prunedResult" in page:
                     parsing_res = page["prunedResult"].get("parsing_res_list", [])
+                    slim_blocks = []
+                    for b in parsing_res:
+                        content = b.get("block_content", "")
+                        # 图片 block 的 content 始终为空，用 bbox 构造实际图片路径
+                        if b.get("block_label") == "image" and not content:
+                            bbox = b.get("block_bbox")
+                            if bbox:
+                                content = f"/images/img_in_image_box_{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}.jpg"
+                        slim_blocks.append({
+                            "block_label": b.get("block_label"),
+                            "block_content": content,
+                            "block_order": b.get("block_order"),
+                        })
                     simplified_results.append({
                         "page_index": page_index,
-                        "blocks": parsing_res,
-                        "block_order": page.get("block_order", [])
+                        "blocks": slim_blocks,
                     })
                     page_index += 1
+
+    # 保存发送给 Agent 的 JSON 到本地
+    agent_input_path = os.path.join(results_dir, "agent_input.json")
+    with open(agent_input_path, 'w', encoding='utf-8') as f:
+        json.dump(simplified_results, f, ensure_ascii=False, indent=2)
+    logger.info(f"Agent 输入数据已保存到: {agent_input_path}")
 
     prompt = f"""请分析以下OCR识别结果，将其分割为独立的题目。
 
@@ -132,10 +150,12 @@ OCR结果包含 {len(simplified_results)} 页内容，请严格按照 page_index
 
 每页的数据结构：
 - page_index: 页码索引（从0开始），决定全局阅读顺序
-- blocks: 包含所有识别的内容块（文本、公式、图片等）
-- block_order: 该页内部推荐的阅读顺序
+- blocks: 包含所有识别的内容块，每个 block 有三个字段：
+  - block_label: 类型（text / image / doc_title / paragraph_title 等）
+  - block_content: 文本内容（公式用 LaTeX 标记）
+  - block_order: 该 block 在页内的阅读顺序
 
-请先按 page_index 顺序处理每一页，再在每页内部按 block_order 顺序处理各 block，仔细分析题号、内容结构，将题目准确分割，并使用 save_questions 工具保存结果。
+请按 page_index 顺序处理每一页，再在每页内部按 block_order 顺序处理各 block，仔细分析题号、内容结构，将题目准确分割，并使用 save_questions 工具保存结果。
 
 如果遇到不确定的情况，请使用 log_issue 工具记录。
 """

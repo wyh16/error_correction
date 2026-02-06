@@ -1,33 +1,43 @@
 """
-错题本题目分割Agent
+错题本多智能体工厂
+使用 deepagents.create_deep_agent 构建智能体，配合 ToolStrategy 实现结构化输出
 """
 
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+from langchain.agents.structured_output import ToolStrategy
 from deepagents import create_deep_agent
 
 from .prompts import SYSTEM_PROMPT
+from .schemas import QuestionSplitResult
 from .tools import save_questions, log_issue, download_image, read_ocr_result
 
 load_dotenv()
 
 
-def create_question_split_agent():
-    """创建题目分割Agent
-
-    使用DeepSeek模型和定义的工具创建一个专门用于分割题目的Agent。
-
-    Returns:
-        配置好的Agent实例
-    """
-    # 初始化模型（DeepSeek）
-    model = init_chat_model(
+def _init_model(temperature=0.1):
+    """初始化 DeepSeek 模型（所有智能体共用）"""
+    return init_chat_model(
         model="deepseek:deepseek-chat",
-        temperature=0.1,  # 低温度以获得更确定性的输出
+        temperature=temperature,
     )
 
-    # 定义工具列表
+
+def create_split_agent():
+    """创建题目分割智能体
+
+    使用 deepagents 框架 + ToolStrategy 结构化输出。
+    deepagents 提供文件操作、子智能体、上下文摘要等内置中间件，
+    ToolStrategy 强制返回 Pydantic 校验后的 QuestionSplitResult。
+
+    工具：save_questions, log_issue, download_image, read_ocr_result
+
+    Returns:
+        配置好的题目分割 Agent 实例 (CompiledStateGraph)
+    """
+    model = _init_model(temperature=0.1)
+
     tools = [
         save_questions,
         log_issue,
@@ -35,21 +45,22 @@ def create_question_split_agent():
         read_ocr_result,
     ]
 
-    # 创建Agent
     agent = create_deep_agent(
         model=model,
         tools=tools,
         system_prompt=SYSTEM_PROMPT,
+        response_format=ToolStrategy(
+            schema=QuestionSplitResult,
+            handle_errors=True,
+        ),
     )
 
     return agent
 
 
-# 导出agent实例（用于langgraph.json）
-agent = create_question_split_agent()
+# 默认导出（兼容 langgraph.json 配置）
+agent = create_split_agent()
 
 
 if __name__ == "__main__":
-    # 测试Agent创建
-    print("Agent创建成功!")
-    print(f"工具列表: {[tool.name for tool in agent.tools]}")
+    print("Split Agent 创建成功!")

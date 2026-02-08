@@ -19,3 +19,4 @@ __pycache__/
 frontend/dist/
 frontend/package-lock.json
 static/vue/
+frontend/package-lock.json

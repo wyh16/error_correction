@@ -37,20 +37,29 @@ class OCRMiddleware(AgentMiddleware):
 
     def before_agent(self, state: AgentState, runtime: Runtime) -> dict[str, Any] | None:
         """agent 启动前执行 OCR 解析"""
+        print("[OCRMiddleware] before_agent 被调用")
+
         messages = state.get("messages", [])
+        print(f"[OCRMiddleware] messages 数量: {len(messages)}")
         if not messages:
+            print("[OCRMiddleware] 无 messages，跳过")
             return None
 
         # 从最后一条用户消息中提取图片路径
         last_msg = messages[-1]
+        print(f"[OCRMiddleware] last_msg type: {type(last_msg).__name__}")
+        print(f"[OCRMiddleware] last_msg: {repr(last_msg)[:200]}")
         content = last_msg.content if hasattr(last_msg, "content") else str(last_msg)
+        print(f"[OCRMiddleware] content[:200]: {content[:200]}")
 
         # 尝试解析 JSON 格式的图片路径列表
         image_paths = self._extract_image_paths(content)
         if not image_paths:
+            print("[OCRMiddleware] 未检测到图片路径，跳过 OCR")
             logger.info("OCRMiddleware: 未检测到图片路径，跳过 OCR")
             return None
 
+        print(f"[OCRMiddleware] 检测到 {len(image_paths)} 张图片，开始 OCR 解析")
         logger.info(f"OCRMiddleware: 检测到 {len(image_paths)} 张图片，开始 OCR 解析")
 
         # 执行 OCR

@@ -6,17 +6,12 @@ import os
 import json
 import logging
 from typing import List, Dict, Any
-from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from config import RESULTS_DIR
 
 load_dotenv()
 logger = logging.getLogger(__name__)
-
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-RUNTIME_ROOT = os.path.join(BACKEND_ROOT, "runtime_data")
-
 
 @tool(parse_docstring=True)
 def save_questions(questions: List[Dict[str, Any]], output_path: str = None) -> str:
@@ -35,9 +30,8 @@ def save_questions(questions: List[Dict[str, Any]], output_path: str = None) -> 
     try:
         # 使用默认路径
         if output_path is None:
-            results_dir = os.getenv("RESULTS_DIR", os.path.join(RUNTIME_ROOT, "results"))
-            os.makedirs(results_dir, exist_ok=True)
-            output_path = os.path.join(results_dir, "questions.json")
+            os.makedirs(RESULTS_DIR, exist_ok=True)
+            output_path = os.path.join(RESULTS_DIR, "questions.json")
 
         # 读取已有数据（支持多次调用追加）
         existing = []
@@ -79,9 +73,8 @@ def log_issue(issue_type: str, description: str, block_info: Dict[str, Any] = No
         记录结果消息
     """
     try:
-        results_dir = os.getenv("RESULTS_DIR", os.path.join(RUNTIME_ROOT, "results"))
-        os.makedirs(results_dir, exist_ok=True)
-        log_path = os.path.join(results_dir, "split_issues.jsonl")
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        log_path = os.path.join(RESULTS_DIR, "split_issues.jsonl")
 
         # 构建日志条目
         log_entry = {

@@ -14,6 +14,7 @@ from rich.console import Console
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
+from config import RESULTS_DIR
 from .paddleocr_client import PaddleOCRClient
 from .utils import prepare_input, export_wrongbook
 

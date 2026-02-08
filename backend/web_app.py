@@ -19,6 +19,15 @@ from dotenv import load_dotenv
 
 from src.workflow import build_workflow
 from src.utils import export_wrongbook as export_wrongbook_md
+from config import (
+    PROJECT_ROOT,
+    UPLOAD_DIR,
+    PAGES_DIR,
+    STRUCT_DIR,
+    RESULTS_DIR,
+    MAX_FILE_SIZE_MB,
+    ALLOWED_EXTENSIONS,
+)
 
 # 加载环境变量
 load_dotenv()
@@ -39,9 +48,6 @@ PAGES_DIR_DEFAULT = os.path.join(RUNTIME_ROOT, 'pages')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 MAX_FILE_SIZE_MB = 50
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE_MB * 1024 * 1024
-
-# 确保上传目录存在
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.errorhandler(413)
 def request_entity_too_large(error):

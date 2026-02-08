@@ -11,6 +11,8 @@ from rich.console import Console
 from pdf2image import convert_from_path
 from PIL import Image
 
+from config import RESULTS_DIR
+
 load_dotenv()
 console = Console()
 

@@ -9,6 +9,7 @@ from typing import List, Dict, Any
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.tools import tool
+from config import RESULTS_DIR
 
 load_dotenv()
 logger = logging.getLogger(__name__)

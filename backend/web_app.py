@@ -165,7 +165,7 @@ def upload_file():
     """
     处理文件上传并执行预处理（支持多文件）
 
-    图执行: prepare_input → ocr_parse → [中断]
+    只做文件预处理（PDF/图片 → 标准化图片），OCR 由 Agent 的 OCRMiddleware 完成。
 
     Returns:
         JSON响应，包含处理结果
@@ -220,7 +220,6 @@ def upload_file():
             return jsonify({'error': '没有上传文件'}), 400
 
         from src.utils import prepare_input
-        from src.paddleocr_client import PaddleOCRClient
 
         with session_lock:
             if current_thread_id is None:
@@ -240,9 +239,8 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
+            # 只做文件预处理（PDF/图片 → 标准化图片列表），OCR 由 Agent 中间件完成
             image_paths = prepare_input(filepath)
-            client = PaddleOCRClient()
-            ocr_results = _run_async(client.parse_images_async(image_paths, save_output=True))
 
             with session_lock:
                 inflight_file_keys.discard(file_key)
@@ -257,24 +255,20 @@ def upload_file():
                 session_files[file_key] = {
                     "filename": file.filename,
                     "image_paths": list(image_paths),
-                    "ocr_results": list(ocr_results),
                 }
                 if file_key not in session_file_order:
                     session_file_order.append(file_key)
 
                 agg_image_paths = []
-                agg_ocr_results = []
                 for k in session_file_order:
                     v = session_files.get(k)
                     if not v:
                         continue
                     agg_image_paths.extend(v.get("image_paths", []))
-                    agg_ocr_results.extend(v.get("ocr_results", []))
 
                 config = {"configurable": {"thread_id": current_thread_id}}
                 workflow_graph.update_state(config, {
                     "image_paths": agg_image_paths,
-                    "ocr_results": agg_ocr_results,
                 })
 
             results_out.append({
@@ -558,19 +552,16 @@ def cancel_file():
                 session_file_order = [x for x in session_file_order if x != file_key]
 
             agg_image_paths = []
-            agg_ocr_results = []
             for k in session_file_order:
                 v = session_files.get(k)
                 if not v:
                     continue
                 agg_image_paths.extend(v.get("image_paths", []))
-                agg_ocr_results.extend(v.get("ocr_results", []))
 
             if current_thread_id is not None:
                 config = {"configurable": {"thread_id": current_thread_id}}
                 workflow_graph.update_state(config, {
                     "image_paths": agg_image_paths,
-                    "ocr_results": agg_ocr_results,
                 })
 
         return jsonify({

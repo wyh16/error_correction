@@ -298,7 +298,7 @@ const handleUpload = (files) => {
       }
       uploadReady.value = pendingFiles.length > 0
       step.value = pendingFiles.length > 0 ? 3 : 1
-      pushToast('success', `上传成功！本次新增 ${data.result.file_count} 个文件，点击“开始分割题目”开始处理`) 
+      pushToast('success', `上传成功！本次新增 ${fileCount} 个文件，点击“开始分割题目”开始处理`) 
       pumpUploadQueue()
       return
     }

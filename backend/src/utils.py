@@ -103,55 +103,6 @@ def prepare_input(file_path: str) -> List[str]:
     return image_paths
 
 
-def deduplicate_questions(questions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """去除重复题目
-
-    基于 question_id 和内容相似度判断重复(用于处理批次重叠产生的重复题目)
-
-    Args:
-        questions: 题目列表
-
-    Returns:
-        去重后的题目列表
-    """
-    seen = {}  # {question_id: {content_hash: question}}
-    unique_questions = []
-    duplicates_count = 0
-
-    for q in questions:
-        qid = q.get('question_id', '')
-
-        # 提取题干文本用于相似度判断
-        content_text = ""
-        for block in q.get('content_blocks', []):
-            if block.get('block_type') == 'text':
-                content_text += block.get('content', '')
-
-        # 简单的内容哈希(去除空白后比较前200字符,避免OCR微小差异)
-        content_normalized = ''.join(content_text.split())[:200]
-
-        # 检查是否重复
-        if qid in seen:
-            # 同一个题号,检查内容是否相似
-            if content_normalized in seen[qid]:
-                # 重复题目,跳过
-                duplicates_count += 1
-                continue
-            else:
-                # 题号相同但内容不同,可能是子题或不同题目
-                seen[qid][content_normalized] = q
-                unique_questions.append(q)
-        else:
-            # 新题号
-            seen[qid] = {content_normalized: q}
-            unique_questions.append(q)
-
-    if duplicates_count > 0:
-        console.print(f"[yellow]去重: 发现 {duplicates_count} 道重复题目已移除[/yellow]")
-
-    return unique_questions
-
-
 def export_wrongbook(questions: List[Dict[str, Any]], selected_ids: List[str], output_path: str = None) -> str:
     """
     步骤5: 导出错题本
@@ -169,9 +120,6 @@ def export_wrongbook(questions: List[Dict[str, Any]], selected_ids: List[str], o
     if output_path is None:
         os.makedirs(RESULTS_DIR, exist_ok=True)
         output_path = os.path.join(RESULTS_DIR, "wrongbook.md")
-
-    # 先去重(处理批次重叠产生的重复题目)
-    questions = deduplicate_questions(questions)
 
     # 过滤选中的题目
     selected_questions = [q for q in questions if q.get('question_id') in selected_ids]

@@ -95,7 +95,7 @@ def log_issue(issue_type: str, description: str, block_info: Dict[str, Any] = No
 
 
 @tool(parse_docstring=True)
-def split_batch(ocr_data: str, existing_ids: str = "") -> str:
+def split_batch(ocr_data: str, existing_ids: str = "", subject: str = "", existing_tags: str = "") -> str:
     """对一批OCR数据进行题目分割，返回结构化题目列表JSON
 
     将1-2页的OCR数据发送给内层分割智能体（create_agent + ToolStrategy），
@@ -104,6 +104,8 @@ def split_batch(ocr_data: str, existing_ids: str = "") -> str:
     Args:
         ocr_data: 一批OCR数据的JSON字符串，包含1-2页的blocks数据
         existing_ids: 前面批次已提取的题目ID列表，用逗号分隔（如 "1,2,3,4,5"），用于跳过重叠页上的已有题目
+        subject: 试卷所属科目（如 "高中数学"、"初中物理"），用于辅助知识点标注
+        existing_tags: 前面批次已使用的知识点标签，用逗号分隔（如 "复数,集合,立体几何"），用于保持标签一致性
 
     Returns:
         题目列表的JSON字符串，如 '[{"question_id": "1", ...}, ...]'
@@ -121,6 +123,14 @@ def split_batch(ocr_data: str, existing_ids: str = "") -> str:
 以下题号的题目已经在前面的批次中提取过，请不要再次输出它们：{existing_ids}
 只输出新的、不在上述列表中的题目。"""
 
+        tags_instruction = ""
+        if subject.strip() or existing_tags.strip():
+            tags_instruction = "\n**知识点标注上下文**："
+            if subject.strip():
+                tags_instruction += f"\n- 本试卷科目：{subject}"
+            if existing_tags.strip():
+                tags_instruction += f"\n- 已有知识点标签池（请优先复用）：{existing_tags}"
+
         prompt = f"""请分析以下OCR识别结果，将其分割为独立的题目。
 
 每页的数据结构：
@@ -128,7 +138,7 @@ def split_batch(ocr_data: str, existing_ids: str = "") -> str:
 - blocks: 内容块列表，每个 block 有 block_label、block_content、block_order 三个字段
 
 请按 page_index 和 block_order 顺序处理，返回结构化的题目列表。
-{skip_instruction}
+{skip_instruction}{tags_instruction}
 
 OCR数据：
 {ocr_data}"""

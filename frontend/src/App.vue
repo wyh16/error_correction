@@ -705,6 +705,15 @@ onBeforeUnmount(() => {
                   <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                     {{ q.question_type }}
                   </span>
+                  <template v-if="q.knowledge_tags && q.knowledge_tags.length">
+                    <span
+                      v-for="tag in q.knowledge_tags"
+                      :key="`${q.question_id}-tag-${tag}`"
+                      class="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                    >
+                      {{ tag }}
+                    </span>
+                  </template>
                   <label class="ml-auto inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300" @click.stop>
                     <input
                       type="checkbox"

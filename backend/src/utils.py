@@ -139,21 +139,17 @@ def export_wrongbook(
         md_content += f"## {i}. 题目 {q.get('question_id', '')} ({q.get('question_type', '未知')})\n\n"
 
         # 获取图片引用列表，用于填充空的 image block
-        image_refs = q.get('image_refs', [])
-        image_ref_index = 0
+        image_refs = q.get('image_refs') or []
+        rendered_images = set()  # 记录已渲染的图片路径
 
         # 添加内容块（只有 text 和 image，公式以 LaTeX 标记嵌入 text 中）
         for block in q.get('content_blocks', []):
             if block['block_type'] == 'text':
                 md_content += f"{block['content']}\n\n"
             elif block['block_type'] == 'image':
-                # 优先使用 block 的 content
                 image_path = block.get('content', '').strip()
-
-                # 如果为空，尝试从 image_refs 获取
-                if not image_path and image_ref_index < len(image_refs):
-                    image_path = image_refs[image_ref_index]
-                    image_ref_index += 1
+                if image_path:
+                    rendered_images.add(image_path)
 
                 # 将 Flask 路由路径转为 Markdown 相对路径
                 if image_path.startswith("/images/"):
@@ -161,12 +157,23 @@ def export_wrongbook(
                     rel_struct_dir = os.path.relpath(STRUCT_DIR, RESULTS_DIR)
                     image_path = f"{rel_struct_dir}/imgs/{image_path[len('/images/') :]}"
 
-                md_content += f"![图片]({image_path})\n\n"
+                if image_path:
+                    md_content += f"![图片]({image_path})\n\n"
 
         # 添加选项
         if q.get('options'):
             for option in q['options']:
                 md_content += f"{option}\n\n"
+
+        # 兜底：渲染 image_refs 中未被 content_blocks 覆盖的图片
+        remaining_images = [p for p in image_refs if p not in rendered_images]
+        if remaining_images:
+            for image_path in remaining_images:
+                if image_path.startswith("/images/"):
+                    from config import STRUCT_DIR
+                    rel_struct_dir = os.path.relpath(STRUCT_DIR, RESULTS_DIR)
+                    image_path = f"{rel_struct_dir}/imgs/{image_path[len('/images/') :]}"
+                md_content += f"![图片]({image_path})\n\n"
 
         md_content += "### 我的答案\n\n"
         md_content += "_（请在此处填写你的答案）_\n\n"

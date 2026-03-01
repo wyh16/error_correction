@@ -138,11 +138,13 @@ class OCRMiddleware(AgentMiddleware):
                 slim_blocks = []
                 for b in parsing_res:
                     content = b.get("block_content", "")
-                    # 图片 block 的 content 始终为空，用 bbox 构造图片路径
-                    if b.get("block_label") == "image" and not content:
+                    label = b.get("block_label", "")
+                    # image/chart block 的 content 始终为空，用 bbox 构造图片路径
+                    if label in ("image", "chart") and not content:
                         bbox = b.get("block_bbox")
                         if bbox:
-                            content = f"/images/img_in_image_box_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
+                            prefix = "img_in_chart_box" if label == "chart" else "img_in_image_box"
+                            content = f"/images/{prefix}_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
                     slim_blocks.append({
                         "block_label": b.get("block_label"),
                         "block_content": content,

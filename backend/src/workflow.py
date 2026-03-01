@@ -98,11 +98,11 @@ def _run_ocr_and_simplify(image_paths: List[str]) -> List[Dict[str, Any]]:
                 with ThreadPoolExecutor(max_workers=1) as pool:
                     ocr_results = pool.submit(
                         asyncio.run,
-                        client.parse_images_async(image_paths, save_output=True)
+                        client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
                     ).result()
             else:
                 ocr_results = asyncio.run(
-                    client.parse_images_async(image_paths, save_output=True)
+                    client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
                 )
             break
         except Exception as e:

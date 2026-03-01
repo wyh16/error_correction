@@ -396,7 +396,7 @@ class PaddleOCRClient:
         image_paths: List[str],
         save_output: bool = True,
         output_dir: Optional[str] = None,
-        stagger_delay: float = 0.5,
+        stagger_delay: float = 1,
     ) -> List[Dict[str, Any]]:
         """异步并发解析多张图片（错峰发送，避免 API 限流）
 
@@ -404,7 +404,7 @@ class PaddleOCRClient:
             image_paths: 图片路径列表
             save_output: 是否保存输出结果
             output_dir: 输出目录
-            stagger_delay: 每个请求之间的错峰间隔（秒），默认 0.5s
+            stagger_delay: 每个请求之间的错峰间隔（秒），默认 1s
 
         Returns:
             List[Dict]: 每张图片的结构化结果（顺序与输入一致）

@@ -7,7 +7,9 @@ import os
 import json
 import logging
 import time
+import asyncio
 from typing import List, Dict, Any, TypedDict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from rich.console import Console
 from langgraph.graph import StateGraph, START, END
@@ -64,25 +66,261 @@ def prepare_input_node(state: WorkflowState) -> dict:
     return {"image_paths": all_image_paths}
 
 
-def split_questions_node(state: WorkflowState) -> dict:
-    """节点: Agent 智能分割题目
+# ── 并行分割辅助函数 ──────────────────────────────────────────
 
-    OCR 解析由编排智能体的 OCRMiddleware 自动完成。
-    workflow 只需将图片路径传给 agent，中间件会：
-    1. 调用 PaddleOCR API 解析图片
-    2. 简化结果并注入 messages
-    3. agent 自主分批调用 split_batch + save_questions
+
+def _run_ocr_and_simplify(image_paths: List[str]) -> List[Dict[str, Any]]:
+    """执行 OCR 解析并简化结果（含重试机制）
+
+    调用 PaddleOCR API 解析所有图片（图片级并行），
+    然后将结果简化为 split_batch 所需的格式。
+
+    Returns:
+        简化后的 OCR 数据列表，每项包含 page_index 和 blocks
     """
-    console.print("[bold yellow]步骤 2: Agent OCR + 分割题目[/bold yellow]")
+    from src.paddleocr_client import PaddleOCRClient
+
+    client = PaddleOCRClient()
+
+    max_retries = 3
+    retry_delays = [15, 30, 60]
+    ocr_results = None
+    last_error = None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+
+            if loop and loop.is_running():
+                with ThreadPoolExecutor(max_workers=1) as pool:
+                    ocr_results = pool.submit(
+                        asyncio.run,
+                        client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
+                    ).result()
+            else:
+                ocr_results = asyncio.run(
+                    client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
+                )
+            break
+        except Exception as e:
+            last_error = e
+            if attempt < max_retries:
+                delay = retry_delays[attempt - 1]
+                logger.warning(f"OCR 第 {attempt} 次失败 ({e})，{delay}s 后重试...")
+                console.print(f"[yellow]OCR 第 {attempt} 次失败，{delay}s 后重试...[/yellow]")
+                time.sleep(delay)
+            else:
+                logger.error(f"OCR 全部 {max_retries} 次重试失败: {last_error}")
+                console.print(f"[red]OCR 解析失败（已重试 {max_retries} 次）: {last_error}[/red]")
+
+    if ocr_results is None:
+        return []
+
+    return _simplify_ocr_results(ocr_results)
+
+
+def _simplify_ocr_results(ocr_results: list) -> List[Dict[str, Any]]:
+    """简化 OCR 结果，只保留 split 所需字段
+
+    与 OCRMiddleware._simplify_results 逻辑一致。
+    """
+    simplified = []
+    page_index = 0
+    for result in ocr_results:
+        if "layoutParsingResults" not in result:
+            continue
+        for page in result["layoutParsingResults"]:
+            if "prunedResult" not in page:
+                continue
+            parsing_res = page["prunedResult"].get("parsing_res_list", [])
+            slim_blocks = []
+            for b in parsing_res:
+                content = b.get("block_content", "")
+                label = b.get("block_label", "")
+                if label in ("image", "chart") and not content:
+                    bbox = b.get("block_bbox")
+                    if bbox:
+                        prefix = "img_in_chart_box" if label == "chart" else "img_in_image_box"
+                        content = f"/images/{prefix}_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
+                slim_blocks.append({
+                    "block_label": b.get("block_label"),
+                    "block_content": content,
+                    "block_order": b.get("block_order"),
+                })
+            simplified.append({
+                "page_index": page_index,
+                "blocks": slim_blocks,
+            })
+            page_index += 1
+    return simplified
+
+
+def _build_overlapping_batches(
+    ocr_data: List[Dict[str, Any]],
+    batch_size: int = 2,
+    overlap: int = 1,
+) -> List[List[Dict[str, Any]]]:
+    """构建重叠批次
+
+    每批 batch_size 页，相邻批次重叠 overlap 页。
+    例如 5 页, batch_size=2, overlap=1:
+        批次0: [page0, page1]
+        批次1: [page1, page2]
+        批次2: [page2, page3]
+        批次3: [page3, page4]
+    """
+    if not ocr_data:
+        return []
+
+    n_pages = len(ocr_data)
+    if n_pages <= batch_size:
+        return [ocr_data]
+
+    step = batch_size - overlap
+    batches = []
+    for start in range(0, n_pages, step):
+        end = min(start + batch_size, n_pages)
+        batches.append(ocr_data[start:end])
+        if end >= n_pages:
+            break
+
+    return batches
+
+
+def _load_db_context():
+    """加载数据库已有科目和标签"""
+    db_subjects = []
+    db_tags = []
+    try:
+        from db import SessionLocal
+        from db.crud import get_existing_subjects, get_existing_tag_names
+
+        with SessionLocal() as db:
+            db_subjects = get_existing_subjects(db)
+            db_tags = get_existing_tag_names(db)
+
+        logger.info(f"已加载 DB 上下文: {len(db_subjects)} 个科目, {len(db_tags)} 个标签")
+    except Exception as e:
+        logger.warning(f"加载 DB 上下文失败（不影响分割）: {e}")
+    return db_subjects, db_tags
+
+
+def _identify_subject(
+    ocr_data: List[Dict[str, Any]],
+    db_subjects: List[str],
+) -> str:
+    """从 OCR 数据前几页启发式识别科目
+
+    优先匹配 DB 已有科目名称，其次按关键词匹配。
+    """
+    if not ocr_data:
+        return ""
+
+    # 提取前 2 页的文本
+    text_sample = ""
+    for page in ocr_data[:2]:
+        for block in page.get("blocks", []):
+            if block.get("block_label") in ("text", "paragraph_title", "doc_title"):
+                text_sample += block.get("block_content", "") + "\n"
+
+    # 优先匹配 DB 已有科目
+    for subj in db_subjects:
+        if subj in text_sample:
+            return subj
+
+    # 通用关键词匹配
+    subject_keywords = {
+        "高中数学": ["数学试卷", "数学考试", "数学试题", "高中数学"],
+        "高中物理": ["物理试卷", "物理考试", "物理试题", "高中物理"],
+        "高中化学": ["化学试卷", "化学考试", "化学试题", "高中化学"],
+        "高中生物": ["生物试卷", "生物考试", "生物试题", "高中生物"],
+        "高中英语": ["英语试卷", "英语考试", "英语试题", "高中英语"],
+        "高中语文": ["语文试卷", "语文考试", "语文试题", "高中语文"],
+        "初中数学": ["初中数学"],
+        "初中物理": ["初中物理"],
+        "初中化学": ["初中化学"],
+    }
+    for subj, keywords in subject_keywords.items():
+        for kw in keywords:
+            if kw in text_sample:
+                return subj
+
+    # 从内容特征推断
+    indicators = {
+        "高中数学": ["函数", "方程", "不等式", "三角", "向量", "概率", "数列", "导数", "圆锥", "椭圆"],
+        "高中物理": ["力", "速度", "加速度", "电场", "磁场", "动能", "势能"],
+        "高中化学": ["离子", "溶液", "元素", "原子", "分子", "化学反应"],
+    }
+    scores = {subj: sum(1 for w in words if w in text_sample) for subj, words in indicators.items()}
+    best = max(scores, key=scores.get)
+    if scores[best] >= 2:
+        return best
+
+    return ""
+
+
+def _dedup_questions(questions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """按 question_id 去重
+
+    当多个批次产出相同 question_id 的题目时（因为重叠页），
+    保留内容更丰富的版本（总文本更长）。
+    """
+    if not questions:
+        return []
+
+    seen: Dict[str, Dict[str, Any]] = {}
+    for q in questions:
+        qid = q.get("question_id", "")
+        if not qid:
+            continue
+        if qid not in seen:
+            seen[qid] = q
+        else:
+            # 保留内容更丰富的版本
+            if _question_richness(q) > _question_richness(seen[qid]):
+                seen[qid] = q
+
+    result = list(seen.values())
+    result.sort(key=lambda q: _sort_key(q.get("question_id", "")))
+    return result
+
+
+def _question_richness(q: Dict[str, Any]) -> int:
+    """计算题目内容丰富度（总字符数）"""
+    score = 0
+    for block in q.get("content_blocks", []):
+        score += len(block.get("content", ""))
+    for opt in (q.get("options") or []):
+        score += len(opt)
+    return score
+
+
+def _sort_key(qid: str):
+    """题号排序: 纯数字按数值，否则按字符串"""
+    try:
+        return (0, int(qid), "")
+    except ValueError:
+        return (1, 0, qid)
+
+
+def split_questions_node(state: WorkflowState) -> dict:
+    """节点: 并行 OCR + 分割题目
+
+    不再依赖编排智能体的顺序处理，而是直接执行：
+    1. OCR 解析（PaddleOCR，图片级并行）
+    2. 构建重叠批次（2页/批，1页重叠）
+    3. 并行调用 split_batch（批次级并行，每批独立的内层 agent）
+    4. 按 question_id 去重（重叠页产生的重复题目）
+    5. 保存结果
+    """
+    console.print("[bold yellow]步骤 2: 并行 OCR + 分割题目[/bold yellow]")
     step_start = time.time()
 
     results_dir = RESULTS_DIR
     os.makedirs(results_dir, exist_ok=True)
-
-    from error_correction_agent.agent import create_orchestrator_agent
-
-    logger.info("开始调用编排智能体（OCR + 分割）")
-    agent = create_orchestrator_agent()
 
     image_paths = state["image_paths"]
 
@@ -94,55 +332,126 @@ def split_questions_node(state: WorkflowState) -> dict:
     if os.path.exists(meta_path):
         os.remove(meta_path)
 
-    # 从数据库加载已有科目和知识点标签，供编排智能体参考
-    db_context = ""
-    try:
-        from db import SessionLocal
-        from db.crud import get_existing_subjects, get_existing_tag_names
+    # ── Step 1: OCR 解析 ──
+    console.print(f"[cyan]OCR 解析 {len(image_paths)} 张图片...[/cyan]")
+    ocr_start = time.time()
 
-        with SessionLocal() as db:
-            existing_subjects = get_existing_subjects(db)
-            existing_tags = get_existing_tag_names(db)
+    ocr_data = _run_ocr_and_simplify(image_paths)
 
-        if existing_subjects or existing_tags:
-            db_context = "\n\n## 历史数据参考\n"
-            if existing_subjects:
-                db_context += f"数据库中已有科目：{', '.join(existing_subjects)}\n"
-                db_context += "请优先复用上述科目名称，保持一致性。\n"
-            if existing_tags:
-                db_context += f"数据库中已有知识点标签：{', '.join(existing_tags)}\n"
-                db_context += "第 1 批 split_batch 的 existing_tags 参数请传入上述标签（逗号分隔），后续批次在此基础上追加新标签。\n"
-            logger.info(f"已加载 DB 上下文: {len(existing_subjects)} 个科目, {len(existing_tags)} 个标签")
-    except Exception as e:
-        logger.warning(f"加载 DB 上下文失败（不影响分割）: {e}")
+    if not ocr_data:
+        logger.error("OCR 解析失败，无数据返回")
+        console.print("[red]⚠ OCR 解析失败[/red]")
+        return {"questions": []}
 
-    console.print(f"[cyan]Agent 输入: {len(image_paths)} 张图片[/cyan]")
+    # 保存 agent_input.json（供纠错节点使用）
+    agent_input_path = os.path.join(results_dir, "agent_input.json")
+    with open(agent_input_path, 'w', encoding='utf-8') as f:
+        json.dump(ocr_data, f, ensure_ascii=False, indent=2)
 
-    # 传入图片路径 JSON，OCRMiddleware 会自动解析并注入 OCR 结果
-    agent.invoke(
-        {
-            "messages": [
-                {"role": "user", "content": f"请对以下图片进行 OCR 解析并分割题目。{db_context}"},
-                {"role": "user", "content": json.dumps(image_paths, ensure_ascii=False)}
-            ]
-        },
-        config={"recursion_limit": 300},
-    )
+    total_blocks = sum(len(p.get("blocks", [])) for p in ocr_data)
+    ocr_elapsed = time.time() - ocr_start
+    logger.info(f"OCR 完成: {len(ocr_data)} 页, {total_blocks} 个 block, 耗时 {ocr_elapsed:.2f}s")
+    console.print(f"[green]✓ OCR 完成: {len(ocr_data)} 页, {total_blocks} 个 block ({ocr_elapsed:.1f}s)[/green]")
 
-    # 从文件读取结果（外层 agent 通过 save_questions 追加保存）
-    questions = []
-    if os.path.exists(questions_file):
-        with open(questions_file, 'r', encoding='utf-8') as f:
-            questions = json.load(f)
+    # ── Step 2: 加载 DB 上下文 ──
+    db_subjects, db_tags = _load_db_context()
 
-    if questions:
-        logger.info(f"Agent分割完成: 共 {len(questions)} 道题目，耗时 {time.time() - step_start:.2f}s")
-        console.print(f"[green]✓ 成功分割 {len(questions)} 道题目[/green]")
+    # ── Step 3: 识别科目 ──
+    subject = _identify_subject(ocr_data, db_subjects)
+    if subject:
+        console.print(f"[cyan]识别科目: {subject}[/cyan]")
+        logger.info(f"识别科目: {subject}")
+
+    # ── Step 4: 构建重叠批次 ──
+    batches = _build_overlapping_batches(ocr_data, batch_size=2, overlap=1)
+    console.print(f"[cyan]构建 {len(batches)} 个批次（2页/批, 1页重叠）[/cyan]")
+
+    # ── Step 5: 并行分割 ──
+    split_start = time.time()
+    console.print(f"[cyan]并行分割 {len(batches)} 个批次...[/cyan]")
+
+    from error_correction_agent.tools import split_batch
+
+    existing_tags_str = ",".join(db_tags) if db_tags else ""
+    max_workers = min(len(batches), 3)
+    batch_results: List[List[Dict[str, Any]]] = [[] for _ in range(len(batches))]
+
+    max_batch_retries = 2
+
+    def _invoke_split(batch_idx: int, batch_data: list) -> None:
+        """在线程中调用 split_batch 并存储结果（含重试）"""
+        for attempt in range(1, max_batch_retries + 1):
+            try:
+                result_str = split_batch.invoke({
+                    "ocr_data": json.dumps(batch_data, ensure_ascii=False),
+                    "existing_ids": "",
+                    "subject": subject,
+                    "existing_tags": existing_tags_str,
+                })
+                # split_batch 内部捕获异常并返回 "分割失败: ..." 字符串，
+                # 需要检测这种情况并触发重试
+                if not result_str or not result_str.startswith("["):
+                    raise RuntimeError(f"split_batch 返回非JSON: {result_str[:200]}")
+                questions = json.loads(result_str)
+                batch_results[batch_idx] = questions
+                logger.info(f"批次 {batch_idx} 完成: {len(questions)} 道题目")
+                console.print(f"[green]  ✓ 批次 {batch_idx} 完成: {len(questions)} 道题目[/green]")
+                return
+            except Exception as e:
+                if attempt < max_batch_retries:
+                    logger.warning(f"批次 {batch_idx} 第 {attempt} 次失败 ({e})，重试中...")
+                    console.print(f"[yellow]  ⚠ 批次 {batch_idx} 第 {attempt} 次失败，重试...[/yellow]")
+                    time.sleep(2)
+                else:
+                    logger.error(f"批次 {batch_idx} 分割失败（已重试 {max_batch_retries} 次）: {e}")
+                    console.print(f"[red]  ✗ 批次 {batch_idx} 失败: {e}[/red]")
+
+    if len(batches) == 1:
+        _invoke_split(0, batches[0])
     else:
-        logger.warning("Agent未生成任何题目，请检查执行日志")
-        console.print("[yellow]⚠ Agent未生成任何题目[/yellow]")
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = {
+                pool.submit(_invoke_split, i, batch): i
+                for i, batch in enumerate(batches)
+            }
+            # 等待全部完成
+            for future in as_completed(futures):
+                future.result()  # 触发异常传播（已在 _invoke_split 内处理）
 
-    return {"questions": questions}
+    split_elapsed = time.time() - split_start
+    logger.info(f"并行分割完成, 耗时 {split_elapsed:.2f}s")
+
+    # ── Step 6: 合并 + 去重 ──
+    all_questions = []
+    for questions in batch_results:
+        all_questions.extend(questions)
+
+    before_dedup = len(all_questions)
+    deduped = _dedup_questions(all_questions)
+    after_dedup = len(deduped)
+
+    if before_dedup > after_dedup:
+        logger.info(f"去重: {before_dedup} → {after_dedup} 道题目（移除 {before_dedup - after_dedup} 道重复）")
+        console.print(f"[yellow]去重: 移除 {before_dedup - after_dedup} 道重复题目[/yellow]")
+
+    # ── Step 7: 保存结果 ──
+    with open(questions_file, 'w', encoding='utf-8') as f:
+        json.dump(deduped, f, ensure_ascii=False, indent=2)
+
+    if subject:
+        meta = {"subject": subject}
+        with open(meta_path, 'w', encoding='utf-8') as f:
+            json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    total_elapsed = time.time() - step_start
+    if deduped:
+        logger.info(f"分割完成: 共 {len(deduped)} 道题目, 总耗时 {total_elapsed:.2f}s")
+        console.print(f"[bold green]✓ 成功分割 {len(deduped)} 道题目 (总耗时 {total_elapsed:.1f}s)[/bold green]")
+    else:
+        logger.warning("未生成任何题目，请检查执行日志")
+        console.print("[yellow]⚠ 未生成任何题目[/yellow]")
+
+    return {"questions": deduped}
 
 
 def correct_questions_node(state: WorkflowState) -> dict:
@@ -241,8 +550,11 @@ def build_workflow():
 
         START → prepare_input → [中断] → split_questions → correct_questions → [中断] → export → END
 
-    OCR 解析由 split_questions 内的 OCRMiddleware 中间件自动完成，
-    不再需要独立的 ocr_parse 节点。
+    split_questions 节点直接执行 OCR + 并行分割（不再依赖编排智能体）:
+    1. 调用 PaddleOCR API 解析图片（图片级并行）
+    2. 构建重叠批次 → 并行调用 split_batch（批次级并行）
+    3. 按 question_id 去重 → 保存结果
+
     纠错节点在分割后自动执行，仅对标记了 needs_correction 的题目调用纠错智能体。
 
     Returns:

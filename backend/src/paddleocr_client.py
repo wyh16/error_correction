@@ -395,24 +395,31 @@ class PaddleOCRClient:
         self,
         image_paths: List[str],
         save_output: bool = True,
-        output_dir: Optional[str] = None
+        output_dir: Optional[str] = None,
+        stagger_delay: float = 1,
     ) -> List[Dict[str, Any]]:
-        """异步并发解析多张图片
+        """异步并发解析多张图片（错峰发送，避免 API 限流）
 
         Args:
             image_paths: 图片路径列表
             save_output: 是否保存输出结果
             output_dir: 输出目录
+            stagger_delay: 每个请求之间的错峰间隔（秒），默认 1s
 
         Returns:
             List[Dict]: 每张图片的结构化结果（顺序与输入一致）
         """
         console.print(f"[bold cyan]异步并发解析 {len(image_paths)} 张图片...[/bold cyan]")
 
+        async def _delayed_parse(idx: int, path: str, session: aiohttp.ClientSession):
+            if idx > 0 and stagger_delay > 0:
+                await asyncio.sleep(idx * stagger_delay)
+            return await self.async_parse_image(session, path, save_output, output_dir)
+
         async with aiohttp.ClientSession() as session:
             tasks = [
-                self.async_parse_image(session, path, save_output, output_dir)
-                for path in image_paths
+                _delayed_parse(i, path, session)
+                for i, path in enumerate(image_paths)
             ]
             results = await asyncio.gather(*tasks)
 

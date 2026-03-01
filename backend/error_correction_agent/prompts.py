@@ -65,6 +65,7 @@ SPLIT_PROMPT = """# 错题本题目分割专家
    - 遇到下一个题号时停止
    - 包括：text、image 两种 block 类型
    - 公式不单独成块，直接用 LaTeX 标记嵌入 text 的 content 中（行内 `$...$`，独占行 `$$...$$`）
+   - **图片必须嵌入 content_blocks**：所有属于该题目的 image block 都必须作为 `{"block_type": "image", "content": "/images/..."}` 加入 content_blocks，即使图片与选项关联（如实验操作图）。不要只放在 image_refs 中而不嵌入 content_blocks
 
 4. **结构化输出**
    - 将每道题目组织为结构化数据

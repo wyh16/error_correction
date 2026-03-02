@@ -125,27 +125,25 @@ def split_batch(ocr_data: str, existing_ids: str = "", subject: str = "", existi
         题目列表的JSON字符串，如 '[{"question_id": "1", ...}, ...]'
     """
     logger.info("split_batch called")
-    try:
-        from ..agent import create_inner_split_agent
 
-        inner_agent = create_inner_split_agent()
+    from ..agent import create_inner_split_agent
 
-        skip_instruction = ""
-        if existing_ids.strip():
-            skip_instruction = f"""
+    skip_instruction = ""
+    if existing_ids.strip():
+        skip_instruction = f"""
 **重要 - 跳过已处理的题目**：
 以下题号的题目已经在前面的批次中提取过，请不要再次输出它们：{existing_ids}
 只输出新的、不在上述列表中的题目。"""
 
-        tags_instruction = ""
-        if subject.strip() or existing_tags.strip():
-            tags_instruction = "\n**知识点标注上下文**："
-            if subject.strip():
-                tags_instruction += f"\n- 本试卷科目：{subject}"
-            if existing_tags.strip():
-                tags_instruction += f"\n- 已有知识点标签池（请优先复用）：{existing_tags}"
+    tags_instruction = ""
+    if subject.strip() or existing_tags.strip():
+        tags_instruction = "\n**知识点标注上下文**："
+        if subject.strip():
+            tags_instruction += f"\n- 本试卷科目：{subject}"
+        if existing_tags.strip():
+            tags_instruction += f"\n- 已有知识点标签池（请优先复用）：{existing_tags}"
 
-        prompt = f"""请分析以下OCR识别结果，将其分割为独立的题目。
+    prompt = f"""请分析以下OCR识别结果，将其分割为独立的题目。
 
 每页的数据结构：
 - page_index: 页码索引
@@ -157,23 +155,31 @@ def split_batch(ocr_data: str, existing_ids: str = "", subject: str = "", existi
 OCR数据：
 {ocr_data}"""
 
-        response = inner_agent.invoke(
-            {"messages": [{"role": "user", "content": prompt}]},
-            config={"recursion_limit": 100},
-        )
+    max_retries = 3
+    last_error = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            # 每次重试都创建全新的 agent 实例，确保消息历史干净
+            inner_agent = create_inner_split_agent()
+            response = inner_agent.invoke(
+                {"messages": [{"role": "user", "content": prompt}]},
+                config={"recursion_limit": 100},
+            )
 
-        structured = response.get("structured_response")
-        if structured:
-            questions = [q.model_dump() for q in structured.questions]
-            logger.info(f"split_batch done: {len(questions)} questions")
-            return json.dumps(questions, ensure_ascii=False)
+            structured = response.get("structured_response")
+            if structured:
+                questions = [q.model_dump() for q in structured.questions]
+                logger.info(f"split_batch done: {len(questions)} questions")
+                return json.dumps(questions, ensure_ascii=False)
 
-        logger.warning("split_batch: no structured_response")
-        return "[]"
+            logger.warning(f"split_batch: 第 {attempt} 次未获得 structured_response，重试")
+            last_error = "未获得 structured_response"
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"split_batch: 第 {attempt}/{max_retries} 次失败: {last_error}")
 
-    except Exception as e:
-        logger.error(f"split_batch error: {str(e)}")
-        return f"分割失败: {str(e)}"
+    logger.error(f"split_batch: {max_retries} 次尝试均失败: {last_error}")
+    return f"分割失败: {last_error}"
 
 
 @tool(parse_docstring=True)
@@ -191,12 +197,10 @@ def correct_batch(questions_json: str, ocr_context: str) -> str:
         纠错后的题目列表JSON字符串
     """
     logger.info("correct_batch called")
-    try:
-        from ..agent import create_correction_agent
 
-        correction_agent = create_correction_agent()
+    from ..agent import create_correction_agent
 
-        prompt = f"""请修复以下题目中的 OCR 错误。
+    prompt = f"""请修复以下题目中的 OCR 错误。
 
 ## 待纠错题目
 {questions_json}
@@ -207,23 +211,30 @@ def correct_batch(questions_json: str, ocr_context: str) -> str:
 
 请逐题修复标记的 OCR 问题，输出纠错后的结构化数据。"""
 
-        response = correction_agent.invoke(
-            {"messages": [{"role": "user", "content": prompt}]},
-            config={"recursion_limit": 100},
-        )
+    max_retries = 3
+    last_error = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            correction_agent = create_correction_agent()
+            response = correction_agent.invoke(
+                {"messages": [{"role": "user", "content": prompt}]},
+                config={"recursion_limit": 100},
+            )
 
-        structured = response.get("structured_response")
-        if structured:
-            corrected = [q.model_dump() for q in structured.corrected_questions]
-            logger.info(f"correct_batch done: {len(corrected)} questions corrected")
-            return json.dumps(corrected, ensure_ascii=False)
+            structured = response.get("structured_response")
+            if structured:
+                corrected = [q.model_dump() for q in structured.corrected_questions]
+                logger.info(f"correct_batch done: {len(corrected)} questions corrected")
+                return json.dumps(corrected, ensure_ascii=False)
 
-        logger.warning("correct_batch: no structured_response")
-        return "[]"
+            logger.warning(f"correct_batch: 第 {attempt} 次未获得 structured_response，重试")
+            last_error = "未获得 structured_response"
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"correct_batch: 第 {attempt}/{max_retries} 次失败: {last_error}")
 
-    except Exception as e:
-        logger.error(f"correct_batch error: {str(e)}")
-        return f"纠错失败: {str(e)}"
+    logger.error(f"correct_batch: {max_retries} 次尝试均失败: {last_error}")
+    return f"纠错失败: {last_error}"
 
 
 @tool(parse_docstring=True)

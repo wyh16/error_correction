@@ -31,7 +31,7 @@ def _init_model(temperature: float = 0.1, provider: str = "deepseek"):
     if provider == "ernie":
         api_key = os.getenv("ERNIE_API_KEY", "")
         base_url = os.getenv("ERNIE_BASE_URL", "https://aistudio.baidu.com/llm/lmapi/v3")
-        model_name = os.getenv("ERNIE_MODEL_NAME", "ernie-5.0-thinking-preview")
+        model_name = os.getenv("ERNIE_MODEL_NAME", "ernie-4.5-turbo-128k-preview")
 
         if not api_key:
             raise ValueError("使用文心一言需要配置 ERNIE_API_KEY 环境变量")

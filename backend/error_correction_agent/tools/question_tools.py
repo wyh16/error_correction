@@ -127,8 +127,6 @@ def split_batch(ocr_data: str, existing_ids: str = "", subject: str = "", existi
     """
     logger.info(f"split_batch called (provider={model_provider})")
 
-    from ..agent import create_inner_split_agent
-
     skip_instruction = ""
     if existing_ids.strip():
         skip_instruction = f"""
@@ -156,18 +154,13 @@ def split_batch(ocr_data: str, existing_ids: str = "", subject: str = "", existi
 OCR数据：
 {ocr_data}"""
 
+    from ..agent import invoke_split
+
     max_retries = 3
     last_error = None
     for attempt in range(1, max_retries + 1):
         try:
-            # 每次重试都创建全新的 agent 实例，确保消息历史干净
-            inner_agent = create_inner_split_agent(provider=model_provider)
-            response = inner_agent.invoke(
-                {"messages": [{"role": "user", "content": prompt}]},
-                config={"recursion_limit": 100},
-            )
-
-            structured = response.get("structured_response")
+            structured = invoke_split(prompt, provider=model_provider)
             if structured:
                 questions = [q.model_dump() for q in structured.questions]
                 logger.info(f"split_batch done: {len(questions)} questions")
@@ -200,7 +193,7 @@ def correct_batch(questions_json: str, ocr_context: str, model_provider: str = "
     """
     logger.info(f"correct_batch called (provider={model_provider})")
 
-    from ..agent import create_correction_agent
+    from ..agent import invoke_correction
 
     prompt = f"""请修复以下题目中的 OCR 错误。
 
@@ -217,13 +210,7 @@ def correct_batch(questions_json: str, ocr_context: str, model_provider: str = "
     last_error = None
     for attempt in range(1, max_retries + 1):
         try:
-            correction_agent = create_correction_agent(provider=model_provider)
-            response = correction_agent.invoke(
-                {"messages": [{"role": "user", "content": prompt}]},
-                config={"recursion_limit": 100},
-            )
-
-            structured = response.get("structured_response")
+            structured = invoke_correction(prompt, provider=model_provider)
             if structured:
                 corrected = [q.model_dump() for q in structured.corrected_questions]
                 logger.info(f"correct_batch done: {len(corrected)} questions corrected")

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
+from langchain_core.messages import SystemMessage, HumanMessage
 from deepagents import create_deep_agent
 
 from .prompts import SPLIT_PROMPT, ORCHESTRATOR_PROMPT, CORRECTION_PROMPT
@@ -107,6 +108,58 @@ def create_correction_agent(provider: str = "deepseek"):
             handle_errors=True,
         ),
     )
+
+
+def invoke_split(prompt: str, provider: str = "deepseek"):
+    """统一调用分割，屏蔽 ToolStrategy vs with_structured_output 差异
+
+    Args:
+        prompt: 用户 prompt
+        provider: 模型供应商
+
+    Returns:
+        QuestionSplitResult 或 None
+    """
+    if provider == "ernie":
+        model = _init_model(temperature=0.1, provider=provider)
+        structured_model = model.with_structured_output(QuestionSplitResult)
+        return structured_model.invoke([
+            SystemMessage(content=SPLIT_PROMPT),
+            HumanMessage(content=prompt),
+        ])
+    else:
+        agent = create_inner_split_agent(provider=provider)
+        response = agent.invoke(
+            {"messages": [{"role": "user", "content": prompt}]},
+            config={"recursion_limit": 100},
+        )
+        return response.get("structured_response")
+
+
+def invoke_correction(prompt: str, provider: str = "deepseek"):
+    """统一调用纠错，屏蔽 ToolStrategy vs with_structured_output 差异
+
+    Args:
+        prompt: 用户 prompt
+        provider: 模型供应商
+
+    Returns:
+        CorrectionResult 或 None
+    """
+    if provider == "ernie":
+        model = _init_model(temperature=0.0, provider=provider)
+        structured_model = model.with_structured_output(CorrectionResult)
+        return structured_model.invoke([
+            SystemMessage(content=CORRECTION_PROMPT),
+            HumanMessage(content=prompt),
+        ])
+    else:
+        agent = create_correction_agent(provider=provider)
+        response = agent.invoke(
+            {"messages": [{"role": "user", "content": prompt}]},
+            config={"recursion_limit": 100},
+        )
+        return response.get("structured_response")
 
 
 def create_orchestrator_agent():

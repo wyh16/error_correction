@@ -28,7 +28,7 @@ python -m pytest tests/ -v -k "dedup"
 
 ```
 backend/tests/
-├── conftest.py                  # pytest 配置，将 backend/ 加入 sys.path
+├── conftest.py                  # pytest 配置，sys.path + --model-provider 参数
 ├── test_workflow_helpers.py     # workflow.py 纯函数测试（58 个）
 ├── test_export.py               # export_wrongbook 导出测试（10 个）
 ├── test_web_helpers.py          # web_app.py 纯函数测试（22 个）
@@ -37,7 +37,8 @@ backend/tests/
 ├── test_ocr_middleware.py       # OCR 中间件测试（18 个）
 ├── test_question_tools.py       # 题目工具函数测试（7 个）
 ├── test_correct_node.py         # 纠错节点合并逻辑测试（4 个）
-└── test_utils.py                # 通用工具函数测试（4 个）
+├── test_utils.py                # 通用工具函数测试（4 个）
+└── test_split_integration.py    # 分割集成测试（需要 API Key，6 个）
 ```
 
 ---
@@ -148,6 +149,31 @@ backend/tests/
 | `test_skip_when_no_flagged` | 无 needs_correction 标记时跳过 |
 | `test_merge_corrected` | 纠错结果按 question_id 合并回原列表，未标记题目不受影响 |
 | `test_invalid_json_keeps_original` | 纠错返回无效 JSON 时保留原始题目 |
+
+### test_split_integration.py （6 个）
+
+**集成测试**：调用真实大模型 API 验证 `split_batch` 的分割效果。需要配置对应的 API Key 环境变量。
+
+通过 `--model-provider` 参数指定模型供应商：
+
+```bash
+# 使用 deepseek（默认）
+python -m pytest tests/test_split_integration.py -v -s
+
+# 使用文心一言
+python -m pytest tests/test_split_integration.py -v -s --model-provider ernie
+```
+
+| 测试方法 | 说明 |
+|----------|------|
+| `test_returns_non_empty` | 至少分割出一道题目 |
+| `test_question_schema` | 每道题符合 Question Pydantic schema |
+| `test_covers_all_questions` | 覆盖 OCR 数据中所有题号 |
+| `test_choice_questions_have_options` | 选择题包含选项 |
+| `test_formula_detection` | 含 LaTeX 的题目标记 has_formula |
+| `test_knowledge_tags` | 至少一半题目有知识点标注 |
+
+> **注意**：此测试会消耗 API 配额，使用 session 级 fixture 共享一次调用结果以减少开销。测试数据来自 `runtime_data/results/agent_input.json`。
 
 ---
 

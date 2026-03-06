@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold shadow-sm transition-colors duration-200 active:scale-[0.98] motion-reduce:active:scale-100 focus:outline-none bg-blue-700 text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900/50;
+  }
+  .btn-success {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold shadow-sm transition-colors duration-200 active:scale-[0.98] motion-reduce:active:scale-100 focus:outline-none bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-emerald-900/50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold shadow-sm transition-colors duration-200 active:scale-[0.98] motion-reduce:active:scale-100 focus:outline-none border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-4 focus:ring-slate-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800;
+  }
+}
+
 html,
 body,
 #app {

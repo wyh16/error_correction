@@ -7,7 +7,6 @@ import os
 import json
 import logging
 import time
-import asyncio
 from typing import List, Dict, Any, TypedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
@@ -16,10 +15,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
 from config import RESULTS_DIR
-from .utils import prepare_input, export_wrongbook
-
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-RUNTIME_ROOT = os.path.join(BACKEND_ROOT, "runtime_data")
+from .utils import prepare_input, export_wrongbook, simplify_ocr_results, run_async
 
 load_dotenv()
 console = Console()
@@ -90,21 +86,9 @@ def _run_ocr_and_simplify(image_paths: List[str]) -> List[Dict[str, Any]]:
 
     for attempt in range(1, max_retries + 1):
         try:
-            try:
-                loop = asyncio.get_running_loop()
-            except RuntimeError:
-                loop = None
-
-            if loop and loop.is_running():
-                with ThreadPoolExecutor(max_workers=1) as pool:
-                    ocr_results = pool.submit(
-                        asyncio.run,
-                        client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
-                    ).result()
-            else:
-                ocr_results = asyncio.run(
-                    client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
-                )
+            ocr_results = run_async(
+                client.parse_images_async(image_paths, save_output=True, stagger_delay=1.0)
+            )
             break
         except Exception as e:
             last_error = e
@@ -120,43 +104,7 @@ def _run_ocr_and_simplify(image_paths: List[str]) -> List[Dict[str, Any]]:
     if ocr_results is None:
         return []
 
-    return _simplify_ocr_results(ocr_results)
-
-
-def _simplify_ocr_results(ocr_results: list) -> List[Dict[str, Any]]:
-    """简化 OCR 结果，只保留 split 所需字段
-
-    只保留 block_label、block_content、block_order 三个字段。
-    """
-    simplified = []
-    page_index = 0
-    for result in ocr_results:
-        if "layoutParsingResults" not in result:
-            continue
-        for page in result["layoutParsingResults"]:
-            if "prunedResult" not in page:
-                continue
-            parsing_res = page["prunedResult"].get("parsing_res_list", [])
-            slim_blocks = []
-            for b in parsing_res:
-                content = b.get("block_content", "")
-                label = b.get("block_label", "")
-                if label in ("image", "chart") and not content:
-                    bbox = b.get("block_bbox")
-                    if bbox:
-                        prefix = "img_in_chart_box" if label == "chart" else "img_in_image_box"
-                        content = f"/images/{prefix}_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
-                slim_blocks.append({
-                    "block_label": b.get("block_label"),
-                    "block_content": content,
-                    "block_order": b.get("block_order"),
-                })
-            simplified.append({
-                "page_index": page_index,
-                "blocks": slim_blocks,
-            })
-            page_index += 1
-    return simplified
+    return simplify_ocr_results(ocr_results)
 
 
 def _build_overlapping_batches(

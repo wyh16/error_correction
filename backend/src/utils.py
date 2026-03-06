@@ -4,6 +4,8 @@
 """
 
 import os
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import List, Dict, Any
 from dotenv import load_dotenv
@@ -11,13 +13,10 @@ from rich.console import Console
 from pdf2image import convert_from_path
 from PIL import Image
 
-from config import RESULTS_DIR
+from config import PAGES_DIR, RESULTS_DIR
 
 load_dotenv()
 console = Console()
-
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-RUNTIME_ROOT = os.path.join(BACKEND_ROOT, "runtime_data")
 
 
 def prepare_input(file_path: str) -> List[str]:
@@ -40,8 +39,8 @@ def prepare_input(file_path: str) -> List[str]:
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"文件不存在: {file_path}")
 
-    # 获取输出目录（统一到 backend/runtime_data/pages 下）
-    pages_dir = os.getenv("PAGES_DIR", os.path.join(RUNTIME_ROOT, "pages"))
+    # 获取输出目录（统一从 config.py 导入）
+    pages_dir = PAGES_DIR
     os.makedirs(pages_dir, exist_ok=True)
 
     # 获取文件扩展名
@@ -209,3 +208,70 @@ def export_wrongbook(
             console.print(f"[yellow]⚠ 入库失败: {e}[/yellow]")
 
     return output_path
+
+
+def simplify_ocr_results(ocr_results: list) -> List[Dict[str, Any]]:
+    """简化 OCR 结果，只保留 split 所需字段
+
+    将 PaddleOCR API 原始返回结果精简为 block_label、block_content、block_order 三个字段。
+    供 workflow 和 retry_ocr 共享使用。
+
+    Args:
+        ocr_results: PaddleOCR API 原始返回结果列表
+
+    Returns:
+        简化后的 OCR 数据列表，每项包含 page_index 和 blocks
+    """
+    simplified = []
+    page_index = 0
+    for result in ocr_results:
+        if "layoutParsingResults" not in result:
+            continue
+        for page in result["layoutParsingResults"]:
+            if "prunedResult" not in page:
+                continue
+            parsing_res = page["prunedResult"].get("parsing_res_list", [])
+            slim_blocks = []
+            for b in parsing_res:
+                content = b.get("block_content", "")
+                label = b.get("block_label", "")
+                if label in ("image", "chart") and not content:
+                    bbox = b.get("block_bbox")
+                    if bbox:
+                        prefix = "img_in_chart_box" if label == "chart" else "img_in_image_box"
+                        content = f"/images/{prefix}_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
+                slim_blocks.append({
+                    "block_label": b.get("block_label"),
+                    "block_content": content,
+                    "block_order": b.get("block_order"),
+                })
+            simplified.append({
+                "page_index": page_index,
+                "blocks": slim_blocks,
+            })
+            page_index += 1
+    return simplified
+
+
+def run_async(coro):
+    """在同步上下文中运行异步协程（兼容已有事件循环）
+
+    如果当前线程已有 running 事件循环（如在 Flask/Jupyter 中），
+    则在新线程中创建事件循环运行；否则直接 asyncio.run。
+
+    Args:
+        coro: 异步协程对象
+
+    Returns:
+        协程返回值
+    """
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            return pool.submit(asyncio.run, coro).result()
+    else:
+        return asyncio.run(coro)

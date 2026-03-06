@@ -7,7 +7,7 @@
 # 在 backend/ 目录下执行
 cd backend
 
-# 运行全部单元测试（210 个）
+# 运行全部单元测试
 python -m pytest tests/ -v
 
 # 运行单个测试文件
@@ -39,6 +39,7 @@ backend/tests/
 ├── test_utils.py                # 通用工具函数测试（4 个）
 ├── test_benchmark_metrics.py    # benchmark 评测指标测试（26 个）
 ├── test_solve_schemas.py        # 解题结果 schema 测试（7 个）
+├── test_ocr_api.py              # PaddleOCR API 集成测试（需要 API 配置，21 个）
 ├── test_split_integration.py    # 分割集成测试（需要 API Key，6 个）
 └── test_solve_integration.py    # 解题集成测试（需要 API Key，7 个）
 ```
@@ -160,6 +161,27 @@ backend/tests/
 |--------|----------|--------|------|
 | `TestSolveResult` | `SolveResult` | 4 | 最小构造、自定义 confidence、缺 answer 拒绝、缺 reasoning 拒绝 |
 | `TestSolveBatchResult` | `SolveBatchResult` | 3 | 空列表、包含结果、model_dump 完整性 |
+
+### test_ocr_api.py （21 个）
+
+**集成测试**：验证 PaddleOCR V2 异步任务 API 的连通性与结果格式兼容性。需要配置 `PADDLEOCR_API_URL`、`PADDLEOCR_API_TOKEN`。测试文件使用 `example_uploads/` 下的 `test.jpg`（图片）和 `test4.pdf`（PDF）。
+
+```bash
+pytest tests/test_ocr_api.py -v -s
+```
+
+| 测试类 | 用例数 | 说明 |
+|--------|--------|------|
+| `TestImageApiConnection` | 4 | 图片 API 连通性：任务提交、完成、结果 URL、提取进度 |
+| `TestImageResultFormat` | 7 | 图片结果格式：layoutParsingResults / prunedResult / parsing_res_list 结构、block 必填字段、markdown 输出、block_label 类型 |
+| `TestPdfApiConnection` | 3 | PDF API 连通性：任务提交、完成、多页解析 |
+| `TestPdfResultFormat` | 3 | PDF 结果格式：非空结果、layoutParsingResults 结构、block 必填字段 |
+| `TestOcrClientImage` | 3 | PaddleOCRClient 图片解析：parse_image 返回值、_struct.json 保存、simplify_ocr_results 兼容 |
+| `TestOcrClientPdf` | 2 | PaddleOCRClient PDF 解析：parse_pdf 返回值、simplify_ocr_results 兼容 |
+
+> **注意**：此测试会消耗 API 配额。图片和 PDF 各使用 module 级 fixture 共享一次 API 调用（`Connection` + `ResultFormat` 测试类共享），`OcrClient*` 测试类独立调用客户端方法验证端到端流程。无 API 配置或测试文件缺失时自动 skip。
+
+---
 
 ### test_split_integration.py （6 个）
 

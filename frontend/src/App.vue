@@ -126,13 +126,25 @@ const pushToast = (type, message, timeout = 2600) => {
 
 const modalOpen = ref(false)
 const modalSrc = ref('')
+const modalScale = ref(1)
+const MIN_SCALE = 0.25
+const MAX_SCALE = 5
 const openModal = (src) => {
   modalSrc.value = src || ''
+  modalScale.value = 1
   modalOpen.value = !!src
+  if (src) document.body.style.overflow = 'hidden'
 }
 const closeModal = () => {
   modalOpen.value = false
   modalSrc.value = ''
+  modalScale.value = 1
+  document.body.style.overflow = ''
+}
+const onModalWheel = (e) => {
+  e.preventDefault()
+  const delta = e.deltaY > 0 ? -0.1 : 0.1
+  modalScale.value = Math.min(MAX_SCALE, Math.max(MIN_SCALE, modalScale.value + delta))
 }
 const onKeydown = (e) => {
   if (e.key === 'Escape' && modalOpen.value) closeModal()
@@ -914,8 +926,15 @@ onBeforeUnmount(() => {
     aria-modal="true"
     class="img-modal fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
     @click="closeModal"
+    @wheel.prevent="onModalWheel"
   >
-    <img class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl" :src="modalSrc" alt="预览" @click.stop />
+    <img
+      class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl transition-transform duration-100"
+      :style="{ transform: `scale(${modalScale})` }"
+      :src="modalSrc"
+      alt="预览"
+      @click.stop
+    />
   </div>
 
   <div class="pointer-events-none fixed left-1/2 top-4 z-50 flex w-[min(420px,calc(100vw-2rem))] -translate-x-1/2 flex-col gap-2">

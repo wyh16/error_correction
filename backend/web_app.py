@@ -27,7 +27,7 @@ from config import (
     MAX_FILE_SIZE_MB,
     ALLOWED_EXTENSIONS,
 )
-from db import init_db
+from db import init_db, SessionLocal
 from db import crud
 from db.models import Question, UploadBatch, KnowledgeTag
 
@@ -88,6 +88,20 @@ def allowed_file(filename):
     """检查文件扩展名是否允许"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def _serialize_question(q: Question) -> dict:
+    """将 Question ORM 对象序列化为前端 JSON 格式"""
+    return {
+        'id': q.id,
+        'question_type': q.question_type,
+        'content_json': json.loads(q.content_json) if q.content_json else [],
+        'options_json': json.loads(q.options_json) if q.options_json else None,
+        'has_formula': q.has_formula,
+        'has_image': q.has_image,
+        'needs_correction': q.needs_correction,
+        'created_at': q.created_at.isoformat() if q.created_at else None,
+    }
 
 
 @app.route('/')
@@ -600,8 +614,6 @@ def get_history():
         start_date: 开始日期（可选，格式：YYYY-MM-DD）
         end_date: 结束日期（可选，格式：YYYY-MM-DD）
     """
-    from db import SessionLocal
-
     try:
         page = request.args.get('page', 1, type=int)
         page_size = request.args.get('page_size', 20, type=int)
@@ -616,8 +628,7 @@ def get_history():
         if end_date_str:
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             questions, total = crud.get_history_questions(
                 db,
                 start_date=start_date,
@@ -627,20 +638,7 @@ def get_history():
             )
 
             total_pages = (total + page_size - 1) // page_size
-
-            # 序列化题目
-            items = []
-            for q in questions:
-                items.append({
-                    'id': q.id,
-                    'question_type': q.question_type,
-                    'content_json': json.loads(q.content_json) if q.content_json else [],
-                    'options_json': json.loads(q.options_json) if q.options_json else None,
-                    'has_formula': q.has_formula,
-                    'has_image': q.has_image,
-                    'needs_correction': q.needs_correction,
-                    'created_at': q.created_at.isoformat() if q.created_at else None,
-                })
+            items = [_serialize_question(q) for q in questions]
 
             return jsonify({
                 'items': items,
@@ -649,8 +647,6 @@ def get_history():
                 'page_size': page_size,
                 'total_pages': total_pages
             })
-        finally:
-            db.close()
 
     except ValueError as e:
         return jsonify({'success': False, 'error': f'日期格式错误：{str(e)}'}), 400
@@ -670,8 +666,6 @@ def search_questions():
         page: 页码（默认1）
         page_size: 每页数量（默认20）
     """
-    from db import SessionLocal
-
     try:
         page = request.args.get('page', 1, type=int)
         page_size = request.args.get('page_size', 20, type=int)
@@ -686,8 +680,7 @@ def search_questions():
                 'error': '至少需要提供一个搜索条件（keyword/knowledge_tag/question_type）'
             }), 400
 
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             questions, total = crud.search_questions(
                 db,
                 keyword=keyword if keyword else None,
@@ -698,20 +691,7 @@ def search_questions():
             )
 
             total_pages = (total + page_size - 1) // page_size
-
-            # 序列化题目
-            items = []
-            for q in questions:
-                items.append({
-                    'id': q.id,
-                    'question_type': q.question_type,
-                    'content_json': json.loads(q.content_json) if q.content_json else [],
-                    'options_json': json.loads(q.options_json) if q.options_json else None,
-                    'has_formula': q.has_formula,
-                    'has_image': q.has_image,
-                    'needs_correction': q.needs_correction,
-                    'created_at': q.created_at.isoformat() if q.created_at else None,
-                })
+            items = [_serialize_question(q) for q in questions]
 
             return jsonify({
                 'items': items,
@@ -720,8 +700,6 @@ def search_questions():
                 'page_size': page_size,
                 'total_pages': total_pages
             })
-        finally:
-            db.close()
 
     except Exception as e:
         return jsonify({'success': False, 'error': f'搜索失败：{str(e)}'}), 500
@@ -732,18 +710,13 @@ def get_stats():
     """
     获取知识点统计信息
     """
-    from db import SessionLocal
-
     try:
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             stats = crud.get_knowledge_stats(db)
             return jsonify({
                 'stats': stats,
                 'total_tags': len(stats)
             })
-        finally:
-            db.close()
 
     except Exception as e:
         return jsonify({'success': False, 'error': f'获取统计失败：{str(e)}'}), 500
@@ -757,11 +730,8 @@ def delete_question(question_id):
     Path参数:
         question_id: 题目ID
     """
-    from db import SessionLocal
-
     try:
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             success = crud.delete_question(db, question_id)
             if success:
                 return jsonify({
@@ -773,8 +743,6 @@ def delete_question(question_id):
                     'success': False,
                     'error': '题目不存在'
                 }), 404
-        finally:
-            db.close()
 
     except Exception as e:
         return jsonify({'success': False, 'error': f'删除失败：{str(e)}'}), 500

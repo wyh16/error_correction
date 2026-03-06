@@ -13,9 +13,11 @@ workflow.py 中纯函数的单元测试
 
 import pytest
 from unittest.mock import patch, MagicMock
+from src.utils import simplify_ocr_results as _simplify_ocr_results
+from src.paddleocr_client import PaddleOCRClient
 from src.workflow import (
-    _simplify_ocr_results,
     _build_overlapping_batches,
+    _run_ocr_and_simplify,
     _dedup_questions,
     _question_richness,
     _sort_key,
@@ -692,3 +694,128 @@ class TestIdentifySubjectLLM:
         _identify_subject(ocr, ["高中数学"], model_provider="ernie")
         _, kwargs = mock_llm.call_args
         assert kwargs.get("provider") == "ernie"
+
+
+# ── _merge_pages 测试 ─────────────────────────────────────────
+
+
+class TestMergePages:
+    """PaddleOCRClient._merge_pages 静态方法测试"""
+
+    def test_empty_input(self):
+        """空列表应返回空 layoutParsingResults"""
+        result = PaddleOCRClient._merge_pages([])
+        assert result == {"layoutParsingResults": []}
+
+    def test_single_page(self):
+        """单页结果应原样保留"""
+        page = {"layoutParsingResults": [{"prunedResult": {"parsing_res_list": [{"block_label": "text"}]}}]}
+        result = PaddleOCRClient._merge_pages([page])
+        assert len(result["layoutParsingResults"]) == 1
+
+    def test_multi_page_merge(self):
+        """多页结果应合并到一个 layoutParsingResults"""
+        pages = [
+            {"layoutParsingResults": [{"page": 0}]},
+            {"layoutParsingResults": [{"page": 1}, {"page": 2}]},
+            {"layoutParsingResults": [{"page": 3}]},
+        ]
+        result = PaddleOCRClient._merge_pages(pages)
+        assert len(result["layoutParsingResults"]) == 4
+
+    def test_missing_key_skipped(self):
+        """缺少 layoutParsingResults 的页面应被跳过"""
+        pages = [
+            {"layoutParsingResults": [{"page": 0}]},
+            {"other_key": "value"},
+        ]
+        result = PaddleOCRClient._merge_pages(pages)
+        assert len(result["layoutParsingResults"]) == 1
+
+
+# ── _run_ocr_and_simplify 混合文件类型测试 ────────────────────
+
+
+class TestRunOcrAndSimplifyFileTypes:
+    """_run_ocr_and_simplify 文件类型分发逻辑测试"""
+
+    @staticmethod
+    def _make_ocr_result(n_blocks=2):
+        """构造一个最小的 OCR 返回结果"""
+        return {
+            "layoutParsingResults": [{
+                "prunedResult": {
+                    "parsing_res_list": [
+                        {"block_label": "text", "block_content": f"内容{i}", "block_order": i}
+                        for i in range(n_blocks)
+                    ]
+                },
+                "markdown": {"text": "test", "images": {}},
+                "outputImages": {},
+            }]
+        }
+
+    @patch("src.workflow.run_async")
+    @patch.object(PaddleOCRClient, "parse_pdf")
+    @patch.object(PaddleOCRClient, "__init__", return_value=None)
+    def test_only_images(self, mock_init, mock_pdf, mock_run_async):
+        """纯图片列表应只调用 parse_images_async，不调用 parse_pdf"""
+        mock_init.return_value = None
+        mock_run_async.return_value = [self._make_ocr_result()]
+
+        result = _run_ocr_and_simplify(["a.png", "b.jpg"])
+
+        mock_pdf.assert_not_called()
+        mock_run_async.assert_called_once()
+        assert len(result) >= 1
+
+    @patch("src.workflow.run_async")
+    @patch.object(PaddleOCRClient, "parse_pdf")
+    @patch.object(PaddleOCRClient, "__init__", return_value=None)
+    def test_only_pdfs(self, mock_init, mock_pdf, mock_run_async):
+        """纯 PDF 列表应只调用 parse_pdf，不调用 parse_images_async"""
+        mock_pdf.return_value = self._make_ocr_result()
+
+        result = _run_ocr_and_simplify(["a.pdf", "b.pdf"])
+
+        assert mock_pdf.call_count == 2
+        mock_run_async.assert_not_called()
+        assert len(result) >= 1
+
+    @patch("src.workflow.run_async")
+    @patch.object(PaddleOCRClient, "parse_pdf")
+    @patch.object(PaddleOCRClient, "__init__", return_value=None)
+    def test_mixed_files(self, mock_init, mock_pdf, mock_run_async):
+        """混合文件应分别调用 parse_pdf 和 parse_images_async"""
+        mock_pdf.return_value = self._make_ocr_result(3)
+        mock_run_async.return_value = [self._make_ocr_result(2)]
+
+        result = _run_ocr_and_simplify(["doc.pdf", "img.png"])
+
+        mock_pdf.assert_called_once()
+        mock_run_async.assert_called_once()
+        # PDF 3 blocks + 图片 2 blocks = 2 pages
+        assert len(result) == 2
+
+    @patch("src.workflow.run_async")
+    @patch.object(PaddleOCRClient, "parse_pdf")
+    @patch.object(PaddleOCRClient, "__init__", return_value=None)
+    def test_pdf_case_insensitive(self, mock_init, mock_pdf, mock_run_async):
+        """PDF 扩展名应不区分大小写"""
+        mock_pdf.return_value = self._make_ocr_result()
+
+        _run_ocr_and_simplify(["DOC.PDF", "test.Pdf"])
+
+        assert mock_pdf.call_count == 2
+        mock_run_async.assert_not_called()
+
+    @patch("src.workflow.run_async")
+    @patch.object(PaddleOCRClient, "parse_pdf")
+    @patch.object(PaddleOCRClient, "__init__", return_value=None)
+    def test_empty_input(self, mock_init, mock_pdf, mock_run_async):
+        """空文件列表应返回空结果"""
+        result = _run_ocr_and_simplify([])
+
+        mock_pdf.assert_not_called()
+        mock_run_async.assert_not_called()
+        assert result == []

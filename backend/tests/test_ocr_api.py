@@ -359,3 +359,18 @@ class TestOcrClientPdf:
         for page in simplified:
             assert "page_index" in page
             assert "blocks" in page
+
+    def test_pdf_multipage_index_continuity(self):
+        """PDF 多页经 simplify 后 page_index 应连续递增（0, 1, 2...）"""
+        from src.paddleocr_client import PaddleOCRClient
+        from src.utils import simplify_ocr_results
+
+        client = PaddleOCRClient()
+        result = client.parse_pdf(TEST_PDF, save_output=False)
+
+        simplified = simplify_ocr_results([result])
+        assert len(simplified) >= 2, "PDF 应解析出多页"
+        indexes = [p["page_index"] for p in simplified]
+        assert indexes == list(range(len(simplified))), (
+            f"page_index 应连续递增，实际: {indexes}"
+        )

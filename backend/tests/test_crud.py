@@ -17,10 +17,8 @@
 """
 
 import pytest
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker
 
-from db.models import Base
+from tests.conftest import make_question
 from db.crud import (
     compute_content_hash,
     save_questions_to_db,
@@ -33,24 +31,6 @@ from db.crud import (
     get_all_tags,
     get_statistics,
 )
-
-
-@pytest.fixture
-def db():
-    """每个测试用例使用独立的内存 SQLite 数据库"""
-    engine = create_engine("sqlite:///:memory:", echo=False)
-
-    @event.listens_for(engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
-    Base.metadata.create_all(bind=engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    yield session
-    session.close()
 
 
 # ═══════════════════════════════════════════════════════════
@@ -145,25 +125,13 @@ class TestGetOrCreateTag:
 # ═══════════════════════════════════════════════════════════
 
 
-def _make_question(qid, text="题目内容", qtype="选择题", tags=None):
-    """构造符合 save_questions_to_db 输入格式的题目 dict"""
-    q = {
-        "question_id": qid,
-        "question_type": qtype,
-        "content_blocks": [{"block_type": "text", "content": f"{text}_{qid}"}],
-        "has_formula": False,
-        "has_image": False,
-    }
-    if tags:
-        q["knowledge_tags"] = tags
-    return q
 
 
 class TestSaveQuestionsToDB:
     """save_questions_to_db 测试"""
 
     def test_basic_save(self, db):
-        qs = [_make_question("1"), _make_question("2")]
+        qs = [make_question("1"), make_question("2")]
         batch_info = {"original_filename": "test.pdf", "subject": "高中数学"}
         result = save_questions_to_db(db, qs, batch_info)
         assert result["created"] == 2
@@ -171,7 +139,7 @@ class TestSaveQuestionsToDB:
 
     def test_dedup_same_content(self, db):
         """相同内容的题目第二次入库应标记为重复"""
-        qs = [_make_question("1", text="重复题")]
+        qs = [make_question("1", text="重复题")]
         batch_info = {"original_filename": "a.pdf", "subject": "数学"}
 
         r1 = save_questions_to_db(db, qs, batch_info)
@@ -190,7 +158,7 @@ class TestSaveQuestionsToDB:
         assert result["duplicates"] == 0
 
     def test_with_tags(self, db):
-        qs = [_make_question("1", tags=["导数", "极值"])]
+        qs = [make_question("1", tags=["导数", "极值"])]
         batch_info = {"original_filename": "a.pdf", "subject": "高中数学"}
         result = save_questions_to_db(db, qs, batch_info)
         assert result["created"] == 1
@@ -202,7 +170,7 @@ class TestSaveQuestionsToDB:
 
     def test_default_subject(self, db):
         """未提供 subject 时应使用 '未知'"""
-        qs = [_make_question("1")]
+        qs = [make_question("1")]
         batch_info = {"original_filename": "a.pdf"}
         save_questions_to_db(db, qs, batch_info)
         subjects = get_existing_subjects(db)
@@ -216,7 +184,7 @@ class TestQuestionExists:
         assert question_exists(db, "nonexistent_hash") is None
 
     def test_exists_after_save(self, db):
-        qs = [_make_question("1", text="check_exists")]
+        qs = [make_question("1", text="check_exists")]
         batch_info = {"original_filename": "a.pdf", "subject": "数学"}
         save_questions_to_db(db, qs, batch_info)
 
@@ -232,8 +200,8 @@ class TestGetExistingSubjects:
 
     def test_returns_distinct(self, db):
         batch_info = {"original_filename": "a.pdf", "subject": "高中数学"}
-        save_questions_to_db(db, [_make_question("1")], batch_info)
-        save_questions_to_db(db, [_make_question("2", text="t2")], batch_info)
+        save_questions_to_db(db, [make_question("1")], batch_info)
+        save_questions_to_db(db, [make_question("2", text="t2")], batch_info)
         subjects = get_existing_subjects(db)
         assert subjects.count("高中数学") == 1
 
@@ -245,7 +213,7 @@ class TestGetExistingTagNames:
         assert get_existing_tag_names(db) == []
 
     def test_returns_tags(self, db):
-        qs = [_make_question("1", tags=["导数", "函数"])]
+        qs = [make_question("1", tags=["导数", "函数"])]
         save_questions_to_db(db, qs, {"original_filename": "a.pdf", "subject": "数学"})
         tags = get_existing_tag_names(db)
         assert "导数" in tags
@@ -254,12 +222,12 @@ class TestGetExistingTagNames:
     def test_filter_by_subject(self, db):
         save_questions_to_db(
             db,
-            [_make_question("1", tags=["导数"])],
+            [make_question("1", tags=["导数"])],
             {"original_filename": "a.pdf", "subject": "高中数学"}
         )
         save_questions_to_db(
             db,
-            [_make_question("2", text="t2", tags=["电场"])],
+            [make_question("2", text="t2", tags=["电场"])],
             {"original_filename": "b.pdf", "subject": "高中物理"}
         )
         math_tags = get_existing_tag_names(db, subject="高中数学")
@@ -276,19 +244,19 @@ class TestGetQuestionsBySubject:
     def test_filter_by_subject(self, db):
         save_questions_to_db(
             db,
-            [_make_question("1")],
+            [make_question("1")],
             {"original_filename": "a.pdf", "subject": "高中数学"}
         )
         save_questions_to_db(
             db,
-            [_make_question("2", text="t2")],
+            [make_question("2", text="t2")],
             {"original_filename": "b.pdf", "subject": "高中物理"}
         )
         math_qs = get_questions_by_subject(db, "高中数学")
         assert len(math_qs) == 1
 
     def test_pagination(self, db):
-        qs = [_make_question(str(i), text=f"q{i}") for i in range(5)]
+        qs = [make_question(str(i), text=f"q{i}") for i in range(5)]
         save_questions_to_db(db, qs, {"original_filename": "a.pdf", "subject": "数学"})
         page1 = get_questions_by_subject(db, "数学", limit=2, offset=0)
         page2 = get_questions_by_subject(db, "数学", limit=2, offset=2)
@@ -305,7 +273,7 @@ class TestGetQuestionsByTag:
     def test_filter(self, db):
         save_questions_to_db(
             db,
-            [_make_question("1", tags=["导数"]), _make_question("2", text="t2", tags=["极值"])],
+            [make_question("1", tags=["导数"]), make_question("2", text="t2", tags=["极值"])],
             {"original_filename": "a.pdf", "subject": "数学"}
         )
         result = get_questions_by_tag(db, "导数")
@@ -341,7 +309,7 @@ class TestGetStatistics:
     def test_with_data(self, db):
         save_questions_to_db(
             db,
-            [_make_question("1", tags=["导数"]), _make_question("2", text="t2")],
+            [make_question("1", tags=["导数"]), make_question("2", text="t2")],
             {"original_filename": "a.pdf", "subject": "高中数学"}
         )
         stats = get_statistics(db)

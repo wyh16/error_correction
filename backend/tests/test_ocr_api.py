@@ -220,13 +220,14 @@ class TestImageResultFormat:
             "header", "footer", "reference", "abstract",
             "table_title", "figure", "seal", "equation",
         }
+        unknown = set()
         for result in image_parsed_result:
             for layout in result["layoutParsingResults"]:
                 for block in layout["prunedResult"]["parsing_res_list"]:
                     label = block["block_label"]
                     if label not in known_labels:
-                        import warnings
-                        warnings.warn(f"未知 block_label: {label}")
+                        unknown.add(label)
+        assert not unknown, f"发现未知 block_label: {unknown}"
 
 
 # ── PDF OCR 测试 ──────────────────────────────────────────

@@ -67,7 +67,7 @@ class TestAllowedFile:
         assert allowed_file("my.pdf.exe") is False
 
     def test_hidden_file(self):
-        assert allowed_file(".pdf") is True  # "." 在 filename 中，后缀为 "pdf"
+        assert allowed_file(".pdf") is False  # ".pdf" 被视为无扩展名的隐藏文件
 
 
 # ═══════════════════════════════════════════════════════════

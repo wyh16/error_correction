@@ -4,6 +4,7 @@
 
 import hashlib
 import json
+import re
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 
@@ -261,7 +262,8 @@ def search_questions(
 
     # 关键字搜索：匹配 content_json 中的内容
     if keyword:
-        query = query.filter(Question.content_json.ilike(f"%{keyword}%"))
+        escaped = re.sub(r"([%_\\])", r"\\\1", keyword)
+        query = query.filter(Question.content_json.ilike(f"%{escaped}%"))
 
     # 题型筛选
     if question_type:

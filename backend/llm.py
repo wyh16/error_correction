@@ -5,10 +5,7 @@
 """
 
 import os
-from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
-
-load_dotenv()
 
 
 def init_model(temperature: float = 0.1, provider: str = "deepseek", model_name: str = None):
@@ -37,7 +34,7 @@ def init_model(temperature: float = 0.1, provider: str = "deepseek", model_name:
             api_key=api_key,
             temperature=temperature,
         )
-    else:
+    elif provider == "deepseek":
         api_key = os.getenv("DEEPSEEK_API_KEY", "")
         base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
         if model_name is None:
@@ -52,3 +49,5 @@ def init_model(temperature: float = 0.1, provider: str = "deepseek", model_name:
             base_url=base_url,
             temperature=temperature,
         )
+    else:
+        raise ValueError(f"不支持的模型供应商: {provider}（可选: deepseek, ernie）")

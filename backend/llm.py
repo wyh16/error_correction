@@ -42,6 +42,10 @@ def init_model(temperature: float = 0.1, provider: str = "deepseek", model_name:
         base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
         if model_name is None:
             model_name = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek-chat")
+
+        if not api_key:
+            raise ValueError("使用 DeepSeek 需要配置 DEEPSEEK_API_KEY 环境变量")
+
         return init_chat_model(
             model=f"deepseek:{model_name}",
             api_key=api_key,

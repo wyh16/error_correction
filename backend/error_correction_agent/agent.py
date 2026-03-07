@@ -4,6 +4,7 @@
 """
 
 import os
+import logging
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
@@ -14,6 +15,10 @@ from .prompts import SPLIT_PROMPT, SPLIT_PROMPT_LITE, CORRECTION_PROMPT
 from .schemas import QuestionSplitResult, CorrectionResult
 
 load_dotenv()
+logger = logging.getLogger(__name__)
+
+# Agent 实例缓存（避免每次调用重复初始化模型和编译图）
+_agent_cache = {}
 
 
 def detect_subject_via_llm(ocr_text_sample: str, db_subjects: list, provider: str = "deepseek") -> str:
@@ -128,7 +133,11 @@ def invoke_split(prompt: str, provider: str = "deepseek"):
             HumanMessage(content=prompt),
         ])
     else:
-        agent = create_inner_split_agent(provider=provider)
+        cache_key = f"split_{provider}"
+        if cache_key not in _agent_cache:
+            logger.info(f"创建分割 Agent 实例 (provider={provider})")
+            _agent_cache[cache_key] = create_inner_split_agent(provider=provider)
+        agent = _agent_cache[cache_key]
         response = agent.invoke(
             {"messages": [{"role": "user", "content": prompt}]},
             config={"recursion_limit": 100},
@@ -154,7 +163,11 @@ def invoke_correction(prompt: str, provider: str = "deepseek"):
             HumanMessage(content=prompt),
         ])
     else:
-        agent = create_correction_agent(provider=provider)
+        cache_key = f"correction_{provider}"
+        if cache_key not in _agent_cache:
+            logger.info(f"创建纠错 Agent 实例 (provider={provider})")
+            _agent_cache[cache_key] = create_correction_agent(provider=provider)
+        agent = _agent_cache[cache_key]
         response = agent.invoke(
             {"messages": [{"role": "user", "content": prompt}]},
             config={"recursion_limit": 100},

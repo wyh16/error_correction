@@ -4,12 +4,15 @@
 
 import hashlib
 import json
+import logging
 import re
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+
+logger = logging.getLogger(__name__)
 
 from db.models import UploadBatch, Question, KnowledgeTag, QuestionTagMapping
 
@@ -321,11 +324,16 @@ def delete_question(db: Session, question_id: int) -> bool:
     if not question:
         return False
 
-    # 删除关联的标签映射
-    db.query(QuestionTagMapping).filter(QuestionTagMapping.question_id == question_id).delete()
+    try:
+        # 删除关联的标签映射
+        db.query(QuestionTagMapping).filter(QuestionTagMapping.question_id == question_id).delete()
 
-    # 删除题目
-    db.delete(question)
-    db.commit()
+        # 删除题目
+        db.delete(question)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"删除题目 {question_id} 失败: {e}")
+        raise
 
     return True

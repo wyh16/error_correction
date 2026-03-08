@@ -20,6 +20,8 @@ console = Console()
 
 # 任务轮询间隔（秒）
 POLL_INTERVAL = 3
+# 轮询最大超时（秒）
+POLL_TIMEOUT = 300
 
 
 class PaddleOCRClient:
@@ -72,8 +74,15 @@ class PaddleOCRClient:
 
     def _poll_job(self, job_id: str) -> str:
         """轮询任务状态直到完成，返回 JSONL 结果 URL"""
+        import time
+
         url = f"{self.api_url}/{job_id}"
+        start_time = time.monotonic()
         while True:
+            elapsed = time.monotonic() - start_time
+            if elapsed > POLL_TIMEOUT:
+                raise TimeoutError(f"OCR 任务轮询超时（已等待 {int(elapsed)}s，上限 {POLL_TIMEOUT}s）")
+
             resp = requests.get(url, headers=self._headers)
             if resp.status_code != 200:
                 raise Exception(f"查询任务状态失败: HTTP {resp.status_code}")
@@ -90,7 +99,6 @@ class PaddleOCRClient:
                 extracted = progress.get("extractedPages", "?")
                 console.print(f"  [dim]进度: {extracted}/{total} 页...[/dim]")
 
-            import time
             time.sleep(POLL_INTERVAL)
 
     def _download_result(self, jsonl_url: str) -> List[Dict[str, Any]]:

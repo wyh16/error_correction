@@ -225,7 +225,7 @@ def upload_file():
         for fk, file in prepared:
             file_key = fk or f"{uuid.uuid4().hex}"
 
-            original_ext = file.filename.rsplit('.', 1)[1].lower()
+            original_ext = os.path.splitext(file.filename)[1].lower().lstrip('.')
             filename = f"{uuid.uuid4().hex}.{original_ext}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
@@ -310,7 +310,7 @@ def cancel_file():
             v = session_files.pop(file_key, None) or {}
             filepath = v.get('filepath')
             if file_key in session_file_order:
-                session_file_order = [x for x in session_file_order if x != file_key]
+                session_file_order.remove(file_key)
 
             cancelled_file_keys.discard(file_key)
 

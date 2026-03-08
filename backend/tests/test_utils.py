@@ -2,76 +2,59 @@
 utils.py 工具函数的单元测试
 
 覆盖函数：
-- prepare_input (Mock pdf2image 和 PIL)
+- prepare_input (文件验证与复制)
 """
 
 import os
 import pytest
-from unittest.mock import patch, MagicMock
 from src.utils import prepare_input
+
 
 @pytest.fixture
 def mock_env(monkeypatch, tmp_path):
-    """设置环境变量，使用临时目录作为 runtime_data"""
-    runtime_root = tmp_path / "runtime_data"
-    pages_dir = runtime_root / "pages"
-    monkeypatch.setenv("PAGES_DIR", str(pages_dir))
+    """设置环境变量，使用临时目录作为 PAGES_DIR"""
+    pages_dir = tmp_path / "pages"
+    monkeypatch.setattr("src.utils.PAGES_DIR", str(pages_dir))
     return pages_dir
+
 
 class TestPrepareInput:
     """prepare_input 测试"""
 
-    @patch("src.utils.convert_from_path")
-    def test_pdf_conversion(self, mock_convert, mock_env, tmp_path):
-        """测试 PDF 转图片流程"""
-        # 确保环境变量已生效（虽然没有直接使用 mock_env 变量，但 fixture 必须运行）
-        assert os.getenv("PAGES_DIR")
-
-        # 模拟 PDF 文件
+    def test_pdf_passthrough(self, mock_env, tmp_path):
+        """PDF 文件应直接复制到 PAGES_DIR，不做转换"""
         pdf_path = tmp_path / "test.pdf"
-        pdf_path.touch()
+        pdf_path.write_bytes(b"%PDF-1.4 fake content")
 
-        # 模拟 convert_from_path 返回两个 PIL Image 对象
-        mock_img1 = MagicMock()
-        mock_img2 = MagicMock()
-        mock_convert.return_value = [mock_img1, mock_img2]
-
-        # 执行 prepare_input
         result = prepare_input(str(pdf_path))
 
-        # 验证结果
-        assert len(result) == 2
-        assert result[0].endswith("_page_001.png")
-        assert result[1].endswith("_page_002.png")
-        
-        # 验证是否调用了 save
-        assert mock_img1.save.called
-        assert mock_img2.save.called
+        assert len(result) == 1
+        assert result[0].endswith(".pdf")
+        assert os.path.exists(result[0])
+        # 验证内容一致
+        with open(result[0], "rb") as f:
+            assert f.read() == b"%PDF-1.4 fake content"
 
-    @patch("src.utils.Image.open")
-    def test_image_standardization(self, mock_open, mock_env, tmp_path):
-        """测试图片标准化流程"""
-        # 确保环境变量已生效
-        assert os.getenv("PAGES_DIR")
-
-        # 模拟图片文件
+    def test_image_passthrough(self, mock_env, tmp_path):
+        """图片文件应直接复制到 PAGES_DIR，保留原始格式"""
         img_path = tmp_path / "test.jpg"
-        img_path.touch()
+        img_path.write_bytes(b"\xff\xd8\xff fake jpg")
 
-        # 模拟 Image.open
-        mock_img = MagicMock()
-        mock_open.return_value = mock_img
-
-        # 执行 prepare_input
         result = prepare_input(str(img_path))
 
-        # 验证结果
+        assert len(result) == 1
+        assert result[0].endswith(".jpg")
+        assert os.path.exists(result[0])
+
+    def test_png_passthrough(self, mock_env, tmp_path):
+        """PNG 图片也应直接复制"""
+        img_path = tmp_path / "test.png"
+        img_path.write_bytes(b"\x89PNG fake")
+
+        result = prepare_input(str(img_path))
+
         assert len(result) == 1
         assert result[0].endswith(".png")
-        assert "runtime_data" in result[0]
-
-        # 验证是否调用了 save
-        mock_img.save.assert_called_with(result[0], 'PNG')
 
     def test_file_not_found(self):
         """文件不存在应抛出 FileNotFoundError"""
@@ -82,7 +65,18 @@ class TestPrepareInput:
         """不支持的文件格式应抛出 ValueError"""
         txt_path = tmp_path / "test.txt"
         txt_path.touch()
-        
+
         with pytest.raises(ValueError) as excinfo:
             prepare_input(str(txt_path))
         assert "不支持的文件格式" in str(excinfo.value)
+
+    def test_creates_pages_dir(self, mock_env, tmp_path):
+        """PAGES_DIR 不存在时应自动创建"""
+        assert not mock_env.exists()
+
+        pdf_path = tmp_path / "test.pdf"
+        pdf_path.write_bytes(b"fake")
+
+        prepare_input(str(pdf_path))
+
+        assert mock_env.exists()

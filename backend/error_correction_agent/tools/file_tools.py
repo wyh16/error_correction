@@ -28,7 +28,9 @@ def download_image(image_url: str, save_path: str) -> str:
     """
     try:
         assets_dir = os.getenv("ASSETS_DIR", "output/assets")
-        full_path = os.path.join(assets_dir, save_path)
+        full_path = os.path.abspath(os.path.join(assets_dir, save_path))
+        if not full_path.startswith(os.path.abspath(assets_dir) + os.sep):
+            return "错误: 非法保存路径"
 
         # 创建目录
         os.makedirs(os.path.dirname(full_path), exist_ok=True)

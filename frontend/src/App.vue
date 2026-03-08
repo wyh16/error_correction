@@ -6,6 +6,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from '@headlessui/vue'
+import { fileKey, formatOption, isHtml, sanitizeHtml, clampScale } from './utils.js'
 
 const theme = ref('light')
 const applyTheme = (nextTheme) => {
@@ -98,6 +99,7 @@ const fetchStatus = async () => {
   statusError.value = ''
   try {
     const resp = await fetch('/api/status')
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = await resp.json()
     if (data && data.success) systemStatus.value = data.status
     else statusError.value = (data && data.error) || '获取系统状态失败'
@@ -124,13 +126,27 @@ const pushToast = (type, message, timeout = 2600) => {
 
 const modalOpen = ref(false)
 const modalSrc = ref('')
+const modalScale = ref(1)
+const MIN_SCALE = 0.25
+const MAX_SCALE = 5
 const openModal = (src) => {
   modalSrc.value = src || ''
+  modalScale.value = 1
   modalOpen.value = !!src
+  if (src) document.body.style.overflow = 'hidden'
 }
 const closeModal = () => {
   modalOpen.value = false
   modalSrc.value = ''
+  modalScale.value = 1
+  document.body.style.overflow = ''
+}
+const onModalWheel = (e) => {
+  e.preventDefault()
+  modalScale.value = clampScale(modalScale.value, e.deltaY, MIN_SCALE, MAX_SCALE)
+}
+const onKeydown = (e) => {
+  if (e.key === 'Escape' && modalOpen.value) closeModal()
 }
 
 const uploadBusy = ref(false)
@@ -147,7 +163,6 @@ let activeXhr = null
 let fakeProgressTimer = null
 let fakeProgressKeys = []
 
-const fileKey = (file) => `${file.name}|${file.size}|${file.lastModified}`
 
 const pendingCount = computed(() => pendingFiles.length)
 const splitEnabled = computed(() => !splitting.value && !splitCompleted.value && uploadReady.value && !uploadBusy.value)
@@ -188,8 +203,6 @@ const startFakeProgress = (keys) => {
   fakeProgressTimer = window.setInterval(tick, 360)
 }
 
-const isUploadBusy = () => uploadBusy.value
-
 const enqueueUpload = (files) => {
   const list = Array.from(files || [])
   if (!list.length) return
@@ -205,7 +218,7 @@ const enqueueUpload = (files) => {
     setProgress(k, 0)
   }
 
-  if (isUploadBusy()) {
+  if (uploadBusy.value) {
     for (const f of list) waitingKeys.add(fileKey(f))
     uploadQueue.push(list)
     return
@@ -215,7 +228,7 @@ const enqueueUpload = (files) => {
 }
 
 const pumpUploadQueue = () => {
-  if (isUploadBusy()) return
+  if (uploadBusy.value) return
   if (!uploadQueue.length) return
   const next = uploadQueue.shift()
   if (next && next.length) handleUpload(next)
@@ -225,7 +238,7 @@ const removePendingFile = async (key) => {
   if (!key) return
   if (splitting.value || splitCompleted.value) return
 
-  const locked = isUploadBusy() || uploadReady.value
+  const locked = uploadBusy.value || uploadReady.value
   if (locked) {
     await cancelFile(key)
     return
@@ -251,6 +264,7 @@ const cancelFile = async (key) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ file_key: key }),
     })
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = await resp.json().catch(() => null)
 
     if (data && data.success) {
@@ -371,10 +385,6 @@ const deselectAll = () => {
   selectedIds.clear()
 }
 
-const formatOption = (s) => String(s || '')
-
-/** 判断内容是否包含 HTML 标签（OCR 表格等） */
-const isHtml = (s) => /<\/?(?:table|tr|td|th|thead|tbody)\b/i.test(s || '')
 
 const typesetMath = async () => {
   await nextTick()
@@ -425,6 +435,7 @@ const doSplit = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model_provider: modelProvider.value }),
     })
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = await resp.json()
     if (data && data.success) {
       questions.value = data.questions || []
@@ -455,6 +466,7 @@ const doExport = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ selected_ids: Array.from(selectedIds) }),
     })
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = await resp.json()
     if (data && data.success) {
       step.value = 5
@@ -493,7 +505,8 @@ const doReset = async () => {
   uploadQueue.splice(0, uploadQueue.length)
   questions.value = []
   selectedIds.clear()
-  modelProvider.value = 'deepseek'
+  const configured = providerOptions.value.find(m => m.configured)
+  modelProvider.value = configured ? configured.value : 'deepseek'
   step.value = 1
   pushToast('success', '已重置')
 }
@@ -515,10 +528,12 @@ onMounted(() => {
   const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
   applyTheme(initial)
   fetchStatus()
+  document.addEventListener('keydown', onKeydown)
 })
 
 onBeforeUnmount(() => {
   stopFakeProgress()
+  document.removeEventListener('keydown', onKeydown)
   if (sortable) sortable.destroy()
   sortable = null
 })
@@ -537,7 +552,7 @@ onBeforeUnmount(() => {
         </div>
         <button
           type="button"
-          class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800"
+          class="btn-secondary px-4 py-2"
           @click="(e) => toggleTheme(e.currentTarget)"
         >
           <i class="fa-solid" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
@@ -646,11 +661,9 @@ onBeforeUnmount(() => {
               <span
                 class="step-circle flex h-10 w-10 shrink-0 items-center justify-center rounded-full lg:h-12 lg:w-12"
                 :class="
-                  n < step
+                  n <= step
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
-                    : n === step
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
-                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300'
+                    : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300'
                 "
               >
                 <i v-if="n < step" class="fa-solid fa-check"></i>
@@ -706,6 +719,7 @@ onBeforeUnmount(() => {
                 type="button"
                 class="ml-1 inline-flex h-6 w-6 flex-none items-center justify-center rounded-md text-slate-500 transition focus:outline-none focus:ring-4 focus:ring-slate-200 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:focus:ring-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                 :disabled="splitting || splitCompleted"
+                aria-label="移除文件"
                 @click.stop="() => removePendingFile(item.key)"
               >
                 <i class="fa-solid fa-xmark"></i>
@@ -726,6 +740,10 @@ onBeforeUnmount(() => {
           @dragleave.prevent="uploadHover = false"
           @drop="onDrop"
           @click="() => fileInputEl?.click()"
+          @keydown.enter.prevent="() => fileInputEl?.click()"
+          @keydown.space.prevent="() => fileInputEl?.click()"
+          role="button"
+          tabindex="0"
         >
           <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <i class="fa-regular fa-file-lines text-2xl text-slate-700 dark:text-slate-200"></i>
@@ -754,7 +772,7 @@ onBeforeUnmount(() => {
               <div class="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800"
+                  class="btn-secondary px-4 py-2"
                   @click="selectAll"
                 >
                   <i class="fa-solid fa-check-double"></i>
@@ -762,7 +780,7 @@ onBeforeUnmount(() => {
                 </button>
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800"
+                  class="btn-secondary px-4 py-2"
                   @click="deselectAll"
                 >
                   <i class="fa-solid fa-xmark"></i>
@@ -787,6 +805,7 @@ onBeforeUnmount(() => {
                     type="button"
                     class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                     data-drag-handle="1"
+                    aria-label="拖动排序"
                     @click.stop
                   >
                     <i class="fa-solid fa-grip-lines"></i>
@@ -818,7 +837,7 @@ onBeforeUnmount(() => {
                 <div class="question-content">
                   <template v-if="q.content_blocks && q.content_blocks.length">
                     <template v-for="(b, i) in q.content_blocks" :key="`${q.question_id}-${i}`">
-                      <div v-if="b.block_type === 'text' && isHtml(b.content)" v-html="b.content" class="question-text my-2 leading-7 text-slate-800 dark:text-slate-100"></div>
+                      <div v-if="b.block_type === 'text' && isHtml(b.content)" v-html="sanitizeHtml(b.content)" class="question-text my-2 leading-7 text-slate-800 dark:text-slate-100"></div>
                       <p v-else-if="b.block_type === 'text'" class="my-2 whitespace-pre-line leading-7 text-slate-800 dark:text-slate-100">{{ b.content }}</p>
                       <img
                         v-else-if="b.block_type === 'image' && b.content"
@@ -853,7 +872,7 @@ onBeforeUnmount(() => {
         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900/50"
+            class="btn-primary px-5 py-2.5"
             :disabled="!splitEnabled"
             @click="doSplit"
           >
@@ -872,7 +891,7 @@ onBeforeUnmount(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100 dark:focus:ring-emerald-900/50"
+            class="btn-success px-5 py-2.5"
             :disabled="!exportEnabled"
             @click="doExport"
           >
@@ -881,7 +900,7 @@ onBeforeUnmount(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 active:scale-[0.98] motion-reduce:active:scale-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-slate-800"
+            class="btn-secondary px-5 py-2.5"
             @click="doReset"
           >
             <i class="fa-solid fa-arrow-rotate-right"></i>
@@ -893,11 +912,20 @@ onBeforeUnmount(() => {
   </div>
 
   <div
-    class="img-modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4"
-    :class="modalOpen ? 'flex' : 'hidden'"
+    v-show="modalOpen"
+    role="dialog"
+    aria-modal="true"
+    class="img-modal fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
     @click="closeModal"
+    @wheel.prevent="onModalWheel"
   >
-    <img class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl" :src="modalSrc" alt="预览" @click.stop />
+    <img
+      class="max-h-[90vh] w-auto max-w-full rounded-xl shadow-2xl transition-transform duration-100"
+      :style="{ transform: `scale(${modalScale})` }"
+      :src="modalSrc"
+      alt="预览"
+      @click.stop
+    />
   </div>
 
   <div class="pointer-events-none fixed left-1/2 top-4 z-50 flex w-[min(420px,calc(100vw-2rem))] -translate-x-1/2 flex-col gap-2">

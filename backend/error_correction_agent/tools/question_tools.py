@@ -5,15 +5,51 @@
 import os
 import json
 import logging
-import asyncio
 import time
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from config import RESULTS_DIR
+from src.utils import simplify_ocr_results, run_async
 
 load_dotenv()
 logger = logging.getLogger(__name__)
+
+
+def _retry_invoke(fn, prompt, provider, task_name, max_retries=3):
+    """带指数退避的 LLM 调用重试
+
+    Args:
+        fn: 调用函数，签名为 fn(prompt, provider=provider)
+        prompt: 用户 prompt
+        provider: 模型供应商
+        task_name: 任务名称（用于日志）
+        max_retries: 最大重试次数
+
+    Returns:
+        结构化输出结果
+
+    Raises:
+        RuntimeError: 所有重试均失败
+    """
+    last_error = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            structured = fn(prompt, provider=provider)
+            if structured:
+                return structured
+            last_error = "未获得 structured_response"
+            logger.warning(f"{task_name}: 第 {attempt} 次未获得 structured_response，重试")
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"{task_name}: 第 {attempt}/{max_retries} 次失败: {last_error}")
+
+        if attempt < max_retries:
+            wait = 2 ** attempt  # 2s, 4s
+            logger.info(f"{task_name}: 等待 {wait}s 后重试...")
+            time.sleep(wait)
+
+    raise RuntimeError(f"{task_name}: {max_retries} 次尝试均失败: {last_error}")
 
 @tool(parse_docstring=True)
 def save_questions(questions: List[Dict[str, Any]], subject: str = "", output_path: str = None) -> str:
@@ -149,29 +185,14 @@ OCR数据：
 
     from ..agent import invoke_split
 
-    max_retries = 3
-    last_error = None
-    for attempt in range(1, max_retries + 1):
-        try:
-            structured = invoke_split(prompt, provider=model_provider)
-            if structured:
-                questions = [q.model_dump() for q in structured.questions]
-                logger.info(f"split_batch done: {len(questions)} questions")
-                return json.dumps(questions, ensure_ascii=False)
-
-            logger.warning(f"split_batch: 第 {attempt} 次未获得 structured_response，重试")
-            last_error = "未获得 structured_response"
-        except Exception as e:
-            last_error = str(e)
-            logger.warning(f"split_batch: 第 {attempt}/{max_retries} 次失败: {last_error}")
-
-        if attempt < max_retries:
-            wait = 2 ** attempt  # 2s, 4s
-            logger.info(f"split_batch: 等待 {wait}s 后重试...")
-            time.sleep(wait)
-
-    logger.error(f"split_batch: {max_retries} 次尝试均失败: {last_error}")
-    return f"分割失败: {last_error}"
+    try:
+        structured = _retry_invoke(invoke_split, prompt, model_provider, "split_batch")
+        questions = [q.model_dump() for q in structured.questions]
+        logger.info(f"split_batch done: {len(questions)} questions")
+        return json.dumps(questions, ensure_ascii=False)
+    except RuntimeError as e:
+        logger.error(str(e))
+        return f"分割失败: {e}"
 
 
 @tool(parse_docstring=True)
@@ -204,29 +225,14 @@ def correct_batch(questions_json: str, ocr_context: str, model_provider: str = "
 
 请逐题修复标记的 OCR 问题，输出纠错后的结构化数据。"""
 
-    max_retries = 3
-    last_error = None
-    for attempt in range(1, max_retries + 1):
-        try:
-            structured = invoke_correction(prompt, provider=model_provider)
-            if structured:
-                corrected = [q.model_dump() for q in structured.corrected_questions]
-                logger.info(f"correct_batch done: {len(corrected)} questions corrected")
-                return json.dumps(corrected, ensure_ascii=False)
-
-            logger.warning(f"correct_batch: 第 {attempt} 次未获得 structured_response，重试")
-            last_error = "未获得 structured_response"
-        except Exception as e:
-            last_error = str(e)
-            logger.warning(f"correct_batch: 第 {attempt}/{max_retries} 次失败: {last_error}")
-
-        if attempt < max_retries:
-            wait = 2 ** attempt  # 2s, 4s
-            logger.info(f"correct_batch: 等待 {wait}s 后重试...")
-            time.sleep(wait)
-
-    logger.error(f"correct_batch: {max_retries} 次尝试均失败: {last_error}")
-    return f"纠错失败: {last_error}"
+    try:
+        structured = _retry_invoke(invoke_correction, prompt, model_provider, "correct_batch")
+        corrected = [q.model_dump() for q in structured.corrected_questions]
+        logger.info(f"correct_batch done: {len(corrected)} questions corrected")
+        return json.dumps(corrected, ensure_ascii=False)
+    except RuntimeError as e:
+        logger.error(str(e))
+        return f"纠错失败: {e}"
 
 
 @tool(parse_docstring=True)
@@ -254,52 +260,12 @@ def retry_ocr(image_paths_json: str) -> str:
         client = PaddleOCRClient()
 
         # 执行异步 OCR（兼容已有事件循环）
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
+        ocr_results = run_async(
+            client.parse_images_async(image_paths, save_output=True)
+        )
 
-        if loop and loop.is_running():
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-                ocr_results = pool.submit(
-                    asyncio.run,
-                    client.parse_images_async(image_paths, save_output=True)
-                ).result()
-        else:
-            ocr_results = asyncio.run(
-                client.parse_images_async(image_paths, save_output=True)
-            )
-
-        # 简化 OCR 结果，只保留 block_label、block_content、block_order
-        simplified = []
-        page_index = 0
-        for result in ocr_results:
-            if "layoutParsingResults" not in result:
-                continue
-            for page in result["layoutParsingResults"]:
-                if "prunedResult" not in page:
-                    continue
-                parsing_res = page["prunedResult"].get("parsing_res_list", [])
-                slim_blocks = []
-                for b in parsing_res:
-                    content = b.get("block_content", "")
-                    label = b.get("block_label", "")
-                    if label in ("image", "chart") and not content:
-                        bbox = b.get("block_bbox")
-                        if bbox:
-                            prefix = "img_in_chart_box" if label == "chart" else "img_in_image_box"
-                            content = f"/images/{prefix}_{int(bbox[0])}_{int(bbox[1])}_{int(bbox[2])}_{int(bbox[3])}.jpg"
-                    slim_blocks.append({
-                        "block_label": b.get("block_label"),
-                        "block_content": content,
-                        "block_order": b.get("block_order"),
-                    })
-                simplified.append({
-                    "page_index": page_index,
-                    "blocks": slim_blocks,
-                })
-                page_index += 1
+        # 简化 OCR 结果
+        simplified = simplify_ocr_results(ocr_results)
 
         # 保存 agent_input.json
         os.makedirs(RESULTS_DIR, exist_ok=True)

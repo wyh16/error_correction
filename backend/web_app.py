@@ -6,9 +6,11 @@
 import os
 import json
 import uuid
+import logging
 import threading
 import mimetypes
 from datetime import datetime
+from pathlib import PurePath
 from typing import Optional
 
 # Windows 注册表可能将 .js 映射为 text/plain，导致浏览器拒绝加载 ES module
@@ -26,13 +28,16 @@ from config import (
     RESULTS_DIR,
     MAX_FILE_SIZE_MB,
     ALLOWED_EXTENSIONS,
+    ensure_dirs,
 )
-from db import init_db
+from db import init_db, SessionLocal
 from db import crud
 from db.models import Question, UploadBatch, KnowledgeTag
 
 # 加载环境变量
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -86,8 +91,21 @@ session_lock = threading.Lock()
 
 def allowed_file(filename):
     """检查文件扩展名是否允许"""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return PurePath(filename).suffix.lower().lstrip('.') in ALLOWED_EXTENSIONS
+
+
+def _serialize_question(q: Question) -> dict:
+    """将 Question ORM 对象序列化为前端 JSON 格式"""
+    return {
+        'id': q.id,
+        'question_type': q.question_type,
+        'content_json': json.loads(q.content_json) if q.content_json else [],
+        'options_json': json.loads(q.options_json) if q.options_json else None,
+        'has_formula': q.has_formula,
+        'has_image': q.has_image,
+        'needs_correction': q.needs_correction,
+        'created_at': q.created_at.isoformat() if q.created_at else None,
+    }
 
 
 @app.route('/')
@@ -207,7 +225,7 @@ def upload_file():
         for fk, file in prepared:
             file_key = fk or f"{uuid.uuid4().hex}"
 
-            original_ext = file.filename.rsplit('.', 1)[1].lower()
+            original_ext = os.path.splitext(file.filename)[1].lower().lstrip('.')
             filename = f"{uuid.uuid4().hex}.{original_ext}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
@@ -257,9 +275,10 @@ def upload_file():
             'error': '文件保存失败，请重新上传'
         }), 500
     except Exception as e:
+        logger.exception("文件处理失败")
         return jsonify({
             'success': False,
-            'error': f'文件处理失败：{str(e)}'
+            'error': '文件处理失败，请稍后重试'
         }), 500
 
 
@@ -291,7 +310,7 @@ def cancel_file():
             v = session_files.pop(file_key, None) or {}
             filepath = v.get('filepath')
             if file_key in session_file_order:
-                session_file_order = [x for x in session_file_order if x != file_key]
+                session_file_order.remove(file_key)
 
             cancelled_file_keys.discard(file_key)
 
@@ -307,9 +326,10 @@ def cancel_file():
         })
 
     except Exception as e:
+        logger.exception("撤销文件失败")
         return jsonify({
             'success': False,
-            'error': f'撤销失败：{str(e)}'
+            'error': '撤销失败，请稍后重试'
         }), 500
 
 
@@ -366,9 +386,10 @@ def split_questions():
         })
 
     except Exception as e:
+        logger.exception("题目分割失败")
         return jsonify({
             'success': False,
-            'error': f'题目分割失败：{str(e)}'
+            'error': '题目分割失败，请稍后重试'
         }), 500
 
 
@@ -385,9 +406,15 @@ def export_wrongbook():
     try:
         global current_thread_id, session_files, session_file_order
 
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         selected_ids = data.get('selected_ids', [])
         subject = data.get('subject')  # 前端传入科目（可选）
+
+        if not isinstance(selected_ids, list):
+            return jsonify({
+                'success': False,
+                'error': 'selected_ids 必须为列表'
+            }), 400
 
         if not selected_ids:
             return jsonify({
@@ -438,9 +465,10 @@ def export_wrongbook():
         })
 
     except Exception as e:
+        logger.exception("导出失败")
         return jsonify({
             'success': False,
-            'error': f'导出失败：{str(e)}'
+            'error': '导出失败，请稍后重试'
         }), 500
 
 
@@ -477,9 +505,10 @@ def get_questions():
             'error': '题目数据文件格式错误，请重新分割题目'
         }), 500
     except Exception as e:
+        logger.exception("获取题目列表失败")
         return jsonify({
             'success': False,
-            'error': f'获取题目列表失败：{str(e)}'
+            'error': '获取题目列表失败，请稍后重试'
         }), 500
 
 
@@ -531,7 +560,11 @@ def download_file(filename):
 @app.route('/images/<path:filename>')
 def serve_image(filename):
     """提供 OCR 解析出的图片资源"""
-    return send_from_directory(os.path.join(STRUCT_DIR, "imgs"), filename)
+    base = os.path.join(STRUCT_DIR, "imgs")
+    file_path = _safe_join(base, filename)
+    if not file_path or not os.path.exists(file_path):
+        return jsonify({'success': False, 'error': '图片不存在'}), 404
+    return send_file(file_path)
 
 
 @app.route('/api/status', methods=['GET'])
@@ -583,9 +616,10 @@ def get_status():
         })
 
     except Exception as e:
+        logger.exception("获取系统状态失败")
         return jsonify({
             'success': False,
-            'error': f'获取系统状态失败：{str(e)}'
+            'error': '获取系统状态失败，请稍后重试'
         }), 500
 
 
@@ -600,11 +634,9 @@ def get_history():
         start_date: 开始日期（可选，格式：YYYY-MM-DD）
         end_date: 结束日期（可选，格式：YYYY-MM-DD）
     """
-    from db import SessionLocal
-
     try:
-        page = request.args.get('page', 1, type=int)
-        page_size = request.args.get('page_size', 20, type=int)
+        page = max(1, request.args.get('page', 1, type=int))
+        page_size = min(100, max(1, request.args.get('page_size', 20, type=int)))
         start_date_str = request.args.get('start_date')
         end_date_str = request.args.get('end_date')
 
@@ -616,8 +648,7 @@ def get_history():
         if end_date_str:
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             questions, total = crud.get_history_questions(
                 db,
                 start_date=start_date,
@@ -627,35 +658,22 @@ def get_history():
             )
 
             total_pages = (total + page_size - 1) // page_size
-
-            # 序列化题目
-            items = []
-            for q in questions:
-                items.append({
-                    'id': q.id,
-                    'question_type': q.question_type,
-                    'content_json': json.loads(q.content_json) if q.content_json else [],
-                    'options_json': json.loads(q.options_json) if q.options_json else None,
-                    'has_formula': q.has_formula,
-                    'has_image': q.has_image,
-                    'needs_correction': q.needs_correction,
-                    'created_at': q.created_at.isoformat() if q.created_at else None,
-                })
+            items = [_serialize_question(q) for q in questions]
 
             return jsonify({
+                'success': True,
                 'items': items,
                 'total': total,
                 'page': page,
                 'page_size': page_size,
                 'total_pages': total_pages
             })
-        finally:
-            db.close()
 
-    except ValueError as e:
-        return jsonify({'success': False, 'error': f'日期格式错误：{str(e)}'}), 400
+    except ValueError:
+        return jsonify({'success': False, 'error': '日期格式错误，请使用 YYYY-MM-DD 格式'}), 400
     except Exception as e:
-        return jsonify({'success': False, 'error': f'查询失败：{str(e)}'}), 500
+        logger.exception("查询历史题目失败")
+        return jsonify({'success': False, 'error': '查询失败，请稍后重试'}), 500
 
 
 @app.route('/api/search', methods=['GET'])
@@ -670,11 +688,9 @@ def search_questions():
         page: 页码（默认1）
         page_size: 每页数量（默认20）
     """
-    from db import SessionLocal
-
     try:
-        page = request.args.get('page', 1, type=int)
-        page_size = request.args.get('page_size', 20, type=int)
+        page = max(1, request.args.get('page', 1, type=int))
+        page_size = min(100, max(1, request.args.get('page_size', 20, type=int)))
         keyword = request.args.get('keyword', type=str)
         knowledge_tag = request.args.get('knowledge_tag', type=str)
         question_type = request.args.get('question_type', type=str)
@@ -686,8 +702,7 @@ def search_questions():
                 'error': '至少需要提供一个搜索条件（keyword/knowledge_tag/question_type）'
             }), 400
 
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             questions, total = crud.search_questions(
                 db,
                 keyword=keyword if keyword else None,
@@ -698,33 +713,20 @@ def search_questions():
             )
 
             total_pages = (total + page_size - 1) // page_size
-
-            # 序列化题目
-            items = []
-            for q in questions:
-                items.append({
-                    'id': q.id,
-                    'question_type': q.question_type,
-                    'content_json': json.loads(q.content_json) if q.content_json else [],
-                    'options_json': json.loads(q.options_json) if q.options_json else None,
-                    'has_formula': q.has_formula,
-                    'has_image': q.has_image,
-                    'needs_correction': q.needs_correction,
-                    'created_at': q.created_at.isoformat() if q.created_at else None,
-                })
+            items = [_serialize_question(q) for q in questions]
 
             return jsonify({
+                'success': True,
                 'items': items,
                 'total': total,
                 'page': page,
                 'page_size': page_size,
                 'total_pages': total_pages
             })
-        finally:
-            db.close()
 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'搜索失败：{str(e)}'}), 500
+        logger.exception("搜索题目失败")
+        return jsonify({'success': False, 'error': '搜索失败，请稍后重试'}), 500
 
 
 @app.route('/api/stats', methods=['GET'])
@@ -732,21 +734,18 @@ def get_stats():
     """
     获取知识点统计信息
     """
-    from db import SessionLocal
-
     try:
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             stats = crud.get_knowledge_stats(db)
             return jsonify({
+                'success': True,
                 'stats': stats,
                 'total_tags': len(stats)
             })
-        finally:
-            db.close()
 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'获取统计失败：{str(e)}'}), 500
+        logger.exception("获取统计失败")
+        return jsonify({'success': False, 'error': '获取统计失败，请稍后重试'}), 500
 
 
 @app.route('/api/question/<int:question_id>', methods=['DELETE'])
@@ -757,11 +756,8 @@ def delete_question(question_id):
     Path参数:
         question_id: 题目ID
     """
-    from db import SessionLocal
-
     try:
-        db = SessionLocal()
-        try:
+        with SessionLocal() as db:
             success = crud.delete_question(db, question_id)
             if success:
                 return jsonify({
@@ -773,14 +769,15 @@ def delete_question(question_id):
                     'success': False,
                     'error': '题目不存在'
                 }), 404
-        finally:
-            db.close()
 
     except Exception as e:
-        return jsonify({'success': False, 'error': f'删除失败：{str(e)}'}), 500
+        logger.exception("删除题目失败")
+        return jsonify({'success': False, 'error': '删除失败，请稍后重试'}), 500
 
 
 if __name__ == '__main__':
+    # 确保运行时目录存在
+    ensure_dirs()
     # 初始化数据库
     init_db()
     print("[数据库] 初始化完成")

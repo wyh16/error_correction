@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 TARGET_DIR = os.path.join(DATA_DIR, "target")
-RESULTS_DIR = os.path.join(DATA_DIR, "results")
+BENCHMARK_RESULTS_DIR = os.path.join(DATA_DIR, "results")
 
 
 def load_targets(subject: str = None) -> List[Dict[str, Any]]:
@@ -121,8 +121,8 @@ def run_evaluation(provider: str, targets: List[Dict[str, Any]]) -> Dict[str, An
 
 def save_report(report: Dict[str, Any], provider: str) -> str:
     """保存评测报告"""
-    os.makedirs(RESULTS_DIR, exist_ok=True)
-    path = os.path.join(RESULTS_DIR, f"report_{provider}.json")
+    os.makedirs(BENCHMARK_RESULTS_DIR, exist_ok=True)
+    path = os.path.join(BENCHMARK_RESULTS_DIR, f"report_{provider}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     return path

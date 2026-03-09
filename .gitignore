@@ -8,6 +8,7 @@ printed-vs-handwritten/
 .langgraph_api/
 OmniDocBench.json
 .vscode
+.claude/
 
 # 前端构建产物
 frontend/dist/

@@ -11,6 +11,7 @@ import ActionBar from './components/ActionBar.vue'
 import ImageModal from './components/ImageModal.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import Dashboard from './components/Dashboard.vue'
+import CatLoading from './components/CatLoading.vue'
 
 // ---- 视图路由控制 ----
 const currentView = ref('workspace') // 'workspace' | 'dashboard'
@@ -54,7 +55,9 @@ const toggleTheme = async (btnEl) => {
       { duration, easing: 'linear', pseudoElement: '::view-transition-old(root)' },
     )
     await transition.finished
-  } catch (_) { applyTheme(nextTheme) }
+  } catch (_) {
+    applyTheme(nextTheme)
+  }
 }
 // ---- 系统状态 ----
 const statusLoading = ref(true)
@@ -145,7 +148,10 @@ const splitEnabled = computed(() => !splitting.value && !splitCompleted.value &&
 const exportEnabled = computed(() => splitCompleted.value && selectedIds.size > 0)
 
 const stopFakeProgress = () => {
-  if (fakeProgressTimer) { window.clearInterval(fakeProgressTimer); fakeProgressTimer = null }
+  if (fakeProgressTimer) {
+    window.clearInterval(fakeProgressTimer)
+    fakeProgressTimer = null
+  }
   fakeProgressKeys = []
 }
 const setProgress = (key, p) => { fileProgress[key] = Math.max(0, Math.min(100, Number(p) || 0)) }
@@ -215,10 +221,16 @@ const doCancelFile = async (key) => {
     questions.value = []
     selectedIds.clear()
     splitCompleted.value = false
-    if (!pendingFiles.length) { uploadReady.value = false; step.value = 1 }
-    else step.value = 3
+    if (!pendingFiles.length) {
+      uploadReady.value = false
+      step.value = 1
+    } else {
+      step.value = 3
+    }
     pushToast('success', data.message || '已撤销')
-    if (!pendingFiles.length && activeXhr) { try { activeXhr.abort() } catch (_) {} }
+    if (!pendingFiles.length && activeXhr) {
+      try { activeXhr.abort() } catch (_) {}
+    }
   } catch (_) { pushToast('error', '撤销失败: 网络错误') }
 }
 
@@ -232,7 +244,10 @@ const handleUpload = (files) => {
   startFakeProgress(keys)
 
   const formData = new FormData()
-  for (const f of uploadFiles) { formData.append('files', f); formData.append('file_key', fileKey(f)) }
+  for (const f of uploadFiles) {
+    formData.append('files', f)
+    formData.append('file_key', fileKey(f))
+  }
 
   activeXhr = api.uploadFiles(formData, {
     onProgress: (ratio) => {
@@ -242,18 +257,30 @@ const handleUpload = (files) => {
       }
     },
     onSuccess: () => {
-      stopFakeProgress(); uploadBusy.value = false; activeXhr = null
-      for (const k of keys) { if (pendingFiles.some(x => x.key === k)) setProgress(k, 100) }
+      stopFakeProgress()
+      uploadBusy.value = false
+      activeXhr = null
+      for (const k of keys) {
+        if (pendingFiles.some(x => x.key === k)) setProgress(k, 100)
+      }
       uploadReady.value = pendingFiles.length > 0
       step.value = pendingFiles.length > 0 ? 3 : 1
       pushToast('success', `上传成功！本次新增 ${keys.length} 个文件，点击"开始分割题目"开始处理`)
       pumpUploadQueue()
     },
     onError: (msg) => {
-      stopFakeProgress(); uploadBusy.value = false; activeXhr = null
-      pushToast('error', msg); pumpUploadQueue()
+      stopFakeProgress()
+      uploadBusy.value = false
+      activeXhr = null
+      pushToast('error', msg)
+      pumpUploadQueue()
     },
-    onAbort: () => { stopFakeProgress(); uploadBusy.value = false; activeXhr = null; pumpUploadQueue() },
+    onAbort: () => {
+      stopFakeProgress()
+      uploadBusy.value = false
+      activeXhr = null
+      pumpUploadQueue()
+    },
   })
 }
 
@@ -276,7 +303,14 @@ const typesetMath = async () => {
   await nextTick()
   const mj = window.MathJax
   if (!mj || typeof mj.typesetPromise !== 'function') return
-  try { await mj.typesetPromise() } catch (_) {}
+  try {
+    const el = questionListRef.value?.questionsBoxEl
+    if (el) {
+      await mj.typesetPromise([el])
+    } else {
+      await mj.typesetPromise()
+    }
+  } catch (_) {}
 }
 const doSplit = async () => {
   if (!uploadReady.value || splitting.value || splitCompleted.value) return
@@ -293,7 +327,9 @@ const doSplit = async () => {
     await typesetMath()
   } catch (e) {
     pushToast('error', '分割失败: ' + (e instanceof Error ? e.message : String(e)))
-  } finally { splitting.value = false }
+  } finally {
+    splitting.value = false
+  }
 }
 
 const doExport = async () => {
@@ -321,12 +357,16 @@ const doExport = async () => {
 }
 
 const doReset = () => {
-  uploadBusy.value = false; uploadReady.value = false
-  splitting.value = false; splitCompleted.value = false
+  uploadBusy.value = false
+  uploadReady.value = false
+  splitting.value = false
+  splitCompleted.value = false
   pendingFiles.splice(0, pendingFiles.length)
   for (const k of Object.keys(fileProgress)) delete fileProgress[k]
-  waitingKeys.clear(); uploadQueue.splice(0, uploadQueue.length)
-  questions.value = []; selectedIds.clear()
+  waitingKeys.clear()
+  uploadQueue.splice(0, uploadQueue.length)
+  questions.value = []
+  selectedIds.clear()
   const configured = providerOptions.value.find(m => m.configured)
   modelProvider.value = configured ? configured.value : 'deepseek'
   step.value = 1
@@ -453,7 +493,7 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- 原工作区主卡片 -->
-          <div class="main-content rounded-3xl border border-slate-200/60 bg-white/70 p-5 shadow-xl backdrop-blur-xl sm:p-8 dark:border-white/10 dark:bg-[#0A0A0F]/60">
+          <div class="main-content relative rounded-3xl border border-slate-200/60 bg-white/70 p-5 shadow-xl backdrop-blur-xl sm:p-8 dark:border-white/10 dark:bg-[#0A0A0F]/60">
             <StatusBar
               :status-loading="statusLoading"
               :status-error="statusError"
@@ -498,16 +538,20 @@ onBeforeUnmount(() => {
               @export="doExport"
               @reset="doReset"
             />
+
+            <!-- 像素猫 loading 遮罩 (AI 分割中) -->
+            <CatLoading v-if="splitting" />
           </div>
         </div>
       </div>
 
       <!-- 视图 2：我的错题本数据看板 (完全独立组件) -->
-      <Dashboard 
-        v-if="currentView === 'dashboard'" 
-        :theme="theme" 
-        @toggle-theme="toggleTheme" 
-        @go-workspace="currentView = 'workspace'" 
+      <Dashboard
+        v-show="currentView === 'dashboard'"
+        :theme="theme"
+        :visible="currentView === 'dashboard'"
+        @toggle-theme="toggleTheme"
+        @go-workspace="currentView = 'workspace'"
       />
     </main>
 

@@ -171,24 +171,39 @@ backend/
 ├── llm.py                     # 公共 LLM 初始化（init_model），支持 deepseek / ernie
 ├── web_app.py                 # Flask 主应用，路由 + 全局会话状态
 ├── db/
+│   ├── __init__.py            # Engine, SessionLocal, init_db()
 │   ├── models.py              # SQLAlchemy ORM 模型
 │   └── crud.py                # 数据库 CRUD 操作
 ├── src/
-│   ├── workflow.py            # 主工作流（OCR → 分割 → 纠错 → 保存）
+│   ├── workflow.py            # LangGraph 主工作流（OCR → 分割 → 纠错 → 保存）
 │   ├── paddleocr_client.py    # PaddleOCR V2 异步任务 API 客户端
-│   └── utils.py               # 共享工具函数（simplify_ocr_results, run_async 等）
+│   └── utils.py               # 共享工具函数（simplify_ocr_results, export 等）
 ├── error_correction_agent/    # 题目分割 + OCR 纠错智能体
-│   ├── agent.py               # Agent 工厂（create_agent + ToolStrategy）
-│   ├── prompts.py             # 系统提示词
+│   ├── agent.py               # Agent 工厂（create_agent + detect_subject_via_llm）
+│   ├── prompts.py             # 系统提示词（SPLIT_PROMPT, CORRECTION_PROMPT 等）
 │   ├── schemas.py             # Pydantic 结构化输出 Schema
-│   └── tools/                 # LangChain Tool 定义
+│   └── tools/                 # LangChain Tool 定义（file_tools, question_tools）
 ├── solve_agent/               # 解题智能体
+│   ├── agent.py               # Solver agent
+│   ├── prompts.py             # 解题提示词
+│   └── schemas.py             # SolveResult / SolveBatchResult
 ├── benchmark/                 # 模型评测模块
-└── tests/                     # 测试套件
+│   ├── collect.py             # 数据采集
+│   ├── evaluate.py            # 评测运行器
+│   └── metrics.py             # 准确率指标计算
+└── tests/                     # 测试套件（13 个测试模块）
     ├── conftest.py            # 公共 fixture（db, make_question）
-    ├── fixtures/              # 测试数据文件
+    ├── fixtures/              # 测试数据文件（sample_ocr_data.json）
     └── test_*.py              # 测试模块
 ```
+
+### Flask 路由结构
+
+- `GET /` → `index.html`（介绍页）
+- `GET /app` 或 `/app.html` → `app.html`（Vue 工作台）
+- `GET /static/vue/<filename>` → Vite 构建产物
+- `POST /api/upload` / `/api/split` / `/api/export` / `/api/cancel_file` — 业务 API
+- `GET /api/status` — 系统状态（OCR 配置、可用模型列表）
 
 ### 模块级副作用
 
@@ -245,7 +260,7 @@ backend/
 
 ## 5) 测试规范
 
-### 运行方式
+### 后端测试
 
 ```bash
 # 工作目录必须是 backend/
@@ -253,24 +268,41 @@ cd backend
 C:/ProgramData/miniconda3/envs/da/python.exe -m pytest tests/ -v
 ```
 
-### 测试组织
+#### 测试组织
 
-- 单元测试（无外部依赖）：`test_utils.py`, `test_crud.py`, `test_web_routes.py` 等
+- 单元测试（无外部依赖）：`test_utils.py`, `test_crud.py`, `test_web_routes.py`, `test_web_helpers.py`, `test_schemas.py`, `test_benchmark_metrics.py` 等
 - 集成测试（依赖 API）：`test_split_integration.py`, `test_solve_integration.py`, `test_ocr_api.py`
 - 集成测试必须添加 `skip_no_api_key` 保护，无 API key 时自动跳过
 - 已知兼容性问题的测试用 `@pytest.mark.xfail(reason="...")` 标记，不要删除测试
 
-### 公共 Fixture
+#### 公共 Fixture
 
 - `conftest.py` 提供共享 fixture（`db` 内存数据库、`make_question` 工厂函数）
 - 新增测试模块应优先复用 `conftest.py` 中的 fixture，避免重复定义
 - 测试数据文件放在 `tests/fixtures/` 目录下
+
+### 前端测试
+
+```bash
+# 工作目录必须是 frontend/
+cd frontend
+npm test          # vitest run（单次运行）
+npm run test:watch  # vitest（watch 模式）
+```
+
+#### 测试组织
+
+- `utils.test.js` — 纯函数单元测试（fileKey, sanitizeHtml, clampScale 等）
+- `api.test.js` — API 交互测试（fetch mock + 按钮状态验证）
+- `state.test.js` — 组件状态逻辑测试（主题、toast、弹窗、步骤指示器）
+- 测试环境：jsdom + @vue/test-utils，HeadlessUI 组件通过 `stubs` 跳过
 
 ### 测试原则
 
 - **不要为了通过测试而修改测试脚本**——测试应反映项目的实际需求
 - 测试失败时应修复代码逻辑，而非放宽断言条件
 - 新增功能或修复 bug 时应同步补充对应的测试用例
+- 重构组件时必须同步更新选择器（类名、文本）保持测试与组件一致
 
 ---
 

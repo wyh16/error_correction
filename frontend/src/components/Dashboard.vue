@@ -16,7 +16,7 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['go-workspace', 'push-toast', 'open-image'])
+const emit = defineEmits(['go-workspace', 'push-toast', 'open-image', 'start-chat'])
 
 // ---- 统计数据 ----
 const stats = ref(null)
@@ -447,6 +447,7 @@ onBeforeUnmount(() => {
       @answer-saved="onAnswerSaved"
       @review-status-changed="onReviewStatusChanged"
       @push-toast="(type, msg) => emit('push-toast', type, msg)"
+      @start-chat="(q) => emit('start-chat', q)"
     />
 
     <!-- AI 分析弹窗 -->

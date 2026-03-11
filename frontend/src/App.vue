@@ -643,6 +643,7 @@ onBeforeUnmount(() => {
         @go-workspace="currentView = 'workspace'"
         @push-toast="pushToast"
         @open-image="openModal"
+        @start-chat="openChat"
       />
 
       <!-- 视图 3：错题库 -->

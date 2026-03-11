@@ -1304,6 +1304,9 @@ def stream_chat(session_id):
         if not message:
             return jsonify({'success': False, 'error': '消息不能为空'}), 400
 
+        if model_provider not in ('deepseek', 'ernie'):
+            return jsonify({'success': False, 'error': f'不支持的模型供应商: {model_provider}'}), 400
+
         with SessionLocal() as db:
             from db.models import ChatSession as ChatSessionModel, QuestionTagMapping
             from sqlalchemy.orm import selectinload

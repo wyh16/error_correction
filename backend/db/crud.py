@@ -560,8 +560,13 @@ def create_chat_session(db: Session, question_id: int) -> ChatSession:
         raise
 
 
+_VALID_ROLES = ('user', 'assistant')
+
+
 def add_chat_message(db: Session, session_id: int, role: str, content: str) -> ChatMessage:
     """向对话中追加一条消息"""
+    if role not in _VALID_ROLES:
+        raise ValueError(f"无效的消息角色: {role}（可选: {', '.join(_VALID_ROLES)}）")
     msg = ChatMessage(session_id=session_id, role=role, content=content)
     db.add(msg)
     try:

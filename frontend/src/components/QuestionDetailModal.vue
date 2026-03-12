@@ -125,6 +125,7 @@ const changeReviewStatus = async (status) => {
   if (!props.question || props.question.review_status === status) return
   try {
     const data = await api.updateReviewStatus(props.question.id, status)
+    props.question.review_status = data.review_status
     emit('review-status-changed', props.question.id, data.review_status, data.updated_at)
     emit('push-toast', 'success', `已标记为「${status}」`)
   } catch (e) {

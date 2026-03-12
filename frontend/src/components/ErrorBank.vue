@@ -226,21 +226,39 @@ const pageButtons = computed(() => {
   return pages
 })
 
+const refreshTags = async () => {
+  tagNames.value = await api.fetchTagNames(filters.subject || undefined)
+  tagBatchIndex.value = 0
+}
+
 const loadFilters = async () => {
   try {
-    const [s, qt, tn] = await Promise.all([
+    const [s, qt] = await Promise.all([
       api.fetchSubjects(),
       api.fetchQuestionTypes(),
-      api.fetchTagNames(),
     ])
     subjects.value = s
     questionTypes.value = qt
-    tagNames.value = tn
+    await refreshTags()
     nextTick(() => { tagBatchAnimating.value = true })
   } catch (e) {
     emit('push-toast', 'error', '加载筛选项失败')
   }
 }
+
+const reloadTags = async () => {
+  try {
+    await refreshTags()
+    // 清除已选中但不再属于当前学科的标签
+    const valid = new Set(tagNames.value)
+    for (const t of Array.from(selectedTags)) {
+      if (!valid.has(t)) selectedTags.delete(t)
+    }
+    filters.knowledge_tag = Array.from(selectedTags).join(',')
+  } catch (e) { /* 静默失败，loadFilters 已加载过 */ }
+}
+
+watch(() => filters.subject, () => { reloadTags() })
 
 watch(() => props.visible, (v) => { if (v) { loadFilters(); doQuery() } })
 

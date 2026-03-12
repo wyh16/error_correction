@@ -311,19 +311,22 @@ def search_questions(
     return questions, total
 
 
-def get_knowledge_stats(db: Session) -> List[Dict]:
+def get_knowledge_stats(db: Session, subject: Optional[str] = None) -> List[Dict]:
     """
     获取知识点统计信息
 
     Returns:
         [{"tag_name": "xxx", "count": 10}, ...]
     """
-    stats = db.query(
+    query = db.query(
         KnowledgeTag.tag_name,
         func.count(QuestionTagMapping.question_id).label("count")
     ).join(
         QuestionTagMapping, QuestionTagMapping.tag_id == KnowledgeTag.id
-    ).group_by(
+    )
+    if subject:
+        query = query.filter(KnowledgeTag.subject == subject)
+    stats = query.group_by(
         KnowledgeTag.id, KnowledgeTag.tag_name
     ).order_by(
         func.count(QuestionTagMapping.question_id).desc()

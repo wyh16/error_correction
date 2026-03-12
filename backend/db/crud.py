@@ -17,6 +17,11 @@ logger = logging.getLogger(__name__)
 from db.models import UploadBatch, Question, KnowledgeTag, QuestionTagMapping, ChatSession, ChatMessage
 
 
+def _parse_tag_list(knowledge_tag: str) -> List[str]:
+    """将逗号分隔的标签字符串拆分为去空白的非空列表"""
+    return [t.strip() for t in knowledge_tag.split(',') if t.strip()]
+
+
 def compute_content_hash(content_blocks: List[Dict]) -> str:
     """
     基于 content_blocks 计算去重哈希
@@ -229,7 +234,8 @@ def get_history_questions(
     if start_date:
         query = query.filter(UploadBatch.upload_time >= start_date)
     if end_date:
-        query = query.filter(UploadBatch.upload_time <= end_date)
+        from datetime import timedelta
+        query = query.filter(UploadBatch.upload_time < end_date + timedelta(days=1))
 
     # 获取总数
     total = query.count()
@@ -280,14 +286,10 @@ def search_questions(
     if question_type:
         query = query.filter(Question.question_type == question_type)
 
-    # 知识点标签筛选（支持逗号分隔多选）
+    # 知识点标签筛选（支持逗号分隔多选，OR 语义）
     if knowledge_tag:
-        tag_list = [t.strip() for t in knowledge_tag.split(',') if t.strip()]
-        if len(tag_list) == 1:
-            query = query.join(QuestionTagMapping).join(KnowledgeTag).filter(
-                KnowledgeTag.tag_name == tag_list[0]
-            )
-        elif tag_list:
+        tag_list = _parse_tag_list(knowledge_tag)
+        if tag_list:
             query = query.join(QuestionTagMapping).join(KnowledgeTag).filter(
                 KnowledgeTag.tag_name.in_(tag_list)
             )
@@ -390,12 +392,8 @@ def query_questions(
         query = query.filter(Question.content_json.ilike(f"%{escaped}%"))
 
     if knowledge_tag:
-        tag_list = [t.strip() for t in knowledge_tag.split(',') if t.strip()]
-        if len(tag_list) == 1:
-            query = query.join(QuestionTagMapping).join(KnowledgeTag).filter(
-                KnowledgeTag.tag_name == tag_list[0]
-            )
-        elif tag_list:
+        tag_list = _parse_tag_list(knowledge_tag)
+        if tag_list:
             query = query.join(QuestionTagMapping).join(KnowledgeTag).filter(
                 KnowledgeTag.tag_name.in_(tag_list)
             )
@@ -403,7 +401,8 @@ def query_questions(
     if start_date:
         query = query.filter(Question.created_at >= start_date)
     if end_date:
-        query = query.filter(Question.created_at <= end_date)
+        from datetime import timedelta
+        query = query.filter(Question.created_at < end_date + timedelta(days=1))
 
     if review_status:
         query = query.filter(Question.review_status == review_status)

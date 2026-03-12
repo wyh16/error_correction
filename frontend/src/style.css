@@ -169,7 +169,8 @@ mjx-container[jax="SVG"] > svg {
 .dark *::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
-.dark * {
+.dark {
   scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   scrollbar-width: thin;
 }
+

@@ -1,0 +1,246 @@
+import { ref } from 'vue'
+import * as api from '@/api.js'
+import { useAuth } from '@/composables/useAuth.js'
+import { useProjects } from '@/composables/useProjects.js'
+
+const QUOTA_EXCEEDED_CODE = 'DAILY_FREE_QUOTA_EXCEEDED'
+
+export function useSplitPipeline(pushToast, currentView, step, S, uploadReady, splitting, splitCompleted, uploadMode, selectedLlmOption, questions, selectedIds, pendingFiles, typesetMath) {
+  const { setQuotaSnapshot, refreshCurrentUser } = useAuth()
+  const { activeQuestionProjectId, activeNoteProjectId, loadProjects } = useProjects()
+  const eraseLoading = ref(false)
+  const eraseImages = ref([])
+  const eraseDone = ref(false)
+  const ocrLoading = ref(false)
+  const ocrPages = ref([])
+  const ocrDone = ref(false)
+  const eraseEnabled = ref(true)
+  const currentRunId = ref(null)
+
+  const syncQuotaFromError = (error) => {
+    if (error?.quota) setQuotaSnapshot(error.quota)
+    return error?.code === QUOTA_EXCEEDED_CODE
+  }
+
+  const refreshQuotaSnapshot = async () => {
+    try {
+      await refreshCurrentUser()
+    } catch (_) { }
+  }
+
+  const startProcess = () => {
+    if (eraseEnabled.value) {
+      doErase()
+    } else {
+      doOcr()
+    }
+  }
+
+  const doErase = async () => {
+    if (eraseLoading.value) return
+    eraseLoading.value = true
+    eraseDone.value = false
+    eraseImages.value = []
+    currentView.value = 'workspace_review'
+    step.value = S.value.ERASE
+    try {
+      const data = await api.runErase()
+      eraseImages.value = data.images || []
+      eraseDone.value = true
+      pushToast('success', data.message || '擦除完成')
+    } catch (e) {
+      pushToast('error', e.message || '擦除失败')
+      currentView.value = 'workspace'
+      step.value = S.value.UPLOAD
+    } finally {
+      eraseLoading.value = false
+    }
+  }
+
+  const doOcr = async () => {
+    if (ocrLoading.value) return
+    ocrLoading.value = true
+    ocrDone.value = false
+    ocrPages.value = []
+    eraseDone.value = false
+    currentView.value = 'workspace_review'
+    step.value = S.value.OCR
+    try {
+      const data = await api.runOcr()
+      ocrPages.value = data.pages || []
+      ocrDone.value = true
+      await refreshQuotaSnapshot()
+      pushToast('success', `OCR 完成，共 ${data.pages?.length || 0} 页`)
+    } catch (e) {
+      if (syncQuotaFromError(e)) {
+        pushToast('error', e.message || '今日免费体验次数已用完')
+      } else {
+        pushToast('error', e.message || 'OCR 失败')
+      }
+      currentView.value = 'workspace'
+      step.value = S.value.UPLOAD
+    } finally {
+      ocrLoading.value = false
+    }
+  }
+
+  const doSplit = async () => {
+    if (!uploadReady.value || splitting.value || splitCompleted.value) return
+
+    if (uploadMode.value === 'note') {
+      await doNoteOrganize()
+      return
+    }
+
+    splitting.value = true
+    currentRunId.value = null
+    ocrDone.value = false
+    step.value = S.value.SPLIT
+    pushToast('info', '正在调用AI分割题目，请稍候...', 1800)
+    try {
+      const data = await api.splitQuestions(
+        selectedLlmOption.value?.category || 'openai',
+        selectedLlmOption.value?.model_name || '',
+        selectedLlmOption.value?.source || '',
+        selectedLlmOption.value?.provider_id || ''
+      )
+      currentRunId.value = data.run_id || null
+      questions.value = data.questions || []
+      selectedIds.clear()
+      if (data.warnings && data.warnings.length) {
+        for (const w of data.warnings) pushToast('warning', w, 6000)
+      }
+      if (questions.value.length > 0) {
+        splitCompleted.value = true
+        step.value = S.value.EXPORT
+        if (!data.warnings || !data.warnings.length) {
+          pushToast('success', `成功分割 ${questions.value.length} 道题目`)
+        }
+        await typesetMath()
+        await refreshQuotaSnapshot()
+        setTimeout(() => {
+          if (currentView.value === 'workspace') {
+            currentView.value = 'workspace_review'
+          }
+        }, 800)
+      }
+    } catch (e) {
+      if (syncQuotaFromError(e)) {
+        pushToast('error', e.message || '今日免费体验次数已用完')
+      } else {
+        pushToast('error', '分割失败: ' + (e instanceof Error ? e.message : String(e)))
+      }
+    } finally {
+      splitting.value = false
+    }
+  }
+
+  const doNoteOrganize = async () => {
+    if (!activeNoteProjectId.value) {
+      pushToast('error', '请先创建并选择一个笔记本')
+      return
+    }
+    splitting.value = true
+    currentRunId.value = null
+    step.value = S.value.SPLIT
+    pushToast('info', '正在调用AI整理笔记，请稍候...', 3000)
+    try {
+      const formData = new FormData()
+      for (const pf of pendingFiles) {
+        if (pf.file) {
+          // 由于部分浏览器/上传库会锁定最初选中的 File 对象导致 ERR_UPLOAD_FILE_CHANGED 错误
+          // 在提交给笔记整理前，我们将其重新拷贝为一个新的 File 对象
+          const newFile = new File([pf.file], pf.file.name, { type: pf.file.type, lastModified: pf.file.lastModified })
+          formData.append('files', newFile)
+        }
+      }
+      formData.append('model_provider', selectedLlmOption.value?.category || 'openai')
+      if (selectedLlmOption.value?.model_name) {
+        formData.append('model_name', selectedLlmOption.value.model_name)
+      }
+      if (selectedLlmOption.value?.source) {
+        formData.append('provider_source', selectedLlmOption.value.source)
+      }
+      if (selectedLlmOption.value?.provider_id) {
+        formData.append('provider_id', selectedLlmOption.value.provider_id)
+      }
+      formData.append('project_id', activeNoteProjectId.value)
+
+      await new Promise((resolve, reject) => {
+        api.createNote(formData, {
+          onSuccess: (data) => resolve(data),
+          onError: (error) => reject(error),
+        })
+      })
+      await loadProjects()
+
+      splitCompleted.value = true
+      step.value = S.value.EXPORT
+      await refreshQuotaSnapshot()
+      pushToast('success', '笔记整理完成！')
+
+      setTimeout(() => {
+        currentView.value = 'notes'
+      }, 800)
+    } catch (e) {
+      if (syncQuotaFromError(e)) {
+        pushToast('error', e.message || '今日免费体验次数已用完')
+      } else {
+        pushToast('error', '笔记整理失败: ' + (e instanceof Error ? e.message : String(e)))
+      }
+    } finally {
+      splitting.value = false
+    }
+  }
+
+  const doExport = async () => {
+    if (!selectedIds.size) { pushToast('error', '请至少选择一道题目！'); return }
+    try {
+      const data = await api.exportQuestions(Array.from(selectedIds), currentRunId.value)
+      step.value = S.value.EXPORT + 1
+      pushToast('success', `错题本导出成功！已保存到: ${data.output_path}`)
+      let filename = 'wrongbook.md'
+      if (data.output_path) {
+        const parts = String(data.output_path).split(/[/\\]/)
+        const last = parts[parts.length - 1]
+        if (last) filename = last
+      }
+      let downloadHref = data.download_url || `/download/${encodeURIComponent(filename)}`
+      downloadHref += downloadHref.includes('?') ? `&t=${Date.now()}` : `?t=${Date.now()}`
+      const a = document.createElement('a')
+      a.href = downloadHref
+      a.download = filename
+      a.style.display = 'none'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    } catch (e) {
+      pushToast('error', '导出失败: ' + (e instanceof Error ? e.message : String(e)))
+    }
+  }
+
+  const doSaveToDb = async (targetProjectId, errorBankRef) => {
+    if (!selectedIds.size) { pushToast('error', '请至少选择一道题目！'); return false }
+    try {
+      const projectId = targetProjectId || activeQuestionProjectId.value
+      if (!projectId) { pushToast('error', '请先创建并选择一个错题库'); return false }
+      const answers = questions.value
+        .filter(q => selectedIds.has(q.uid) && (q.answer || q.user_answer))
+        .map(q => ({ uid: q.uid, answer: q.answer || '', user_answer: q.user_answer || '' }))
+      const data = await api.saveToDb(Array.from(selectedIds), answers, currentRunId.value, projectId)
+      await loadProjects()
+      pushToast('success', data.message || '已导入错题库')
+      errorBankRef?.value?.refresh()
+      return true
+    } catch (e) {
+      pushToast('error', '导入失败: ' + (e instanceof Error ? e.message : String(e)))
+      return false
+    }
+  }
+
+  return {
+    eraseEnabled, eraseLoading, eraseImages, eraseDone,
+    ocrLoading, ocrPages, ocrDone,
+    startProcess, doErase, doOcr, doSplit, doExport, doSaveToDb,
+  }
+}

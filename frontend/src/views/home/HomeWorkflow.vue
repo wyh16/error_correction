@@ -1,0 +1,96 @@
+<script setup>
+/**
+ * HomeWorkflow.vue
+ * 落地页工作流程展示
+ */
+import { ref, onMounted, onUnmounted } from 'vue'
+import { UploadCloud, BrainCircuit, Sparkles, FileDown } from 'lucide-vue-next'
+import WorkflowStep from '@/components/home/WorkflowStep.vue'
+
+const STEPS = [
+  { icon: 'upload-cloud', num: '01', title: '上传试卷',   desc: '支持PDF/多图并行处理',  delay: 0 },
+  { icon: 'brain-circuit', num: '02', title: 'AI 解析拆题', desc: '智能排版与图文切分',    delay: 150 },
+  { icon: 'sparkles',     num: '03', title: '纠错与打标', desc: '公式还原与知识点关联',   delay: 300 },
+  { icon: 'file-down',    num: '04', title: '一键导出',   desc: '生成 Markdown/PDF',      delay: 450 },
+]
+
+const iconMap = {
+  'upload-cloud': UploadCloud,
+  'brain-circuit': BrainCircuit,
+  sparkles: Sparkles,
+  'file-down': FileDown,
+}
+
+const activeStep = ref(0)
+let intervalId = null
+
+function startStepInterval() {
+  intervalId = setInterval(() => {
+    activeStep.value = (activeStep.value + 1) % STEPS.length
+  }, 3000)
+}
+
+function onStepClick(idx) {
+  clearInterval(intervalId)
+  activeStep.value = idx
+  startStepInterval()
+}
+
+function getProgressWidth() {
+  return `${(activeStep.value / (STEPS.length - 1)) * 100}%`
+}
+
+onMounted(() => {
+  startStepInterval()
+})
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+})
+</script>
+
+<template>
+  <section id="workflow" class="relative z-10 py-24 overflow-hidden bg-slate-50 dark:bg-transparent transition-colors duration-200">
+    <!-- 顶部分割线 -->
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/[0.06] to-transparent transition-colors duration-200"></div>
+
+    <div class="reveal max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+      <div class="text-center mb-16">
+        <h2 class="reveal text-3xl font-semibold tracking-tight mb-4">
+          <span class="text-transparent bg-clip-text animate-gradient-sweep home-title-accent" style="
+            background-size: 200% auto;
+          ">极简四步，自动运转</span>
+          <span class="hidden" style="
+            background-size: 200% auto;
+          ">极简四步，自动运转</span>
+        </h2>
+        <p class="text-gray-600 dark:text-white/40 text-sm transition-colors duration-200">将原本需要耗费数小时的繁杂抄录，浓缩进点击之间。</p>
+      </div>
+
+      <div class="relative max-w-4xl mx-auto">
+        <!-- 连接线 -->
+        <div class="absolute top-10 left-12 right-12 h-px bg-gray-200 dark:bg-white/[0.06] hidden lg:block transition-colors duration-200 z-0">
+          <div
+            class="h-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] to-[rgb(var(--accent-hover-rgb))] transition-all duration-700 ease-out"
+            :style="{ width: getProgressWidth() }"
+          ></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative z-10">
+          <WorkflowStep
+            v-for="(s, i) in STEPS"
+            :key="s.num"
+            :icon="iconMap[s.icon]"
+            :title="s.title"
+            :desc="s.desc"
+            :isActive="i === activeStep"
+            :isPast="i < activeStep"
+            @click="onStepClick(i)"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+</style>

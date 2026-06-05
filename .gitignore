@@ -1,0 +1,46 @@
+*.pyc
+*.pyo
+*.pyd
+dataset/
+printed-vs-handwritten/
+.venv/
+.idea/
+.langgraph_api/
+OmniDocBench.json
+.vscode
+.claude/
+.trae/
+
+# uv环境
+.python-version
+uv.lock
+
+# 前端构建产物
+frontend/dist/
+frontend/package-lock.json
+frontend/uploads/
+frontend/output
+
+# 后端运行产物
+backend/runtime_data/
+backend/output/
+output/
+__pycache__/
+backend/static/vue/assets
+
+# 模型权重文件
+backend/models/weight/
+
+# 示例上传文件
+example_uploads/notes/
+# 日志
+workflow.log
+
+# 数据集
+dataset/
+
+# 环境变量
+.env
+backend/.env
+PR.md
+TODO.md

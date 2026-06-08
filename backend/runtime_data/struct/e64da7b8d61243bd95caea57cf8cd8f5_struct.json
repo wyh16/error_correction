@@ -1,0 +1,6593 @@
+{
+  "layoutParsingResults": [
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 1191,
+        "height": 1684,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [
+          {
+            "block_label": "doc_title",
+            "block_content": "2023年普通高等学校招生全国统一考试",
+            "block_bbox": [
+              314,
+              38,
+              907,
+              83
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+              [
+                314.0,
+                38.0
+              ],
+              [
+                907.0,
+                38.0
+              ],
+              [
+                907.0,
+                83.0
+              ],
+              [
+                314.0,
+                83.0
+              ]
+            ]
+          },
+          {
+            "block_label": "doc_title",
+            "block_content": "理科数学",
+            "block_bbox": [
+              533,
+              107,
+              683,
+              149
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+              [
+                533.0,
+                107.0
+              ],
+              [
+                683.0,
+                107.0
+              ],
+              [
+                683.0,
+                149.0
+              ],
+              [
+                533.0,
+                149.0
+              ]
+            ]
+          },
+          {
+            "block_label": "paragraph_title",
+            "block_content": "一、选择题",
+            "block_bbox": [
+              85,
+              172,
+              229,
+              207
+            ],
+            "block_id": 2,
+            "block_order": 3,
+            "group_id": 2,
+            "block_polygon_points": [
+              [
+                85.48493957519531,
+                170.68663024902344
+              ],
+              [
+                229.5696563720703,
+                179.09156799316406
+              ],
+              [
+                227.79991149902344,
+                209.4300079345703
+              ],
+              [
+                83.71519470214844,
+                201.0250701904297
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "1 设  $ z = \\frac{2 + i}{1 + i^2 + i^5} $，则  $ \\overline{z} = $ （ ）\n\nA.  $ 1 - 2i $          B.  $ 1 + 2i $          C.  $ 2 - i $          D.  $ 2 + i $",
+            "block_bbox": [
+              85,
+              223,
+              955,
+              361
+            ],
+            "block_id": 3,
+            "block_order": 4,
+            "group_id": 3,
+            "block_polygon_points": [
+              [
+                86.21719360351562,
+                219.7799072265625
+              ],
+              [
+                955.21728515625,
+                227.7799072265625
+              ],
+              [
+                954.0001220703125,
+                360.0
+              ],
+              [
+                85.00003051757812,
+                352.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "2. 设集合  $ U = \\mathbb{R} $，集合  $ M = \\{x | x < 1\\} $， $ N = \\{x | -1 < x < 2\\} $，则  $ \\{x | x \\geq 2\\} = $ （ ）\n\nA.  $ \\complement_U (M \\cup N) $ B.  $ N \\cup \\complement_U M $\n\nC.  $ \\complement_U (M \\cap N) $ D.  $ M \\cup \\complement_U N $",
+            "block_bbox": [
+              85,
+              376,
+              933,
+              549
+            ],
+            "block_id": 4,
+            "block_order": 5,
+            "group_id": 4,
+            "block_polygon_points": [
+              [
+                85.0,
+                376.0
+              ],
+              [
+                933.0,
+                376.0
+              ],
+              [
+                933.0,
+                549.0
+              ],
+              [
+                85.0,
+                549.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "3. 如图，网格纸上绘制的一个零件的三视图，网格小正方形的边长为1，则该零件的表面积为（）",
+            "block_bbox": [
+              89,
+              573,
+              1084,
+              608
+            ],
+            "block_id": 5,
+            "block_order": 6,
+            "group_id": 5,
+            "block_polygon_points": [
+              [
+                89.0,
+                573.0
+              ],
+              [
+                1084.0,
+                573.0
+              ],
+              [
+                1084.0,
+                608.0
+              ],
+              [
+                89.0,
+                608.0
+              ]
+            ]
+          },
+          {
+            "block_label": "image",
+            "block_content": "",
+            "block_bbox": [
+              91,
+              621,
+              383,
+              743
+            ],
+            "block_id": 6,
+            "block_order": null,
+            "group_id": 6,
+            "block_polygon_points": [
+              [
+                91.0,
+                621.0
+              ],
+              [
+                91.0,
+                742.0
+              ],
+              [
+                234.0,
+                742.0
+              ],
+              [
+                239.0,
+                638.0
+              ],
+              [
+                239.0,
+                621.0
+              ]
+            ]
+          },
+          {
+            "block_label": "image",
+            "block_content": "",
+            "block_bbox": [
+              247,
+              626,
+              384,
+              743
+            ],
+            "block_id": 7,
+            "block_order": null,
+            "group_id": 7,
+            "block_polygon_points": [
+              [
+                247.0,
+                626.0
+              ],
+              [
+                384.0,
+                626.0
+              ],
+              [
+                384.0,
+                743.0
+              ],
+              [
+                247.0,
+                743.0
+              ]
+            ]
+          },
+          {
+            "block_label": "image",
+            "block_content": "",
+            "block_bbox": [
+              89,
+              756,
+              230,
+              876
+            ],
+            "block_id": 8,
+            "block_order": null,
+            "group_id": 8,
+            "block_polygon_points": [
+              [
+                89.0,
+                756.0
+              ],
+              [
+                230.0,
+                756.0
+              ],
+              [
+                230.0,
+                876.0
+              ],
+              [
+                89.0,
+                876.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "A. 24 B. 26 C. 28 D. 30",
+            "block_bbox": [
+              84,
+              896,
+              918,
+              929
+            ],
+            "block_id": 9,
+            "block_order": 7,
+            "group_id": 9,
+            "block_polygon_points": [
+              [
+                84.0,
+                896.0
+              ],
+              [
+                918.0,
+                896.0
+              ],
+              [
+                918.0,
+                929.0
+              ],
+              [
+                84.0,
+                929.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "4. 已知  $ f(x)=\\frac{x\\mathrm{e}^{x}}{\\mathrm{e}^{ax}-1} $ 是偶函数，则  $ a= $ （ ）\n\nA.  $ -2 $ \\quad B.  $ -1 $ \\quad C.  $ 1 $ \\quad D.  $ 2 $",
+            "block_bbox": [
+              83,
+              957,
+              908,
+              1081
+            ],
+            "block_id": 10,
+            "block_order": 8,
+            "group_id": 10,
+            "block_polygon_points": [
+              [
+                83.0,
+                957.0
+              ],
+              [
+                908.0,
+                957.0
+              ],
+              [
+                908.0,
+                1081.0
+              ],
+              [
+                83.0,
+                1081.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "5. 设 $O$ 为平面坐标系的坐标原点，在区域 $\\left\\{(x,y)\\mid1\\leq x^2+y^2\\leq 4\\right\\}$ 内随机取一点，记该点为 $A$，则直线 $OA$ 的倾斜角不大于 $\\frac{\\pi}{4}$ 的概率为（ ）\n\nA. $\\frac{1}{8}$  \nB. $\\frac{1}{6}$  \nC. $\\frac{1}{4}$  \nD. $\\frac{1}{2}$",
+            "block_bbox": [
+              85,
+              1102,
+              1120,
+              1303
+            ],
+            "block_id": 11,
+            "block_order": 9,
+            "group_id": 11,
+            "block_polygon_points": [
+              [
+                85.0,
+                1102.0
+              ],
+              [
+                1120.0,
+                1102.0
+              ],
+              [
+                1120.0,
+                1303.0
+              ],
+              [
+                85.0,
+                1303.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "6. 已知函数  $ f(x) = \\sin(\\omega x + \\varphi) $ 在区间  $ \\left(\\frac{\\pi}{6}, \\frac{2\\pi}{3}\\right) $ 单调递增，直线  $ x = \\frac{\\pi}{6} $ 和  $ x = \\frac{2\\pi}{3} $ 为函数  $ y = f(x) $ 的图像的两条对称轴，则  $ f\\left(-\\frac{5\\pi}{12}\\right) = (\\quad) $",
+            "block_bbox": [
+              85,
+              1332,
+              1111,
+              1502
+            ],
+            "block_id": 12,
+            "block_order": 10,
+            "group_id": 12,
+            "block_polygon_points": [
+              [
+                85.0,
+                1332.0
+              ],
+              [
+                1111.0,
+                1332.0
+              ],
+              [
+                1111.0,
+                1502.0
+              ],
+              [
+                85.0,
+                1502.0
+              ]
+            ]
+          }
+        ],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": [
+            {
+              "cls_id": 6,
+              "label": "doc_title",
+              "score": 0.8320230841636658,
+              "coordinate": [
+                314,
+                38,
+                907,
+                83
+              ],
+              "order": 1,
+              "polygon_points": [
+                [
+                  314.0,
+                  38.0
+                ],
+                [
+                  907.0,
+                  38.0
+                ],
+                [
+                  907.0,
+                  83.0
+                ],
+                [
+                  314.0,
+                  83.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 6,
+              "label": "doc_title",
+              "score": 0.7590385675430298,
+              "coordinate": [
+                533,
+                107,
+                683,
+                149
+              ],
+              "order": 2,
+              "polygon_points": [
+                [
+                  533.0,
+                  107.0
+                ],
+                [
+                  683.0,
+                  107.0
+                ],
+                [
+                  683.0,
+                  149.0
+                ],
+                [
+                  533.0,
+                  149.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8391000032424927,
+              "coordinate": [
+                85,
+                172,
+                229,
+                207
+              ],
+              "order": 3,
+              "polygon_points": [
+                [
+                  85.48493957519531,
+                  170.68663024902344
+                ],
+                [
+                  229.5696563720703,
+                  179.09156799316406
+                ],
+                [
+                  227.79991149902344,
+                  209.4300079345703
+                ],
+                [
+                  83.71519470214844,
+                  201.0250701904297
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9131544232368469,
+              "coordinate": [
+                85,
+                223,
+                955,
+                361
+              ],
+              "order": 4,
+              "polygon_points": [
+                [
+                  86.21719360351562,
+                  219.7799072265625
+                ],
+                [
+                  955.21728515625,
+                  227.7799072265625
+                ],
+                [
+                  954.0001220703125,
+                  360.0
+                ],
+                [
+                  85.00003051757812,
+                  352.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8456616997718811,
+              "coordinate": [
+                145,
+                225,
+                281,
+                290
+              ],
+              "order": 5,
+              "polygon_points": [
+                [
+                  145.0,
+                  225.0
+                ],
+                [
+                  281.0,
+                  225.0
+                ],
+                [
+                  281.0,
+                  290.0
+                ],
+                [
+                  145.0,
+                  290.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9208680391311646,
+              "coordinate": [
+                85,
+                376,
+                933,
+                549
+              ],
+              "order": 6,
+              "polygon_points": [
+                [
+                  85.0,
+                  376.0
+                ],
+                [
+                  933.0,
+                  376.0
+                ],
+                [
+                  933.0,
+                  549.0
+                ],
+                [
+                  85.0,
+                  549.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7446555495262146,
+              "coordinate": [
+                332,
+                380,
+                468,
+                417
+              ],
+              "order": 7,
+              "polygon_points": [
+                [
+                  332.0,
+                  380.0
+                ],
+                [
+                  468.0,
+                  380.0
+                ],
+                [
+                  468.0,
+                  417.0
+                ],
+                [
+                  332.0,
+                  417.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8171314597129822,
+              "coordinate": [
+                497,
+                378,
+                687,
+                416
+              ],
+              "order": 8,
+              "polygon_points": [
+                [
+                  497.0,
+                  378.0
+                ],
+                [
+                  687.0,
+                  378.0
+                ],
+                [
+                  687.0,
+                  416.0
+                ],
+                [
+                  497.0,
+                  416.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.5831329822540283,
+              "coordinate": [
+                740,
+                379,
+                926,
+                418
+              ],
+              "order": 9,
+              "polygon_points": [
+                [
+                  740.0,
+                  379.0
+                ],
+                [
+                  926.0,
+                  379.0
+                ],
+                [
+                  926.0,
+                  418.0
+                ],
+                [
+                  740.0,
+                  418.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7576088905334473,
+              "coordinate": [
+                128,
+                444,
+                253,
+                481
+              ],
+              "order": 10,
+              "polygon_points": [
+                [
+                  134.0,
+                  444.0
+                ],
+                [
+                  252.0,
+                  444.0
+                ],
+                [
+                  252.0,
+                  480.0
+                ],
+                [
+                  134.0,
+                  480.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7901771068572998,
+              "coordinate": [
+                642,
+                448,
+                739,
+                482
+              ],
+              "order": 11,
+              "polygon_points": [
+                [
+                  642.0,
+                  448.0
+                ],
+                [
+                  739.0,
+                  448.0
+                ],
+                [
+                  739.0,
+                  482.0
+                ],
+                [
+                  642.0,
+                  482.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6400320529937744,
+              "coordinate": [
+                127,
+                506,
+                251,
+                543
+              ],
+              "order": 12,
+              "polygon_points": [
+                [
+                  127.0,
+                  506.0
+                ],
+                [
+                  251.0,
+                  506.0
+                ],
+                [
+                  251.0,
+                  543.0
+                ],
+                [
+                  127.0,
+                  543.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7647371292114258,
+              "coordinate": [
+                644,
+                514,
+                745,
+                546
+              ],
+              "order": 13,
+              "polygon_points": [
+                [
+                  644.0,
+                  514.0
+                ],
+                [
+                  745.0,
+                  514.0
+                ],
+                [
+                  745.0,
+                  546.0
+                ],
+                [
+                  644.0,
+                  546.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8192301392555237,
+              "coordinate": [
+                89,
+                573,
+                1084,
+                608
+              ],
+              "order": 14,
+              "polygon_points": [
+                [
+                  89.0,
+                  573.0
+                ],
+                [
+                  1084.0,
+                  573.0
+                ],
+                [
+                  1084.0,
+                  608.0
+                ],
+                [
+                  89.0,
+                  608.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 14,
+              "label": "image",
+              "score": 0.7663140892982483,
+              "coordinate": [
+                92,
+                621,
+                232,
+                741
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  92.0,
+                  621.0
+                ],
+                [
+                  232.0,
+                  621.0
+                ],
+                [
+                  232.0,
+                  741.0
+                ],
+                [
+                  92.0,
+                  741.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 14,
+              "label": "image",
+              "score": 0.34200069308280945,
+              "coordinate": [
+                91,
+                621,
+                383,
+                743
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  91.0,
+                  621.0
+                ],
+                [
+                  91.0,
+                  742.0
+                ],
+                [
+                  234.0,
+                  742.0
+                ],
+                [
+                  239.0,
+                  638.0
+                ],
+                [
+                  239.0,
+                  621.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 14,
+              "label": "image",
+              "score": 0.7466208934783936,
+              "coordinate": [
+                247,
+                626,
+                384,
+                743
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  247.0,
+                  626.0
+                ],
+                [
+                  384.0,
+                  626.0
+                ],
+                [
+                  384.0,
+                  743.0
+                ],
+                [
+                  247.0,
+                  743.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 14,
+              "label": "image",
+              "score": 0.8810142278671265,
+              "coordinate": [
+                89,
+                756,
+                230,
+                876
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  89.0,
+                  756.0
+                ],
+                [
+                  230.0,
+                  756.0
+                ],
+                [
+                  230.0,
+                  876.0
+                ],
+                [
+                  89.0,
+                  876.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7578394412994385,
+              "coordinate": [
+                84,
+                896,
+                918,
+                929
+              ],
+              "order": 15,
+              "polygon_points": [
+                [
+                  84.0,
+                  896.0
+                ],
+                [
+                  918.0,
+                  896.0
+                ],
+                [
+                  918.0,
+                  929.0
+                ],
+                [
+                  84.0,
+                  929.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9103504419326782,
+              "coordinate": [
+                83,
+                957,
+                908,
+                1081
+              ],
+              "order": 16,
+              "polygon_points": [
+                [
+                  83.0,
+                  957.0
+                ],
+                [
+                  908.0,
+                  957.0
+                ],
+                [
+                  908.0,
+                  1081.0
+                ],
+                [
+                  83.0,
+                  1081.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8693585991859436,
+              "coordinate": [
+                168,
+                959,
+                309,
+                1018
+              ],
+              "order": 17,
+              "polygon_points": [
+                [
+                  168.0,
+                  959.0
+                ],
+                [
+                  309.0,
+                  959.0
+                ],
+                [
+                  309.0,
+                  1018.0
+                ],
+                [
+                  168.0,
+                  1018.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9517220854759216,
+              "coordinate": [
+                85,
+                1102,
+                1120,
+                1303
+              ],
+              "order": 18,
+              "polygon_points": [
+                [
+                  85.0,
+                  1102.0
+                ],
+                [
+                  1120.0,
+                  1102.0
+                ],
+                [
+                  1120.0,
+                  1303.0
+                ],
+                [
+                  85.0,
+                  1303.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8751196265220642,
+              "coordinate": [
+                503,
+                1100,
+                728,
+                1142
+              ],
+              "order": 19,
+              "polygon_points": [
+                [
+                  503.0,
+                  1100.0
+                ],
+                [
+                  728.0,
+                  1100.0
+                ],
+                [
+                  728.0,
+                  1142.0
+                ],
+                [
+                  503.0,
+                  1142.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7918986678123474,
+              "coordinate": [
+                249,
+                1165,
+                272,
+                1217
+              ],
+              "order": 20,
+              "polygon_points": [
+                [
+                  249.0,
+                  1165.0
+                ],
+                [
+                  271.0,
+                  1165.0
+                ],
+                [
+                  271.0,
+                  1216.0
+                ],
+                [
+                  249.0,
+                  1216.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7893518805503845,
+              "coordinate": [
+                126,
+                1241,
+                149,
+                1299
+              ],
+              "order": 21,
+              "polygon_points": [
+                [
+                  126.0,
+                  1241.0
+                ],
+                [
+                  148.0,
+                  1241.0
+                ],
+                [
+                  148.0,
+                  1298.0
+                ],
+                [
+                  126.0,
+                  1298.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8071103692054749,
+              "coordinate": [
+                382,
+                1240,
+                407,
+                1299
+              ],
+              "order": 22,
+              "polygon_points": [
+                [
+                  382.0,
+                  1240.0
+                ],
+                [
+                  406.0,
+                  1240.0
+                ],
+                [
+                  406.0,
+                  1298.0
+                ],
+                [
+                  382.0,
+                  1298.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7897095680236816,
+              "coordinate": [
+                632,
+                1237,
+                657,
+                1297
+              ],
+              "order": 23,
+              "polygon_points": [
+                [
+                  632.0,
+                  1237.0
+                ],
+                [
+                  656.0,
+                  1237.0
+                ],
+                [
+                  656.0,
+                  1296.0
+                ],
+                [
+                  632.0,
+                  1296.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9233159422874451,
+              "coordinate": [
+                85,
+                1332,
+                1111,
+                1502
+              ],
+              "order": 24,
+              "polygon_points": [
+                [
+                  85.0,
+                  1332.0
+                ],
+                [
+                  1111.0,
+                  1332.0
+                ],
+                [
+                  1111.0,
+                  1502.0
+                ],
+                [
+                  85.0,
+                  1502.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7444278597831726,
+              "coordinate": [
+                886,
+                1246,
+                910,
+                1288
+              ],
+              "order": 25,
+              "polygon_points": [
+                [
+                  886.0,
+                  1245.9998779296875
+                ],
+                [
+                  909.0,
+                  1245.9998779296875
+                ],
+                [
+                  909.0,
+                  1286.9998779296875
+                ],
+                [
+                  886.0,
+                  1286.9998779296875
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6104266047477722,
+              "coordinate": [
+                213,
+                1353,
+                405,
+                1384
+              ],
+              "order": 26,
+              "polygon_points": [
+                [
+                  213.0,
+                  1353.0
+                ],
+                [
+                  405.0,
+                  1353.0
+                ],
+                [
+                  405.0,
+                  1384.0
+                ],
+                [
+                  213.0,
+                  1384.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8729909658432007,
+              "coordinate": [
+                473,
+                1333,
+                562,
+                1394
+              ],
+              "order": 27,
+              "polygon_points": [
+                [
+                  473.0,
+                  1333.0
+                ],
+                [
+                  562.0,
+                  1333.0
+                ],
+                [
+                  562.0,
+                  1394.0
+                ],
+                [
+                  473.0,
+                  1394.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8159462809562683,
+              "coordinate": [
+                707,
+                1340,
+                768,
+                1391
+              ],
+              "order": 28,
+              "polygon_points": [
+                [
+                  707.0,
+                  1340.0
+                ],
+                [
+                  768.0,
+                  1340.0
+                ],
+                [
+                  768.0,
+                  1391.0
+                ],
+                [
+                  707.0,
+                  1391.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8399518728256226,
+              "coordinate": [
+                792,
+                1336,
+                852,
+                1387
+              ],
+              "order": 29,
+              "polygon_points": [
+                [
+                  792.0,
+                  1336.0
+                ],
+                [
+                  852.0,
+                  1336.0
+                ],
+                [
+                  852.0,
+                  1387.0
+                ],
+                [
+                  792.0,
+                  1387.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.674515962600708,
+              "coordinate": [
+                251,
+                1435,
+                368,
+                1500
+              ],
+              "order": 30,
+              "polygon_points": [
+                [
+                  251.0,
+                  1435.0
+                ],
+                [
+                  368.0,
+                  1435.0
+                ],
+                [
+                  368.0,
+                  1500.0
+                ],
+                [
+                  251.0,
+                  1500.0
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "markdown": {
+        "text": "# 2023年普通高等学校招生全国统一考试\n\n# 理科数学\n\n## 一、 选择题\n\n1 设  $ z = \\frac{2 + i}{1 + i^2 + i^5} $，则  $ \\overline{z} = $ （ ）\n\nA.  $ 1 - 2i $          B.  $ 1 + 2i $          C.  $ 2 - i $          D.  $ 2 + i $\n\n2. 设集合  $ U = \\mathbb{R} $，集合  $ M = \\{x | x < 1\\} $， $ N = \\{x | -1 < x < 2\\} $，则  $ \\{x | x \\geq 2\\} = $ （ ）\n\nA.  $ \\complement_U (M \\cup N) $ B.  $ N \\cup \\complement_U M $\n\nC.  $ \\complement_U (M \\cap N) $ D.  $ M \\cup \\complement_U N $\n\n3. 如图，网格纸上绘制的一个零件的三视图，网格小正方形的边长为1，则该零件的表面积为（）\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_91_621_383_743.jpg\" alt=\"Image\" width=\"24%\" /></div>\n\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_247_626_384_743.jpg\" alt=\"Image\" width=\"11%\" /></div>\n\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_89_756_230_876.jpg\" alt=\"Image\" width=\"11%\" /></div>\n\n\nA. 24 B. 26 C. 28 D. 30\n\n4. 已知  $ f(x)=\\frac{x\\mathrm{e}^{x}}{\\mathrm{e}^{ax}-1} $ 是偶函数，则  $ a= $ （ ）\n\nA.  $ -2 $ \\quad B.  $ -1 $ \\quad C.  $ 1 $ \\quad D.  $ 2 $\n\n5. 设 $O$ 为平面坐标系的坐标原点，在区域 $\\left\\{(x,y)\\mid1\\leq x^2+y^2\\leq 4\\right\\}$ 内随机取一点，记该点为 $A$，则直线 $OA$ 的倾斜角不大于 $\\frac{\\pi}{4}$ 的概率为（ ）\n\nA. $\\frac{1}{8}$  \n\nB. $\\frac{1}{6}$  \n\nC. $\\frac{1}{4}$  \n\nD. $\\frac{1}{2}$\n\n6. 已知函数  $ f(x) = \\sin(\\omega x + \\varphi) $ 在区间  $ \\left(\\frac{\\pi}{6}, \\frac{2\\pi}{3}\\right) $ 单调递增，直线  $ x = \\frac{\\pi}{6} $ 和  $ x = \\frac{2\\pi}{3} $ 为函数  $ y = f(x) $ 的图像的两条对称轴，则  $ f\\left(-\\frac{5\\pi}{12}\\right) = (\\quad) $",
+        "images": {
+          "imgs/img_in_image_box_91_621_383_743.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/markdown_0/imgs/img_in_image_box_91_621_383_743.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A13Z%2F-1%2F%2F42f416fd760b27ffcf51df5f946a0645b393148019f1c71eea061a7c744545e1",
+          "imgs/img_in_image_box_247_626_384_743.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/markdown_0/imgs/img_in_image_box_247_626_384_743.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A13Z%2F-1%2F%2Fd05a2a7018c831845dc28a753e5079de1624c4241c8feba959a712904a5f60fe",
+          "imgs/img_in_image_box_89_756_230_876.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/markdown_0/imgs/img_in_image_box_89_756_230_876.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A13Z%2F-1%2F%2Fe34b1103dcd5bddad487179f2d7d43d85d343a0b7fdc82038643a178e6ea4e29",
+          "imgs/img_in_image_box_92_621_232_741.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/markdown_0/imgs/img_in_image_box_92_621_232_741.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A13Z%2F-1%2F%2F649c13d1c7069b3064504f94889734a95557151ed6d2fa3b1620bd378be49ad3"
+        }
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/layout_det_res_0.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A14Z%2F-1%2F%2F35fafbaea8b5c82fc4d6f3b2fe0e995df55087177ab86cbc8fcf2ddcc47e444f"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/input_img_0.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A14Z%2F-1%2F%2F4814f52e6535dab17586d896c503f7fa55d4ea3cd414d352ce74e3c9e977993d"
+    },
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 1191,
+        "height": 1684,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [
+          {
+            "block_label": "text",
+            "block_content": "A.  $ -\\frac{\\sqrt{3}}{2} $ B.  $ -\\frac{1}{2} $ C.  $ \\frac{1}{2} $ D.  $ \\frac{\\sqrt{3}}{2} $",
+            "block_bbox": [
+              80,
+              0,
+              1119,
+              121
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+              [
+                80.0,
+                -1.0
+              ],
+              [
+                1119.0,
+                -1.0
+              ],
+              [
+                1119.0,
+                121.0
+              ],
+              [
+                80.0,
+                121.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "7. 甲乙两位同学从6种课外读物中各自选读2种，则这两人选读的课外读物中恰有1种相同的选法共有（）\nA. 30 种          B. 60 种          C. 120 种         D. 240 种",
+            "block_bbox": [
+              89,
+              145,
+              1126,
+              230
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+              [
+                89.0,
+                145.0
+              ],
+              [
+                1126.0,
+                145.0
+              ],
+              [
+                1126.0,
+                230.0
+              ],
+              [
+                89.0,
+                230.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "8. 已知圆锥  $ PO $ 的底面半径为  $ \\sqrt{3} $， $ O $ 为底面圆心， $ PA $， $ PB $ 为圆锥的母线， $ \\angle AOB = 120^\\circ $，若  $ \\square PAB $ 的面积等于  $ \\frac{9\\sqrt{3}}{4} $，则该圆锥的体积为（ ）\n\nA.  $ \\pi $  \nB.  $ \\sqrt{6}\\pi $  \nC.  $ 3\\pi $  \nD.  $ 3\\sqrt{6}\\pi $",
+            "block_bbox": [
+              89,
+              256,
+              1111,
+              415
+            ],
+            "block_id": 2,
+            "block_order": 3,
+            "group_id": 2,
+            "block_polygon_points": [
+              [
+                89.0,
+                256.0
+              ],
+              [
+                1111.0,
+                256.0
+              ],
+              [
+                1111.0,
+                415.0
+              ],
+              [
+                89.0,
+                415.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "9. 已知$\\triangle ABC$为等腰直角三角形，$AB$为斜边，$\\triangle ABD$为等边三角形，若二面角$C-AB-D$为$150^\\circ$，则直线$CD$与平面$ABC$所成角的正切值为（ ）\n\nA. $\\frac{1}{5}$  \nB. $\\frac{\\sqrt{2}}{5}$  \nC. $\\frac{\\sqrt{3}}{5}$  \nD. $\\frac{2}{5}$",
+            "block_bbox": [
+              91,
+              440,
+              1119,
+              611
+            ],
+            "block_id": 3,
+            "block_order": 4,
+            "group_id": 3,
+            "block_polygon_points": [
+              [
+                91.0,
+                440.0
+              ],
+              [
+                1118.0,
+                440.0
+              ],
+              [
+                1118.0,
+                602.0
+              ],
+              [
+                91.0,
+                602.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "10. 已知等差数列 $\\{a_n\\}$ 的公差为 $\\frac{2\\pi}{3}$，集合 $S = \\left\\{ \\cos a_n \\mid n \\in \\mathbb{N}^* \\right\\}$，若 $S = \\{a, b\\}$，则 $ab = $（ ）\n\nA. $-1$\n\nB. $-\\frac{1}{2}$\n\nC. $0$\n\nD. $\\frac{1}{2}$",
+            "block_bbox": [
+              92,
+              635,
+              1017,
+              746
+            ],
+            "block_id": 4,
+            "block_order": 5,
+            "group_id": 4,
+            "block_polygon_points": [
+              [
+                92.8282470703125,
+                634.9549560546875
+              ],
+              [
+                1016.8277587890625,
+                643.0072021484375
+              ],
+              [
+                1015.9378662109375,
+                745.1192626953125
+              ],
+              [
+                91.9383544921875,
+                737.0670166015625
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "11. 设  $ A $,  $ B $ 为双曲线  $ x^2 - \\frac{y^2}{9} = 1 $ 上两点，下列四个点中，可为线段  $ AB $ 中点的是（ ）\n\nA.  $ (1,1) $ \\quad B.  $ (-1,2) $ \\quad C.  $ (1,3) $ \\quad D.  $ (-1,-4) $",
+            "block_bbox": [
+              92,
+              763,
+              987,
+              874
+            ],
+            "block_id": 5,
+            "block_order": 6,
+            "group_id": 5,
+            "block_polygon_points": [
+              [
+                92.0,
+                763.0
+              ],
+              [
+                987.0,
+                763.0
+              ],
+              [
+                987.0,
+                874.0
+              ],
+              [
+                92.0,
+                874.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "12. 已知 $\\square O$ 的半径为 1，直线 $PA$ 与 $\\square O$ 相切于点 $A$，直线 $PB$ 与 $\\square O$ 交于 $B$，$C$ 两点，$D$ 为 $BC$ 的中点，若 $|PO| = \\sqrt{2}$，则 $\\overrightarrow{PA} \\cdot \\overrightarrow{PD}$ 的最大值为（ ）\n\nA. $\\frac{1 + \\sqrt{2}}{2}$  B. $\\frac{1 + 2\\sqrt{2}}{2}$  C. $1 + \\sqrt{2}$  D. $2 + \\sqrt{2}$",
+            "block_bbox": [
+              89,
+              894,
+              1116,
+              1153
+            ],
+            "block_id": 6,
+            "block_order": 7,
+            "group_id": 6,
+            "block_polygon_points": [
+              [
+                89.0,
+                894.0
+              ],
+              [
+                1116.0,
+                894.0
+              ],
+              [
+                1116.0,
+                1153.0
+              ],
+              [
+                89.0,
+                1153.0
+              ]
+            ]
+          },
+          {
+            "block_label": "paragraph_title",
+            "block_content": "二、填空题",
+            "block_bbox": [
+              93,
+              1168,
+              231,
+              1200
+            ],
+            "block_id": 7,
+            "block_order": 8,
+            "group_id": 7,
+            "block_polygon_points": [
+              [
+                93.0,
+                1168.0
+              ],
+              [
+                231.0,
+                1168.0
+              ],
+              [
+                231.0,
+                1200.0
+              ],
+              [
+                93.0,
+                1200.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "13. 已知点  $ A(1, \\sqrt{5}) $ 在抛物线  $ C: y^{2} = 2px $ 上，则  $ A $ 到  $ C $ 的准线的距离为 ___.",
+            "block_bbox": [
+              91,
+              1224,
+              886,
+              1262
+            ],
+            "block_id": 8,
+            "block_order": 9,
+            "group_id": 8,
+            "block_polygon_points": [
+              [
+                91.0,
+                1224.0
+              ],
+              [
+                886.0,
+                1224.0
+              ],
+              [
+                886.0,
+                1262.0
+              ],
+              [
+                91.0,
+                1262.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "14. 若 x, y 满足约束条件  $ \\begin{cases} x - 3y \\leq -1 \\\\ x + 2y \\leq 9 \\\\ 3x + y \\geq 7 \\end{cases} $，则  $ z = 2x - y $ 的最大值为___。",
+            "block_bbox": [
+              88,
+              1285,
+              818,
+              1403
+            ],
+            "block_id": 9,
+            "block_order": 10,
+            "group_id": 9,
+            "block_polygon_points": [
+              [
+                88.0,
+                1285.0
+              ],
+              [
+                818.0,
+                1285.0
+              ],
+              [
+                818.0,
+                1403.0
+              ],
+              [
+                88.0,
+                1403.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "15. 已知  $ \\{a_n\\} $ 为等比数列， $ a_2a_4a_5 = a_3a_6 $， $ a_9a_{10} = -8 $，则  $ a_7 = $ ___.",
+            "block_bbox": [
+              88,
+              1424,
+              808,
+              1464
+            ],
+            "block_id": 10,
+            "block_order": 11,
+            "group_id": 10,
+            "block_polygon_points": [
+              [
+                88.0,
+                1424.0001220703125
+              ],
+              [
+                807.3489379882812,
+                1432.1282958984375
+              ],
+              [
+                806.9197998046875,
+                1470.1065673828125
+              ],
+              [
+                87.57086181640625,
+                1461.9783935546875
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "16. 设  $ a \\in (0,1) $，若函数  $ f(x) = a^x + (1+a)^x $ 在  $ (0,+\\infty) $ 上单调递增，则  $ a $ 取值范围是___。",
+            "block_bbox": [
+              86,
+              1489,
+              1040,
+              1531
+            ],
+            "block_id": 11,
+            "block_order": 12,
+            "group_id": 11,
+            "block_polygon_points": [
+              [
+                85.99993896484375,
+                1489.0001220703125
+              ],
+              [
+                1039.30224609375,
+                1498.0030517578125
+              ],
+              [
+                1038.9912109375,
+                1530.9434814453125
+              ],
+              [
+                85.68890380859375,
+                1521.9405517578125
+              ]
+            ]
+          }
+        ],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": [
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7368283271789551,
+              "coordinate": [
+                80,
+                0,
+                1119,
+                121
+              ],
+              "order": 1,
+              "polygon_points": [
+                [
+                  80.0,
+                  -1.0
+                ],
+                [
+                  1119.0,
+                  -1.0
+                ],
+                [
+                  1119.0,
+                  121.0
+                ],
+                [
+                  80.0,
+                  121.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8470330834388733,
+              "coordinate": [
+                126,
+                49,
+                177,
+                114
+              ],
+              "order": 2,
+              "polygon_points": [
+                [
+                  126.0,
+                  49.0
+                ],
+                [
+                  177.0,
+                  49.0
+                ],
+                [
+                  177.0,
+                  114.0
+                ],
+                [
+                  126.0,
+                  114.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8460213541984558,
+              "coordinate": [
+                380,
+                53,
+                419,
+                119
+              ],
+              "order": 3,
+              "polygon_points": [
+                [
+                  380.0,
+                  53.0
+                ],
+                [
+                  419.0,
+                  53.0
+                ],
+                [
+                  419.0,
+                  119.0
+                ],
+                [
+                  380.0,
+                  119.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7810711860656738,
+              "coordinate": [
+                633,
+                59,
+                655,
+                108
+              ],
+              "order": 4,
+              "polygon_points": [
+                [
+                  633.0,
+                  59.0
+                ],
+                [
+                  654.0,
+                  59.0
+                ],
+                [
+                  654.0,
+                  107.0
+                ],
+                [
+                  633.0,
+                  107.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8529579639434814,
+              "coordinate": [
+                891,
+                45,
+                930,
+                119
+              ],
+              "order": 5,
+              "polygon_points": [
+                [
+                  891.0,
+                  45.0
+                ],
+                [
+                  930.0,
+                  45.0
+                ],
+                [
+                  930.0,
+                  119.0
+                ],
+                [
+                  891.0,
+                  119.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9245476722717285,
+              "coordinate": [
+                89,
+                145,
+                1126,
+                230
+              ],
+              "order": 6,
+              "polygon_points": [
+                [
+                  89.0,
+                  145.0
+                ],
+                [
+                  1126.0,
+                  145.0
+                ],
+                [
+                  1126.0,
+                  230.0
+                ],
+                [
+                  89.0,
+                  230.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9339587092399597,
+              "coordinate": [
+                89,
+                256,
+                1111,
+                415
+              ],
+              "order": 7,
+              "polygon_points": [
+                [
+                  89.0,
+                  256.0
+                ],
+                [
+                  1111.0,
+                  256.0
+                ],
+                [
+                  1111.0,
+                  415.0
+                ],
+                [
+                  89.0,
+                  415.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.46329304575920105,
+              "coordinate": [
+                386,
+                258,
+                454,
+                288
+              ],
+              "order": 8,
+              "polygon_points": [
+                [
+                  386.0,
+                  258.0
+                ],
+                [
+                  454.0,
+                  258.0
+                ],
+                [
+                  454.0,
+                  288.0
+                ],
+                [
+                  386.0,
+                  288.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7964056730270386,
+              "coordinate": [
+                818,
+                258,
+                943,
+                283
+              ],
+              "order": 9,
+              "polygon_points": [
+                [
+                  818.0,
+                  258.0
+                ],
+                [
+                  943.0,
+                  258.0
+                ],
+                [
+                  943.0,
+                  283.0
+                ],
+                [
+                  818.0,
+                  283.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.804420530796051,
+              "coordinate": [
+                167,
+                310,
+                211,
+                363
+              ],
+              "order": 10,
+              "polygon_points": [
+                [
+                  167.0,
+                  310.0
+                ],
+                [
+                  211.0,
+                  310.0
+                ],
+                [
+                  211.0,
+                  363.0
+                ],
+                [
+                  167.0,
+                  363.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.33430829644203186,
+              "coordinate": [
+                1006,
+                257,
+                1056,
+                283
+              ],
+              "order": 11,
+              "polygon_points": [
+                [
+                  1006.0,
+                  257.0
+                ],
+                [
+                  1055.0,
+                  257.0
+                ],
+                [
+                  1055.0,
+                  282.0
+                ],
+                [
+                  1006.0,
+                  282.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7776450514793396,
+              "coordinate": [
+                385,
+                382,
+                434,
+                415
+              ],
+              "order": 12,
+              "polygon_points": [
+                [
+                  385.0,
+                  382.0
+                ],
+                [
+                  433.0,
+                  382.0
+                ],
+                [
+                  433.0,
+                  414.0
+                ],
+                [
+                  385.0,
+                  414.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6179459095001221,
+              "coordinate": [
+                633,
+                385,
+                663,
+                409
+              ],
+              "order": 13,
+              "polygon_points": [
+                [
+                  633.0,
+                  385.0
+                ],
+                [
+                  662.0,
+                  385.0
+                ],
+                [
+                  662.0,
+                  408.0
+                ],
+                [
+                  633.0,
+                  408.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8010315895080566,
+              "coordinate": [
+                889,
+                381,
+                951,
+                412
+              ],
+              "order": 14,
+              "polygon_points": [
+                [
+                  889.0,
+                  381.0
+                ],
+                [
+                  951.0,
+                  381.0
+                ],
+                [
+                  951.0,
+                  412.0
+                ],
+                [
+                  889.0,
+                  412.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9372667670249939,
+              "coordinate": [
+                91,
+                440,
+                1119,
+                611
+              ],
+              "order": 15,
+              "polygon_points": [
+                [
+                  91.0,
+                  440.0
+                ],
+                [
+                  1118.0,
+                  440.0
+                ],
+                [
+                  1118.0,
+                  602.0
+                ],
+                [
+                  91.0,
+                  602.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.41360992193222046,
+              "coordinate": [
+                175,
+                442,
+                241,
+                469
+              ],
+              "order": 16,
+              "polygon_points": [
+                [
+                  175.0,
+                  442.0
+                ],
+                [
+                  175.0,
+                  468.0
+                ],
+                [
+                  240.0,
+                  468.0
+                ],
+                [
+                  240.0,
+                  449.0
+                ],
+                [
+                  235.0,
+                  449.0
+                ],
+                [
+                  234.0,
+                  448.0
+                ],
+                [
+                  234.0,
+                  442.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7986924052238464,
+              "coordinate": [
+                554,
+                441,
+                631,
+                467
+              ],
+              "order": 17,
+              "polygon_points": [
+                [
+                  554.0,
+                  441.0
+                ],
+                [
+                  630.0,
+                  441.0
+                ],
+                [
+                  630.0,
+                  466.0
+                ],
+                [
+                  554.0,
+                  466.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7418013215065002,
+              "coordinate": [
+                1021,
+                442,
+                1067,
+                467
+              ],
+              "order": 18,
+              "polygon_points": [
+                [
+                  1021.0,
+                  442.0
+                ],
+                [
+                  1066.0,
+                  442.0
+                ],
+                [
+                  1066.0,
+                  466.0
+                ],
+                [
+                  1021.0,
+                  466.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.785522997379303,
+              "coordinate": [
+                130,
+                545,
+                154,
+                605
+              ],
+              "order": 19,
+              "polygon_points": [
+                [
+                  130.0,
+                  545.0
+                ],
+                [
+                  153.0,
+                  545.0
+                ],
+                [
+                  153.0,
+                  604.0
+                ],
+                [
+                  130.0,
+                  604.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8244033455848694,
+              "coordinate": [
+                385,
+                543,
+                423,
+                608
+              ],
+              "order": 20,
+              "polygon_points": [
+                [
+                  385.0,
+                  543.0
+                ],
+                [
+                  423.0,
+                  543.0
+                ],
+                [
+                  423.0,
+                  608.0
+                ],
+                [
+                  385.0,
+                  608.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.817761242389679,
+              "coordinate": [
+                636,
+                542,
+                676,
+                607
+              ],
+              "order": 21,
+              "polygon_points": [
+                [
+                  636.0,
+                  542.0
+                ],
+                [
+                  676.0,
+                  542.0
+                ],
+                [
+                  676.0,
+                  607.0
+                ],
+                [
+                  636.0,
+                  607.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7752380967140198,
+              "coordinate": [
+                890,
+                548,
+                915,
+                606
+              ],
+              "order": 22,
+              "polygon_points": [
+                [
+                  890.0,
+                  548.0
+                ],
+                [
+                  914.0,
+                  548.0
+                ],
+                [
+                  914.0,
+                  605.0
+                ],
+                [
+                  890.0,
+                  605.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9032050371170044,
+              "coordinate": [
+                92,
+                635,
+                1017,
+                746
+              ],
+              "order": 23,
+              "polygon_points": [
+                [
+                  92.8282470703125,
+                  634.9549560546875
+                ],
+                [
+                  1016.8277587890625,
+                  643.0072021484375
+                ],
+                [
+                  1015.9378662109375,
+                  745.1192626953125
+                ],
+                [
+                  91.9383544921875,
+                  737.0670166015625
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.788533091545105,
+              "coordinate": [
+                275,
+                641,
+                317,
+                675
+              ],
+              "order": 24,
+              "polygon_points": [
+                [
+                  275.0,
+                  641.0
+                ],
+                [
+                  275.0,
+                  674.0
+                ],
+                [
+                  316.0,
+                  674.0
+                ],
+                [
+                  316.0,
+                  641.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7872105240821838,
+              "coordinate": [
+                408,
+                633,
+                436,
+                679
+              ],
+              "order": 25,
+              "polygon_points": [
+                [
+                  408.0,
+                  633.0
+                ],
+                [
+                  435.0,
+                  633.0
+                ],
+                [
+                  435.0,
+                  678.0
+                ],
+                [
+                  408.0,
+                  678.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8605275750160217,
+              "coordinate": [
+                507,
+                635,
+                696,
+                675
+              ],
+              "order": 26,
+              "polygon_points": [
+                [
+                  507.0,
+                  635.0
+                ],
+                [
+                  696.0,
+                  635.0
+                ],
+                [
+                  696.0,
+                  675.0
+                ],
+                [
+                  507.0,
+                  675.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6056807637214661,
+              "coordinate": [
+                748,
+                640,
+                841,
+                673
+              ],
+              "order": 27,
+              "polygon_points": [
+                [
+                  748.0,
+                  640.0
+                ],
+                [
+                  841.0,
+                  640.0
+                ],
+                [
+                  841.0,
+                  673.0
+                ],
+                [
+                  748.0,
+                  673.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.3252451717853546,
+              "coordinate": [
+                892,
+                643,
+                1012,
+                669
+              ],
+              "order": 28,
+              "polygon_points": [
+                [
+                  892.0,
+                  643.0
+                ],
+                [
+                  1012.0,
+                  643.0
+                ],
+                [
+                  1012.0,
+                  669.0
+                ],
+                [
+                  892.0,
+                  669.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8054251670837402,
+              "coordinate": [
+                386,
+                693,
+                426,
+                749
+              ],
+              "order": 29,
+              "polygon_points": [
+                [
+                  386.0,
+                  693.0
+                ],
+                [
+                  426.0,
+                  693.0
+                ],
+                [
+                  426.0,
+                  749.0
+                ],
+                [
+                  386.0,
+                  749.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7232394218444824,
+              "coordinate": [
+                891,
+                702,
+                914,
+                743
+              ],
+              "order": 30,
+              "polygon_points": [
+                [
+                  891.0,
+                  702.0
+                ],
+                [
+                  913.0,
+                  702.0
+                ],
+                [
+                  913.0,
+                  742.0
+                ],
+                [
+                  891.0,
+                  742.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9061925411224365,
+              "coordinate": [
+                92,
+                763,
+                987,
+                874
+              ],
+              "order": 31,
+              "polygon_points": [
+                [
+                  92.0,
+                  763.0
+                ],
+                [
+                  987.0,
+                  763.0
+                ],
+                [
+                  987.0,
+                  874.0
+                ],
+                [
+                  92.0,
+                  874.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8660793304443359,
+              "coordinate": [
+                309,
+                759,
+                403,
+                810
+              ],
+              "order": 32,
+              "polygon_points": [
+                [
+                  309.0,
+                  759.0
+                ],
+                [
+                  403.0,
+                  759.0
+                ],
+                [
+                  403.0,
+                  810.0
+                ],
+                [
+                  309.0,
+                  810.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9356372952461243,
+              "coordinate": [
+                89,
+                894,
+                1116,
+                1153
+              ],
+              "order": 33,
+              "polygon_points": [
+                [
+                  89.0,
+                  894.0
+                ],
+                [
+                  1116.0,
+                  894.0
+                ],
+                [
+                  1116.0,
+                  1153.0
+                ],
+                [
+                  89.0,
+                  1153.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8520928621292114,
+              "coordinate": [
+                123,
+                944,
+                230,
+                982
+              ],
+              "order": 34,
+              "polygon_points": [
+                [
+                  123.0,
+                  944.0
+                ],
+                [
+                  230.0,
+                  944.0
+                ],
+                [
+                  230.0,
+                  982.0
+                ],
+                [
+                  123.0,
+                  982.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.817838728427887,
+              "coordinate": [
+                275,
+                950,
+                356,
+                981
+              ],
+              "order": 35,
+              "polygon_points": [
+                [
+                  275.0,
+                  950.0
+                ],
+                [
+                  356.0,
+                  950.0
+                ],
+                [
+                  356.0,
+                  981.0
+                ],
+                [
+                  275.0,
+                  981.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8384451866149902,
+              "coordinate": [
+                641,
+                1013,
+                727,
+                1079
+              ],
+              "order": 36,
+              "polygon_points": [
+                [
+                  641.0,
+                  1013.0
+                ],
+                [
+                  727.0,
+                  1013.0
+                ],
+                [
+                  727.0,
+                  1079.0
+                ],
+                [
+                  641.0,
+                  1079.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8267560005187988,
+              "coordinate": [
+                129,
+                1109,
+                197,
+                1144
+              ],
+              "order": 37,
+              "polygon_points": [
+                [
+                  129.0,
+                  1109.0
+                ],
+                [
+                  197.0,
+                  1109.0
+                ],
+                [
+                  197.0,
+                  1144.0
+                ],
+                [
+                  129.0,
+                  1144.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7716221809387207,
+              "coordinate": [
+                646,
+                1110,
+                718,
+                1145
+              ],
+              "order": 38,
+              "polygon_points": [
+                [
+                  646.0,
+                  1110.0
+                ],
+                [
+                  718.0,
+                  1110.0
+                ],
+                [
+                  718.0,
+                  1145.0
+                ],
+                [
+                  646.0,
+                  1145.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8461381793022156,
+              "coordinate": [
+                93,
+                1168,
+                231,
+                1200
+              ],
+              "order": 39,
+              "polygon_points": [
+                [
+                  93.0,
+                  1168.0
+                ],
+                [
+                  231.0,
+                  1168.0
+                ],
+                [
+                  231.0,
+                  1200.0
+                ],
+                [
+                  93.0,
+                  1200.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7957225441932678,
+              "coordinate": [
+                91,
+                1224,
+                886,
+                1262
+              ],
+              "order": 40,
+              "polygon_points": [
+                [
+                  91.0,
+                  1224.0
+                ],
+                [
+                  886.0,
+                  1224.0
+                ],
+                [
+                  886.0,
+                  1262.0
+                ],
+                [
+                  91.0,
+                  1262.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8065438866615295,
+              "coordinate": [
+                208,
+                1225,
+                284,
+                1262
+              ],
+              "order": 41,
+              "polygon_points": [
+                [
+                  208.0,
+                  1225.0
+                ],
+                [
+                  284.0,
+                  1225.0
+                ],
+                [
+                  284.0,
+                  1262.0
+                ],
+                [
+                  208.0,
+                  1262.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8357735276222229,
+              "coordinate": [
+                419,
+                1228,
+                516,
+                1258
+              ],
+              "order": 42,
+              "polygon_points": [
+                [
+                  419.0,
+                  1228.0
+                ],
+                [
+                  516.0,
+                  1228.0
+                ],
+                [
+                  516.0,
+                  1258.0
+                ],
+                [
+                  419.0,
+                  1258.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8751033544540405,
+              "coordinate": [
+                88,
+                1285,
+                818,
+                1403
+              ],
+              "order": 43,
+              "polygon_points": [
+                [
+                  88.0,
+                  1285.0
+                ],
+                [
+                  818.0,
+                  1285.0
+                ],
+                [
+                  818.0,
+                  1403.0
+                ],
+                [
+                  88.0,
+                  1403.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8993470072746277,
+              "coordinate": [
+                349,
+                1289,
+                475,
+                1396
+              ],
+              "order": 44,
+              "polygon_points": [
+                [
+                  349.0,
+                  1289.0
+                ],
+                [
+                  475.0,
+                  1289.0
+                ],
+                [
+                  475.0,
+                  1396.0
+                ],
+                [
+                  349.0,
+                  1396.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8201009035110474,
+              "coordinate": [
+                88,
+                1424,
+                808,
+                1464
+              ],
+              "order": 45,
+              "polygon_points": [
+                [
+                  88.0,
+                  1424.0001220703125
+                ],
+                [
+                  807.3489379882812,
+                  1432.1282958984375
+                ],
+                [
+                  806.9197998046875,
+                  1470.1065673828125
+                ],
+                [
+                  87.57086181640625,
+                  1461.9783935546875
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8216845393180847,
+              "coordinate": [
+                181,
+                1425,
+                227,
+                1459
+              ],
+              "order": 46,
+              "polygon_points": [
+                [
+                  181.0,
+                  1425.0
+                ],
+                [
+                  181.0,
+                  1458.0
+                ],
+                [
+                  226.0,
+                  1458.0
+                ],
+                [
+                  226.0,
+                  1425.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.4065636396408081,
+              "coordinate": [
+                366,
+                1431,
+                633,
+                1459
+              ],
+              "order": 47,
+              "polygon_points": [
+                [
+                  366.0,
+                  1431.0
+                ],
+                [
+                  633.0,
+                  1431.0
+                ],
+                [
+                  633.0,
+                  1459.0
+                ],
+                [
+                  366.0,
+                  1459.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6806806921958923,
+              "coordinate": [
+                680,
+                1434,
+                728,
+                1460
+              ],
+              "order": 48,
+              "polygon_points": [
+                [
+                  679.9999389648438,
+                  1433.9998779296875
+                ],
+                [
+                  726.9999389648438,
+                  1433.9998779296875
+                ],
+                [
+                  726.9999389648438,
+                  1458.9998779296875
+                ],
+                [
+                  679.9999389648438,
+                  1458.9998779296875
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8123461604118347,
+              "coordinate": [
+                86,
+                1489,
+                1040,
+                1531
+              ],
+              "order": 49,
+              "polygon_points": [
+                [
+                  85.99993896484375,
+                  1489.0001220703125
+                ],
+                [
+                  1039.30224609375,
+                  1498.0030517578125
+                ],
+                [
+                  1038.9912109375,
+                  1530.9434814453125
+                ],
+                [
+                  85.68890380859375,
+                  1521.9405517578125
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7254753708839417,
+              "coordinate": [
+                156,
+                1490,
+                248,
+                1523
+              ],
+              "order": 50,
+              "polygon_points": [
+                [
+                  156.0,
+                  1490.0
+                ],
+                [
+                  248.0,
+                  1490.0
+                ],
+                [
+                  248.0,
+                  1523.0
+                ],
+                [
+                  156.0,
+                  1523.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7806222438812256,
+              "coordinate": [
+                347,
+                1493,
+                543,
+                1525
+              ],
+              "order": 51,
+              "polygon_points": [
+                [
+                  347.0,
+                  1493.0
+                ],
+                [
+                  543.0,
+                  1493.0
+                ],
+                [
+                  543.0,
+                  1525.0
+                ],
+                [
+                  347.0,
+                  1525.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7076811790466309,
+              "coordinate": [
+                571,
+                1493,
+                649,
+                1524
+              ],
+              "order": 52,
+              "polygon_points": [
+                [
+                  571.0,
+                  1493.0
+                ],
+                [
+                  649.0,
+                  1493.0
+                ],
+                [
+                  649.0,
+                  1524.0
+                ],
+                [
+                  571.0,
+                  1524.0
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "markdown": {
+        "text": "A.  $ -\\frac{\\sqrt{3}}{2} $ B.  $ -\\frac{1}{2} $ C.  $ \\frac{1}{2} $ D.  $ \\frac{\\sqrt{3}}{2} $\n\n7. 甲乙两位同学从6种课外读物中各自选读2种，则这两人选读的课外读物中恰有1种相同的选法共有（）\n\nA. 30 种          B. 60 种          C. 120 种         D. 240 种\n\n8. 已知圆锥  $ PO $ 的底面半径为  $ \\sqrt{3} $， $ O $ 为底面圆心， $ PA $， $ PB $ 为圆锥的母线， $ \\angle AOB = 120^\\circ $，若  $ \\square PAB $ 的面积等于  $ \\frac{9\\sqrt{3}}{4} $，则该圆锥的体积为（ ）\n\nA.  $ \\pi $  \n\nB.  $ \\sqrt{6}\\pi $  \n\nC.  $ 3\\pi $  \n\nD.  $ 3\\sqrt{6}\\pi $\n\n9. 已知$\\triangle ABC$为等腰直角三角形，$AB$为斜边，$\\triangle ABD$为等边三角形，若二面角$C-AB-D$为$150^\\circ$，则直线$CD$与平面$ABC$所成角的正切值为（ ）\n\nA. $\\frac{1}{5}$  \n\nB. $\\frac{\\sqrt{2}}{5}$  \n\nC. $\\frac{\\sqrt{3}}{5}$  \n\nD. $\\frac{2}{5}$\n\n10. 已知等差数列 $\\{a_n\\}$ 的公差为 $\\frac{2\\pi}{3}$，集合 $S = \\left\\{ \\cos a_n \\mid n \\in \\mathbb{N}^* \\right\\}$，若 $S = \\{a, b\\}$，则 $ab = $（ ）\n\nA. $-1$\n\nB. $-\\frac{1}{2}$\n\nC. $0$\n\nD. $\\frac{1}{2}$\n\n11. 设  $ A $,  $ B $ 为双曲线  $ x^2 - \\frac{y^2}{9} = 1 $ 上两点，下列四个点中，可为线段  $ AB $ 中点的是（ ）\n\nA.  $ (1,1) $ \\quad B.  $ (-1,2) $ \\quad C.  $ (1,3) $ \\quad D.  $ (-1,-4) $\n\n12. 已知 $\\square O$ 的半径为 1，直线 $PA$ 与 $\\square O$ 相切于点 $A$，直线 $PB$ 与 $\\square O$ 交于 $B$，$C$ 两点，$D$ 为 $BC$ 的中点，若 $|PO| = \\sqrt{2}$，则 $\\overrightarrow{PA} \\cdot \\overrightarrow{PD}$ 的最大值为（ ）\n\nA. $\\frac{1 + \\sqrt{2}}{2}$  B. $\\frac{1 + 2\\sqrt{2}}{2}$  C. $1 + \\sqrt{2}$  D. $2 + \\sqrt{2}$\n\n## 二、 填空题\n\n13. 已知点  $ A(1, \\sqrt{5}) $ 在抛物线  $ C: y^{2} = 2px $ 上，则  $ A $ 到  $ C $ 的准线的距离为 ___.\n\n14. 若 x, y 满足约束条件  $ \\begin{cases} x - 3y \\leq -1 \\\\ x + 2y \\leq 9 \\\\ 3x + y \\geq 7 \\end{cases} $，则  $ z = 2x - y $ 的最大值为___。\n\n15. 已知  $ \\{a_n\\} $ 为等比数列， $ a_2a_4a_5 = a_3a_6 $， $ a_9a_{10} = -8 $，则  $ a_7 = $ ___.\n\n16. 设  $ a \\in (0,1) $，若函数  $ f(x) = a^x + (1+a)^x $ 在  $ (0,+\\infty) $ 上单调递增，则  $ a $ 取值范围是___。",
+        "images": {}
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/layout_det_res_1.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A15Z%2F-1%2F%2Fa088abea17099f47f15c3a7134affef95508325d018ab33b3caa08839466198c"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/input_img_1.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A16Z%2F-1%2F%2F7cb8de98c8f6b27a5fc57f1eee1a16a2effa42ecb71757a7e0103170bea75599"
+    },
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 1191,
+        "height": 1684,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [
+          {
+            "block_label": "paragraph_title",
+            "block_content": "三、解答题",
+            "block_bbox": [
+              71,
+              41,
+              216,
+              81
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+              [
+                71.4325942993164,
+                33.80797576904297
+              ],
+              [
+                217.25088500976562,
+                42.579002380371094
+              ],
+              [
+                214.96035766601562,
+                80.65926361083984
+              ],
+              [
+                69.1420669555664,
+                71.88823699951172
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "17. 某厂为比较甲乙两种工艺对橡胶产品伸缩率  $ \\frac{1}{2} $ 处理效应，进行10次配对试验，每次配对试验选用材质相同的两个橡胶产品，随机地选其中一个用甲工艺处理，另一个用乙工艺处理，测量处理后的橡胶产品的伸缩率，甲、乙两种工艺处理后的橡胶产品的伸缩率分别记为  $ x_{i} $， $ y_{i} $ ( $ i=1,2,\\cdots,10 $)，试验结果如下",
+            "block_bbox": [
+              77,
+              102,
+              1120,
+              253
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+              [
+                77.0,
+                102.0
+              ],
+              [
+                1120.0,
+                102.0
+              ],
+              [
+                1120.0,
+                253.0
+              ],
+              [
+                77.0,
+                253.0
+              ]
+            ]
+          },
+          {
+            "block_label": "table",
+            "block_content": "<table><tr><td>试验序号 i</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr><tr><td>伸缩率  $ x_i $</td><td>545</td><td>533</td><td>551</td><td>522</td><td>575</td><td>544</td><td>541</td><td>568</td><td>596</td><td>548</td></tr><tr><td>伸缩率  $ y_i $</td><td>536</td><td>527</td><td>543</td><td>530</td><td>560</td><td>533</td><td>522</td><td>550</td><td>576</td><td>536</td></tr></table>",
+            "block_bbox": [
+              79,
+              266,
+              1136,
+              506
+            ],
+            "block_id": 2,
+            "block_order": null,
+            "group_id": 2,
+            "block_polygon_points": [
+              [
+                79.0,
+                266.0
+              ],
+              [
+                1136.0,
+                266.0
+              ],
+              [
+                1136.0,
+                506.0
+              ],
+              [
+                79.0,
+                506.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "记 $ z_{i}=x_{i}-y_{i}(i=1,2,\\cdots,10) $，记 $ z_{1} $， $ z_{2} $，...， $ z_{10} $的样本平均数为 $ \\overline{z} $，样本方差为 $ s^{2} $，",
+            "block_bbox": [
+              95,
+              524,
+              931,
+              556
+            ],
+            "block_id": 3,
+            "block_order": 3,
+            "group_id": 3,
+            "block_polygon_points": [
+              [
+                95.0,
+                524.0
+              ],
+              [
+                931.0,
+                524.0
+              ],
+              [
+                931.0,
+                556.0
+              ],
+              [
+                95.0,
+                556.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）求 $ \\overline{z} $， $ s^{2} $;",
+            "block_bbox": [
+              100,
+              589,
+              248,
+              620
+            ],
+            "block_id": 4,
+            "block_order": 4,
+            "group_id": 4,
+            "block_polygon_points": [
+              [
+                100.0,
+                589.0
+              ],
+              [
+                248.0,
+                589.0
+              ],
+              [
+                248.0,
+                620.0
+              ],
+              [
+                100.0,
+                620.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）判断甲工艺处理后的橡胶产品的伸缩率较乙工艺处理后的橡胶产品的伸缩率是否有显著提高（如果 $ \\overline{z}\\geq2\\sqrt{\\frac{s^{2}}{10}} $，则认为甲工艺处理后的橡胶产品的伸缩率较乙工艺处理后的橡胶产品的伸缩率有显著提高，否则不认为有显著提高）.",
+            "block_bbox": [
+              90,
+              649,
+              1125,
+              824
+            ],
+            "block_id": 5,
+            "block_order": 5,
+            "group_id": 5,
+            "block_polygon_points": [
+              [
+                90.0,
+                649.0
+              ],
+              [
+                1125.0,
+                649.0
+              ],
+              [
+                1125.0,
+                824.0
+              ],
+              [
+                90.0,
+                824.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "18. 在$\\triangle ABC$中，已知$\\angle BAC=120^\\circ$，$AB=2$，$AC=1$。",
+            "block_bbox": [
+              90,
+              844,
+              661,
+              876
+            ],
+            "block_id": 6,
+            "block_order": 6,
+            "group_id": 6,
+            "block_polygon_points": [
+              [
+                90.0,
+                844.0
+              ],
+              [
+                661.0,
+                844.0
+              ],
+              [
+                661.0,
+                876.0
+              ],
+              [
+                90.0,
+                876.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "(1) 求  $ \\sin\\angle ABC $;",
+            "block_bbox": [
+              100,
+              893,
+              288,
+              921
+            ],
+            "block_id": 7,
+            "block_order": 7,
+            "group_id": 7,
+            "block_polygon_points": [
+              [
+                100.0,
+                893.0
+              ],
+              [
+                288.0,
+                893.0
+              ],
+              [
+                288.0,
+                921.0
+              ],
+              [
+                100.0,
+                921.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）若D为BC上一点，且 $ \\angle BAD=90^{\\circ} $，求 $ \\triangle ADC $的面积.",
+            "block_bbox": [
+              98,
+              942,
+              702,
+              974
+            ],
+            "block_id": 8,
+            "block_order": 8,
+            "group_id": 8,
+            "block_polygon_points": [
+              [
+                98.0,
+                942.0
+              ],
+              [
+                702.0,
+                942.0
+              ],
+              [
+                702.0,
+                974.0
+              ],
+              [
+                98.0,
+                974.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "19. 如图，在三棱锥  $ P-ABC $ 中， $ AB \\perp BC $， $ AB=2 $， $ BC=2\\sqrt{2} $， $ PB=PC=\\sqrt{6} $， $ BP $， $ AP $， $ BC $ 的中点分别为  $ D $， $ E $， $ O $， $ AD=\\sqrt{5}DO $，点  $ F $ 在  $ AC $ 上， $ BF \\perp AO $。",
+            "block_bbox": [
+              89,
+              996,
+              1120,
+              1100
+            ],
+            "block_id": 9,
+            "block_order": 9,
+            "group_id": 9,
+            "block_polygon_points": [
+              [
+                89.0,
+                996.0
+              ],
+              [
+                1119.0,
+                996.0
+              ],
+              [
+                1119.0,
+                1091.0
+              ],
+              [
+                89.0,
+                1091.0
+              ]
+            ]
+          },
+          {
+            "block_label": "image",
+            "block_content": "",
+            "block_bbox": [
+              91,
+              1127,
+              368,
+              1350
+            ],
+            "block_id": 10,
+            "block_order": null,
+            "group_id": 10,
+            "block_polygon_points": [
+              [
+                91.0,
+                1127.0
+              ],
+              [
+                368.0,
+                1127.0
+              ],
+              [
+                368.0,
+                1350.0
+              ],
+              [
+                91.0,
+                1350.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）证明：EF//平面ADO；",
+            "block_bbox": [
+              92,
+              1380,
+              396,
+              1411
+            ],
+            "block_id": 11,
+            "block_order": 10,
+            "group_id": 11,
+            "block_polygon_points": [
+              [
+                92.0,
+                1380.0
+              ],
+              [
+                396.0,
+                1380.0
+              ],
+              [
+                396.0,
+                1411.0
+              ],
+              [
+                92.0,
+                1411.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）证明：平面 $ ADO \\perp $平面 $ BEF $;",
+            "block_bbox": [
+              92,
+              1429,
+              438,
+              1458
+            ],
+            "block_id": 12,
+            "block_order": 11,
+            "group_id": 12,
+            "block_polygon_points": [
+              [
+                92.0,
+                1429.0
+              ],
+              [
+                438.0,
+                1429.0
+              ],
+              [
+                438.0,
+                1458.0
+              ],
+              [
+                92.0,
+                1458.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（3）求二面角D-AO-C的正弦值.",
+            "block_bbox": [
+              90,
+              1476,
+              453,
+              1505
+            ],
+            "block_id": 13,
+            "block_order": 12,
+            "group_id": 13,
+            "block_polygon_points": [
+              [
+                90.0,
+                1476.0
+              ],
+              [
+                453.0,
+                1476.0
+              ],
+              [
+                453.0,
+                1505.0
+              ],
+              [
+                90.0,
+                1505.0
+              ]
+            ]
+          }
+        ],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": [
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8473488688468933,
+              "coordinate": [
+                71,
+                41,
+                216,
+                81
+              ],
+              "order": 1,
+              "polygon_points": [
+                [
+                  71.4325942993164,
+                  33.80797576904297
+                ],
+                [
+                  217.25088500976562,
+                  42.579002380371094
+                ],
+                [
+                  214.96035766601562,
+                  80.65926361083984
+                ],
+                [
+                  69.1420669555664,
+                  71.88823699951172
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9425977468490601,
+              "coordinate": [
+                77,
+                102,
+                1120,
+                253
+              ],
+              "order": 2,
+              "polygon_points": [
+                [
+                  77.0,
+                  102.0
+                ],
+                [
+                  1120.0,
+                  102.0
+                ],
+                [
+                  1120.0,
+                  253.0
+                ],
+                [
+                  77.0,
+                  253.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6907061338424683,
+              "coordinate": [
+                688,
+                230,
+                710,
+                255
+              ],
+              "order": 3,
+              "polygon_points": [
+                [
+                  688.0,
+                  230.0
+                ],
+                [
+                  688.0,
+                  254.0
+                ],
+                [
+                  709.0,
+                  254.0
+                ],
+                [
+                  709.0,
+                  230.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.5710911750793457,
+              "coordinate": [
+                735,
+                230,
+                761,
+                257
+              ],
+              "order": 4,
+              "polygon_points": [
+                [
+                  735.0,
+                  230.0
+                ],
+                [
+                  760.0,
+                  230.0
+                ],
+                [
+                  760.0,
+                  256.0
+                ],
+                [
+                  735.0,
+                  256.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 21,
+              "label": "table",
+              "score": 0.9685371518135071,
+              "coordinate": [
+                79,
+                266,
+                1136,
+                506
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  79.0,
+                  266.0
+                ],
+                [
+                  1136.0,
+                  266.0
+                ],
+                [
+                  1136.0,
+                  506.0
+                ],
+                [
+                  79.0,
+                  506.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6534858345985413,
+              "coordinate": [
+                202,
+                374,
+                223,
+                401
+              ],
+              "order": 5,
+              "polygon_points": [
+                [
+                  202.0,
+                  374.0
+                ],
+                [
+                  202.0,
+                  400.0
+                ],
+                [
+                  222.0,
+                  400.0
+                ],
+                [
+                  222.0,
+                  374.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6629395484924316,
+              "coordinate": [
+                202,
+                456,
+                225,
+                483
+              ],
+              "order": 6,
+              "polygon_points": [
+                [
+                  202.0,
+                  456.0
+                ],
+                [
+                  224.0,
+                  456.0
+                ],
+                [
+                  224.0,
+                  482.0
+                ],
+                [
+                  202.0,
+                  482.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7456538081169128,
+              "coordinate": [
+                95,
+                524,
+                931,
+                556
+              ],
+              "order": 7,
+              "polygon_points": [
+                [
+                  95.0,
+                  524.0
+                ],
+                [
+                  931.0,
+                  524.0
+                ],
+                [
+                  931.0,
+                  556.0
+                ],
+                [
+                  95.0,
+                  556.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7921415567398071,
+              "coordinate": [
+                122,
+                525,
+                368,
+                553
+              ],
+              "order": 8,
+              "polygon_points": [
+                [
+                  122.0,
+                  525.0
+                ],
+                [
+                  368.0,
+                  525.0
+                ],
+                [
+                  368.0,
+                  553.0
+                ],
+                [
+                  122.0,
+                  553.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.5968331694602966,
+              "coordinate": [
+                415,
+                529,
+                582,
+                555
+              ],
+              "order": 9,
+              "polygon_points": [
+                [
+                  415.0,
+                  529.0
+                ],
+                [
+                  582.0,
+                  529.0
+                ],
+                [
+                  582.0,
+                  555.0
+                ],
+                [
+                  415.0,
+                  555.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7230167388916016,
+              "coordinate": [
+                742,
+                525,
+                762,
+                555
+              ],
+              "order": 10,
+              "polygon_points": [
+                [
+                  742.0,
+                  525.0
+                ],
+                [
+                  761.0,
+                  525.0
+                ],
+                [
+                  761.0,
+                  554.0
+                ],
+                [
+                  742.0,
+                  554.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7423713207244873,
+              "coordinate": [
+                896,
+                526,
+                920,
+                552
+              ],
+              "order": 11,
+              "polygon_points": [
+                [
+                  896.0,
+                  526.0
+                ],
+                [
+                  919.0,
+                  526.0
+                ],
+                [
+                  919.0,
+                  551.0
+                ],
+                [
+                  896.0,
+                  551.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.820256233215332,
+              "coordinate": [
+                100,
+                589,
+                248,
+                620
+              ],
+              "order": 12,
+              "polygon_points": [
+                [
+                  100.0,
+                  589.0
+                ],
+                [
+                  248.0,
+                  589.0
+                ],
+                [
+                  248.0,
+                  620.0
+                ],
+                [
+                  100.0,
+                  620.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.41024091839790344,
+              "coordinate": [
+                173,
+                590,
+                242,
+                621
+              ],
+              "order": 13,
+              "polygon_points": [
+                [
+                  173.0,
+                  590.0
+                ],
+                [
+                  242.0,
+                  590.0
+                ],
+                [
+                  242.0,
+                  621.0
+                ],
+                [
+                  173.0,
+                  621.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9332461357116699,
+              "coordinate": [
+                90,
+                649,
+                1125,
+                824
+              ],
+              "order": 14,
+              "polygon_points": [
+                [
+                  90.0,
+                  649.0
+                ],
+                [
+                  1125.0,
+                  649.0
+                ],
+                [
+                  1125.0,
+                  824.0
+                ],
+                [
+                  90.0,
+                  824.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8462525010108948,
+              "coordinate": [
+                95,
+                700,
+                195,
+                769
+              ],
+              "order": 15,
+              "polygon_points": [
+                [
+                  95.0,
+                  700.0
+                ],
+                [
+                  195.0,
+                  700.0
+                ],
+                [
+                  195.0,
+                  769.0
+                ],
+                [
+                  95.0,
+                  769.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7930350303649902,
+              "coordinate": [
+                90,
+                844,
+                661,
+                876
+              ],
+              "order": 16,
+              "polygon_points": [
+                [
+                  90.0,
+                  844.0
+                ],
+                [
+                  661.0,
+                  844.0
+                ],
+                [
+                  661.0,
+                  876.0
+                ],
+                [
+                  90.0,
+                  876.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.34355419874191284,
+              "coordinate": [
+                160,
+                846,
+                224,
+                870
+              ],
+              "order": 17,
+              "polygon_points": [
+                [
+                  160.0,
+                  846.0
+                ],
+                [
+                  160.0,
+                  869.0
+                ],
+                [
+                  223.0,
+                  869.0
+                ],
+                [
+                  223.0,
+                  846.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7559467554092407,
+              "coordinate": [
+                314,
+                848,
+                452,
+                873
+              ],
+              "order": 18,
+              "polygon_points": [
+                [
+                  314.0,
+                  848.0
+                ],
+                [
+                  452.0,
+                  848.0
+                ],
+                [
+                  452.0,
+                  873.0
+                ],
+                [
+                  314.0,
+                  873.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.783422589302063,
+              "coordinate": [
+                100,
+                893,
+                288,
+                921
+              ],
+              "order": 19,
+              "polygon_points": [
+                [
+                  100.0,
+                  893.0
+                ],
+                [
+                  288.0,
+                  893.0
+                ],
+                [
+                  288.0,
+                  921.0
+                ],
+                [
+                  100.0,
+                  921.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6615338325500488,
+              "coordinate": [
+                174,
+                895,
+                275,
+                919
+              ],
+              "order": 20,
+              "polygon_points": [
+                [
+                  174.0,
+                  895.0
+                ],
+                [
+                  174.0,
+                  918.0
+                ],
+                [
+                  274.0,
+                  918.0
+                ],
+                [
+                  274.0,
+                  895.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8343906998634338,
+              "coordinate": [
+                98,
+                942,
+                702,
+                974
+              ],
+              "order": 21,
+              "polygon_points": [
+                [
+                  98.0,
+                  942.0
+                ],
+                [
+                  702.0,
+                  942.0
+                ],
+                [
+                  702.0,
+                  974.0
+                ],
+                [
+                  98.0,
+                  974.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8258671760559082,
+              "coordinate": [
+                367,
+                947,
+                496,
+                971
+              ],
+              "order": 22,
+              "polygon_points": [
+                [
+                  367.0,
+                  947.0
+                ],
+                [
+                  496.0,
+                  947.0
+                ],
+                [
+                  496.0,
+                  971.0
+                ],
+                [
+                  367.0,
+                  971.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.806831419467926,
+              "coordinate": [
+                545,
+                947,
+                622,
+                972
+              ],
+              "order": 23,
+              "polygon_points": [
+                [
+                  545.0,
+                  947.0
+                ],
+                [
+                  621.0,
+                  947.0
+                ],
+                [
+                  621.0,
+                  971.0
+                ],
+                [
+                  545.0,
+                  971.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9091057777404785,
+              "coordinate": [
+                89,
+                996,
+                1120,
+                1100
+              ],
+              "order": 24,
+              "polygon_points": [
+                [
+                  89.0,
+                  996.0
+                ],
+                [
+                  1119.0,
+                  996.0
+                ],
+                [
+                  1119.0,
+                  1091.0
+                ],
+                [
+                  89.0,
+                  1091.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7956454157829285,
+              "coordinate": [
+                426,
+                1002,
+                525,
+                1026
+              ],
+              "order": 25,
+              "polygon_points": [
+                [
+                  426.0,
+                  1002.0
+                ],
+                [
+                  426.0,
+                  1025.0
+                ],
+                [
+                  524.0,
+                  1025.0
+                ],
+                [
+                  524.0,
+                  1002.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7923030257225037,
+              "coordinate": [
+                653,
+                1003,
+                764,
+                1035
+              ],
+              "order": 26,
+              "polygon_points": [
+                [
+                  653.0,
+                  1003.0
+                ],
+                [
+                  764.0,
+                  1003.0
+                ],
+                [
+                  764.0,
+                  1035.0
+                ],
+                [
+                  653.0,
+                  1035.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7739777565002441,
+              "coordinate": [
+                790,
+                1003,
+                941,
+                1034
+              ],
+              "order": 27,
+              "polygon_points": [
+                [
+                  790.0,
+                  1003.0
+                ],
+                [
+                  941.0,
+                  1003.0
+                ],
+                [
+                  941.0,
+                  1034.0
+                ],
+                [
+                  790.0,
+                  1034.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7893748879432678,
+              "coordinate": [
+                321,
+                1063,
+                450,
+                1093
+              ],
+              "order": 28,
+              "polygon_points": [
+                [
+                  321.0,
+                  1063.0
+                ],
+                [
+                  450.0,
+                  1063.0
+                ],
+                [
+                  450.0,
+                  1093.0
+                ],
+                [
+                  321.0,
+                  1093.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.749991774559021,
+              "coordinate": [
+                625,
+                1069,
+                729,
+                1095
+              ],
+              "order": 29,
+              "polygon_points": [
+                [
+                  625.0,
+                  1069.0
+                ],
+                [
+                  729.0,
+                  1069.0
+                ],
+                [
+                  729.0,
+                  1095.0
+                ],
+                [
+                  625.0,
+                  1095.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 14,
+              "label": "image",
+              "score": 0.9407045841217041,
+              "coordinate": [
+                91,
+                1127,
+                368,
+                1350
+              ],
+              "order": null,
+              "polygon_points": [
+                [
+                  91.0,
+                  1127.0
+                ],
+                [
+                  368.0,
+                  1127.0
+                ],
+                [
+                  368.0,
+                  1350.0
+                ],
+                [
+                  91.0,
+                  1350.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8405726552009583,
+              "coordinate": [
+                92,
+                1380,
+                396,
+                1411
+              ],
+              "order": 30,
+              "polygon_points": [
+                [
+                  92.0,
+                  1380.0
+                ],
+                [
+                  396.0,
+                  1380.0
+                ],
+                [
+                  396.0,
+                  1411.0
+                ],
+                [
+                  92.0,
+                  1411.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.3851745128631592,
+              "coordinate": [
+                212,
+                1383,
+                276,
+                1408
+              ],
+              "order": 31,
+              "polygon_points": [
+                [
+                  212.0,
+                  1383.0
+                ],
+                [
+                  212.0,
+                  1407.0
+                ],
+                [
+                  275.0,
+                  1407.0
+                ],
+                [
+                  275.0,
+                  1383.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.833244800567627,
+              "coordinate": [
+                92,
+                1429,
+                438,
+                1458
+              ],
+              "order": 32,
+              "polygon_points": [
+                [
+                  92.0,
+                  1429.0
+                ],
+                [
+                  438.0,
+                  1429.0
+                ],
+                [
+                  438.0,
+                  1458.0
+                ],
+                [
+                  92.0,
+                  1458.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.33259761333465576,
+              "coordinate": [
+                258,
+                1434,
+                335,
+                1457
+              ],
+              "order": 33,
+              "polygon_points": [
+                [
+                  258.0,
+                  1434.0
+                ],
+                [
+                  258.0,
+                  1456.0
+                ],
+                [
+                  334.0,
+                  1456.0
+                ],
+                [
+                  334.0,
+                  1434.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8154947757720947,
+              "coordinate": [
+                90,
+                1476,
+                453,
+                1505
+              ],
+              "order": 34,
+              "polygon_points": [
+                [
+                  90.0,
+                  1476.0
+                ],
+                [
+                  453.0,
+                  1476.0
+                ],
+                [
+                  453.0,
+                  1505.0
+                ],
+                [
+                  90.0,
+                  1505.0
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "markdown": {
+        "text": "## 三、 解答题\n\n17. 某厂为比较甲乙两种工艺对橡胶产品伸缩率  $ \\frac{1}{2} $ 处理效应，进行10次配对试验，每次配对试验选用材质相同的两个橡胶产品，随机地选其中一个用甲工艺处理，另一个用乙工艺处理，测量处理后的橡胶产品的伸缩率，甲、乙两种工艺处理后的橡胶产品的伸缩率分别记为  $ x_{i} $， $ y_{i} $ ( $ i=1,2,\\cdots,10 $)，试验结果如下\n\n\n<table border=1 style='margin: auto; word-wrap: break-word;'><tr><td style='text-align: center; word-wrap: break-word;'>试验序号 i</td><td style='text-align: center; word-wrap: break-word;'>1</td><td style='text-align: center; word-wrap: break-word;'>2</td><td style='text-align: center; word-wrap: break-word;'>3</td><td style='text-align: center; word-wrap: break-word;'>4</td><td style='text-align: center; word-wrap: break-word;'>5</td><td style='text-align: center; word-wrap: break-word;'>6</td><td style='text-align: center; word-wrap: break-word;'>7</td><td style='text-align: center; word-wrap: break-word;'>8</td><td style='text-align: center; word-wrap: break-word;'>9</td><td style='text-align: center; word-wrap: break-word;'>10</td></tr><tr><td style='text-align: center; word-wrap: break-word;'>伸缩率  $ x_i $</td><td style='text-align: center; word-wrap: break-word;'>545</td><td style='text-align: center; word-wrap: break-word;'>533</td><td style='text-align: center; word-wrap: break-word;'>551</td><td style='text-align: center; word-wrap: break-word;'>522</td><td style='text-align: center; word-wrap: break-word;'>575</td><td style='text-align: center; word-wrap: break-word;'>544</td><td style='text-align: center; word-wrap: break-word;'>541</td><td style='text-align: center; word-wrap: break-word;'>568</td><td style='text-align: center; word-wrap: break-word;'>596</td><td style='text-align: center; word-wrap: break-word;'>548</td></tr><tr><td style='text-align: center; word-wrap: break-word;'>伸缩率  $ y_i $</td><td style='text-align: center; word-wrap: break-word;'>536</td><td style='text-align: center; word-wrap: break-word;'>527</td><td style='text-align: center; word-wrap: break-word;'>543</td><td style='text-align: center; word-wrap: break-word;'>530</td><td style='text-align: center; word-wrap: break-word;'>560</td><td style='text-align: center; word-wrap: break-word;'>533</td><td style='text-align: center; word-wrap: break-word;'>522</td><td style='text-align: center; word-wrap: break-word;'>550</td><td style='text-align: center; word-wrap: break-word;'>576</td><td style='text-align: center; word-wrap: break-word;'>536</td></tr></table>\n\n记 $ z_{i}=x_{i}-y_{i}(i=1,2,\\cdots,10) $，记 $ z_{1} $， $ z_{2} $，...， $ z_{10} $的样本平均数为 $ \\overline{z} $，样本方差为 $ s^{2} $，\n\n（1）求 $ \\overline{z} $， $ s^{2} $;\n\n（2）判断甲工艺处理后的橡胶产品的伸缩率较乙工艺处理后的橡胶产品的伸缩率是否有显著提高（如果 $ \\overline{z}\\geq2\\sqrt{\\frac{s^{2}}{10}} $，则认为甲工艺处理后的橡胶产品的伸缩率较乙工艺处理后的橡胶产品的伸缩率有显著提高，否则不认为有显著提高）.\n\n18. 在$\\triangle ABC$中，已知$\\angle BAC=120^\\circ$，$AB=2$，$AC=1$。\n\n(1) 求  $ \\sin\\angle ABC $;\n\n（2）若D为BC上一点，且 $ \\angle BAD=90^{\\circ} $，求 $ \\triangle ADC $的面积.\n\n19. 如图，在三棱锥  $ P-ABC $ 中， $ AB \\perp BC $， $ AB=2 $， $ BC=2\\sqrt{2} $， $ PB=PC=\\sqrt{6} $， $ BP $， $ AP $， $ BC $ 的中点分别为  $ D $， $ E $， $ O $， $ AD=\\sqrt{5}DO $，点  $ F $ 在  $ AC $ 上， $ BF \\perp AO $。\n\n<div style=\"text-align: center;\"><img src=\"imgs/img_in_image_box_91_1127_368_1350.jpg\" alt=\"Image\" width=\"23%\" /></div>\n\n\n（1）证明：EF//平面ADO；\n\n（2）证明：平面 $ ADO \\perp $平面 $ BEF $;\n\n（3）求二面角D-AO-C的正弦值.",
+        "images": {
+          "imgs/img_in_image_box_91_1127_368_1350.jpg": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/markdown_2/imgs/img_in_image_box_91_1127_368_1350.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A16Z%2F-1%2F%2Fa020e630cd625ce136a3f1bb6d0ca6d043ecd9939d60b0913f3087360b3110f1"
+        }
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/layout_det_res_2.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A17Z%2F-1%2F%2F5823eccf060abe94dbe7e167bce75573fc9b7d19391ac453ffec04330732e845"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/input_img_2.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A17Z%2F-1%2F%2F569e0b6b856868a8ec6f0102bb745cf2fc6d4f9f9d6d0f5ce12810792d86c19f"
+    },
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 1191,
+        "height": 1684,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [
+          {
+            "block_label": "text",
+            "block_content": "20. 已知椭圆 C:  $ \\frac{y^{2}}{a^{2}}+\\frac{x^{2}}{b^{2}}=1(a>b>0) $ 的离心率为  $ \\frac{\\sqrt{5}}{3} $，点  $ A(-2,0) $ 在 C 上.",
+            "block_bbox": [
+              72,
+              21,
+              864,
+              120
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+              [
+                72.1380615234375,
+                19.58356475830078
+              ],
+              [
+                864.1786499023438,
+                30.081893920898438
+              ],
+              [
+                862.9322509765625,
+                124.1154556274414
+              ],
+              [
+                70.89166259765625,
+                113.61712646484375
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）求 C 的方程：",
+            "block_bbox": [
+              93,
+              119,
+              275,
+              159
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+              [
+                93.31784057617188,
+                114.43079376220703
+              ],
+              [
+                276.1461181640625,
+                127.14927673339844
+              ],
+              [
+                273.6580505371094,
+                162.91534423828125
+              ],
+              [
+                90.82977294921875,
+                150.1968536376953
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）过点 $ (-2,3) $的直线交C于点P，Q两点，直线AP，AQ与y轴的交点分别为M，N，证明：线段MN的中点为定点.",
+            "block_bbox": [
+              90,
+              180,
+              1111,
+              282
+            ],
+            "block_id": 2,
+            "block_order": 3,
+            "group_id": 2,
+            "block_polygon_points": [
+              [
+                89.21517944335938,
+                180.931640625
+              ],
+              [
+                1109.2149658203125,
+                172.93161010742188
+              ],
+              [
+                1109.9998779296875,
+                272.99993896484375
+              ],
+              [
+                90.0001220703125,
+                280.9999694824219
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "21. 已知函数  $ f(x)=\\left(\\frac{1}{x}+a\\right)\\ln(1+x) $.",
+            "block_bbox": [
+              87,
+              300,
+              466,
+              376
+            ],
+            "block_id": 3,
+            "block_order": 4,
+            "group_id": 3,
+            "block_polygon_points": [
+              [
+                87.0,
+                300.0
+              ],
+              [
+                466.0,
+                300.0
+              ],
+              [
+                466.0,
+                376.0
+              ],
+              [
+                87.0,
+                376.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）当a=-1时，求曲线 $ y=f(x) $在点 $ (1,f(1)) $处的切线方程；",
+            "block_bbox": [
+              101,
+              404,
+              721,
+              443
+            ],
+            "block_id": 4,
+            "block_order": 5,
+            "group_id": 4,
+            "block_polygon_points": [
+              [
+                101.0,
+                404.0
+              ],
+              [
+                721.0,
+                404.0
+              ],
+              [
+                721.0,
+                443.0
+              ],
+              [
+                101.0,
+                443.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）是否存在 a, b, 使得曲线  $ y = f\\left(\\frac{1}{x}\\right) $ 关于直线 x = b 对称，若存在，求 a, b 的值，若不存在，说明理由.",
+            "block_bbox": [
+              92,
+              469,
+              1114,
+              598
+            ],
+            "block_id": 5,
+            "block_order": 6,
+            "group_id": 5,
+            "block_polygon_points": [
+              [
+                92.0,
+                469.0
+              ],
+              [
+                1114.0,
+                469.0
+              ],
+              [
+                1114.0,
+                598.0
+              ],
+              [
+                92.0,
+                598.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（3）若  $ f(x) $ 在  $ (0,+\\infty) $ 存在极值，求 a 的取值范围.",
+            "block_bbox": [
+              102,
+              622,
+              606,
+              657
+            ],
+            "block_id": 6,
+            "block_order": 7,
+            "group_id": 6,
+            "block_polygon_points": [
+              [
+                102.0,
+                622.0
+              ],
+              [
+                606.0,
+                622.0
+              ],
+              [
+                606.0,
+                657.0
+              ],
+              [
+                102.0,
+                657.0
+              ]
+            ]
+          },
+          {
+            "block_label": "paragraph_title",
+            "block_content": "四、选做题",
+            "block_bbox": [
+              94,
+              679,
+              229,
+              713
+            ],
+            "block_id": 7,
+            "block_order": 8,
+            "group_id": 7,
+            "block_polygon_points": [
+              [
+                94.0,
+                679.0
+              ],
+              [
+                229.0,
+                679.0
+              ],
+              [
+                229.0,
+                713.0
+              ],
+              [
+                94.0,
+                713.0
+              ]
+            ]
+          },
+          {
+            "block_label": "paragraph_title",
+            "block_content": "【选修4-4】（10分）",
+            "block_bbox": [
+              102,
+              729,
+              319,
+              763
+            ],
+            "block_id": 8,
+            "block_order": 9,
+            "group_id": 8,
+            "block_polygon_points": [
+              [
+                102.0,
+                729.0
+              ],
+              [
+                319.0,
+                729.0
+              ],
+              [
+                319.0,
+                763.0
+              ],
+              [
+                102.0,
+                763.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "22. 在直角坐标系 xOy 中，以坐标原点 O 为极点，x 轴正半轴为极轴建立极坐标系，曲线  $ C_1 $ 的极坐标方程为  $ \\rho = 2\\sin\\theta\\left(\\frac{\\pi}{4} \\leq \\theta \\leq \\frac{\\pi}{2}\\right) $，曲线  $ C_2 $： $ \\begin{cases} x = 2\\cos\\alpha \\\\ y = 2\\sin\\alpha \\end{cases} $（ $ \\alpha $ 为参数， $ \\frac{\\pi}{2} < \\alpha < \\pi $）。",
+            "block_bbox": [
+              91,
+              790,
+              1120,
+              931
+            ],
+            "block_id": 9,
+            "block_order": 10,
+            "group_id": 9,
+            "block_polygon_points": [
+              [
+                91.0,
+                790.0
+              ],
+              [
+                1120.0,
+                790.0
+              ],
+              [
+                1120.0,
+                931.0
+              ],
+              [
+                91.0,
+                931.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）写出 $ C_{1} $的直角坐标方程：",
+            "block_bbox": [
+              102,
+              956,
+              380,
+              986
+            ],
+            "block_id": 10,
+            "block_order": 11,
+            "group_id": 10,
+            "block_polygon_points": [
+              [
+                102.0,
+                956.0
+              ],
+              [
+                380.0,
+                956.0
+              ],
+              [
+                380.0,
+                986.0
+              ],
+              [
+                102.0,
+                986.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）若直线  $ y = x + m $ 既与  $ C_{1} $ 没有公共点，也与  $ C_{2} $ 没有公共点，求 m 的取值范围.",
+            "block_bbox": [
+              100,
+              1020,
+              885,
+              1057
+            ],
+            "block_id": 11,
+            "block_order": 12,
+            "group_id": 11,
+            "block_polygon_points": [
+              [
+                100.0,
+                1020.0
+              ],
+              [
+                884.2589721679688,
+                1027.002197265625
+              ],
+              [
+                884.0000610351562,
+                1056.0
+              ],
+              [
+                99.7410888671875,
+                1048.997802734375
+              ]
+            ]
+          },
+          {
+            "block_label": "paragraph_title",
+            "block_content": "【选修4-5】（10分）",
+            "block_bbox": [
+              99,
+              1076,
+              315,
+              1110
+            ],
+            "block_id": 12,
+            "block_order": 13,
+            "group_id": 12,
+            "block_polygon_points": [
+              [
+                99.0,
+                1076.0
+              ],
+              [
+                315.0,
+                1076.0
+              ],
+              [
+                315.0,
+                1110.0
+              ],
+              [
+                99.0,
+                1110.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "23. 已知  $ f(x)=2|x|+|x-2| $.",
+            "block_bbox": [
+              88,
+              1130,
+              376,
+              1172
+            ],
+            "block_id": 13,
+            "block_order": 14,
+            "group_id": 13,
+            "block_polygon_points": [
+              [
+                88.0,
+                1130.0
+              ],
+              [
+                376.0,
+                1130.0
+              ],
+              [
+                376.0,
+                1172.0
+              ],
+              [
+                88.0,
+                1172.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（1）求不等式  $ f(x) \\leq 6 - x $ 解集；",
+            "block_bbox": [
+              98,
+              1197,
+              442,
+              1238
+            ],
+            "block_id": 14,
+            "block_order": 15,
+            "group_id": 14,
+            "block_polygon_points": [
+              [
+                98.0,
+                1197.0
+              ],
+              [
+                442.0,
+                1197.0
+              ],
+              [
+                442.0,
+                1238.0
+              ],
+              [
+                98.0,
+                1238.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "（2）在直角坐标系 xOy 中，求不等式组  $ \\begin{cases} f(x) \\leq y \\\\ x + y - 6 \\leq 0 \\end{cases} $ 所确定的平面区域的面积.",
+            "block_bbox": [
+              95,
+              1259,
+              869,
+              1343
+            ],
+            "block_id": 15,
+            "block_order": 16,
+            "group_id": 15,
+            "block_polygon_points": [
+              [
+                95.0,
+                1259.0
+              ],
+              [
+                869.0,
+                1259.0
+              ],
+              [
+                869.0,
+                1343.0
+              ],
+              [
+                95.0,
+                1343.0
+              ]
+            ]
+          }
+        ],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": [
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8464586734771729,
+              "coordinate": [
+                72,
+                21,
+                864,
+                120
+              ],
+              "order": 1,
+              "polygon_points": [
+                [
+                  72.1380615234375,
+                  19.58356475830078
+                ],
+                [
+                  864.1786499023438,
+                  30.081893920898438
+                ],
+                [
+                  862.9322509765625,
+                  124.1154556274414
+                ],
+                [
+                  70.89166259765625,
+                  113.61712646484375
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8774185180664062,
+              "coordinate": [
+                257,
+                27,
+                491,
+                103
+              ],
+              "order": 2,
+              "polygon_points": [
+                [
+                  257.0,
+                  27.0
+                ],
+                [
+                  491.0,
+                  27.0
+                ],
+                [
+                  491.0,
+                  103.0
+                ],
+                [
+                  257.0,
+                  103.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8205351829528809,
+              "coordinate": [
+                607,
+                45,
+                649,
+                114
+              ],
+              "order": 3,
+              "polygon_points": [
+                [
+                  607.0,
+                  45.0
+                ],
+                [
+                  649.0,
+                  45.0
+                ],
+                [
+                  649.0,
+                  114.0
+                ],
+                [
+                  607.0,
+                  114.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.798361599445343,
+              "coordinate": [
+                93,
+                119,
+                275,
+                159
+              ],
+              "order": 4,
+              "polygon_points": [
+                [
+                  93.31784057617188,
+                  114.43079376220703
+                ],
+                [
+                  276.1461181640625,
+                  127.14927673339844
+                ],
+                [
+                  273.6580505371094,
+                  162.91534423828125
+                ],
+                [
+                  90.82977294921875,
+                  150.1968536376953
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8713157176971436,
+              "coordinate": [
+                90,
+                180,
+                1111,
+                282
+              ],
+              "order": 5,
+              "polygon_points": [
+                [
+                  89.21517944335938,
+                  180.931640625
+                ],
+                [
+                  1109.2149658203125,
+                  172.93161010742188
+                ],
+                [
+                  1109.9998779296875,
+                  272.99993896484375
+                ],
+                [
+                  90.0001220703125,
+                  280.9999694824219
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.846339225769043,
+              "coordinate": [
+                87,
+                300,
+                466,
+                376
+              ],
+              "order": 6,
+              "polygon_points": [
+                [
+                  87.0,
+                  300.0
+                ],
+                [
+                  466.0,
+                  300.0
+                ],
+                [
+                  466.0,
+                  376.0
+                ],
+                [
+                  87.0,
+                  376.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8848320841789246,
+              "coordinate": [
+                227,
+                308,
+                459,
+                374
+              ],
+              "order": 7,
+              "polygon_points": [
+                [
+                  227.0,
+                  308.0
+                ],
+                [
+                  459.0,
+                  308.0
+                ],
+                [
+                  459.0,
+                  374.0
+                ],
+                [
+                  227.0,
+                  374.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8142469525337219,
+              "coordinate": [
+                101,
+                404,
+                721,
+                443
+              ],
+              "order": 8,
+              "polygon_points": [
+                [
+                  101.0,
+                  404.0
+                ],
+                [
+                  721.0,
+                  404.0
+                ],
+                [
+                  721.0,
+                  443.0
+                ],
+                [
+                  101.0,
+                  443.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.872518002986908,
+              "coordinate": [
+                92,
+                469,
+                1114,
+                598
+              ],
+              "order": 9,
+              "polygon_points": [
+                [
+                  92.0,
+                  469.0
+                ],
+                [
+                  1114.0,
+                  469.0
+                ],
+                [
+                  1114.0,
+                  598.0
+                ],
+                [
+                  92.0,
+                  598.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8616567850112915,
+              "coordinate": [
+                393,
+                473,
+                498,
+                539
+              ],
+              "order": 10,
+              "polygon_points": [
+                [
+                  393.0,
+                  473.0
+                ],
+                [
+                  498.0,
+                  473.0
+                ],
+                [
+                  498.0,
+                  539.0
+                ],
+                [
+                  393.0,
+                  539.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8189797401428223,
+              "coordinate": [
+                102,
+                622,
+                606,
+                657
+              ],
+              "order": 11,
+              "polygon_points": [
+                [
+                  102.0,
+                  622.0
+                ],
+                [
+                  606.0,
+                  622.0
+                ],
+                [
+                  606.0,
+                  657.0
+                ],
+                [
+                  102.0,
+                  657.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.49207764863967896,
+              "coordinate": [
+                257,
+                624,
+                333,
+                656
+              ],
+              "order": 12,
+              "polygon_points": [
+                [
+                  257.0,
+                  624.0
+                ],
+                [
+                  333.0,
+                  624.0
+                ],
+                [
+                  333.0,
+                  656.0
+                ],
+                [
+                  257.0,
+                  656.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8357378840446472,
+              "coordinate": [
+                94,
+                679,
+                229,
+                713
+              ],
+              "order": 13,
+              "polygon_points": [
+                [
+                  94.0,
+                  679.0
+                ],
+                [
+                  229.0,
+                  679.0
+                ],
+                [
+                  229.0,
+                  713.0
+                ],
+                [
+                  94.0,
+                  713.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8224914073944092,
+              "coordinate": [
+                102,
+                729,
+                319,
+                763
+              ],
+              "order": 14,
+              "polygon_points": [
+                [
+                  102.0,
+                  729.0
+                ],
+                [
+                  319.0,
+                  729.0
+                ],
+                [
+                  319.0,
+                  763.0
+                ],
+                [
+                  102.0,
+                  763.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9148186445236206,
+              "coordinate": [
+                91,
+                790,
+                1120,
+                931
+              ],
+              "order": 15,
+              "polygon_points": [
+                [
+                  91.0,
+                  790.0
+                ],
+                [
+                  1120.0,
+                  790.0
+                ],
+                [
+                  1120.0,
+                  931.0
+                ],
+                [
+                  91.0,
+                  931.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.681011438369751,
+              "coordinate": [
+                933,
+                796,
+                956,
+                823
+              ],
+              "order": 16,
+              "polygon_points": [
+                [
+                  933.0,
+                  796.0
+                ],
+                [
+                  933.0,
+                  822.0
+                ],
+                [
+                  955.0,
+                  822.0
+                ],
+                [
+                  955.0,
+                  796.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8730373382568359,
+              "coordinate": [
+                97,
+                853,
+                330,
+                921
+              ],
+              "order": 17,
+              "polygon_points": [
+                [
+                  97.0,
+                  853.0
+                ],
+                [
+                  330.0,
+                  853.0
+                ],
+                [
+                  330.0,
+                  921.0
+                ],
+                [
+                  97.0,
+                  921.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8472900390625,
+              "coordinate": [
+                410,
+                852,
+                585,
+                926
+              ],
+              "order": 18,
+              "polygon_points": [
+                [
+                  410.0,
+                  852.0
+                ],
+                [
+                  585.0,
+                  852.0
+                ],
+                [
+                  585.0,
+                  926.0
+                ],
+                [
+                  410.0,
+                  926.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8304330706596375,
+              "coordinate": [
+                723,
+                867,
+                844,
+                922
+              ],
+              "order": 19,
+              "polygon_points": [
+                [
+                  723.0,
+                  867.0
+                ],
+                [
+                  844.0,
+                  867.0
+                ],
+                [
+                  844.0,
+                  922.0
+                ],
+                [
+                  723.0,
+                  922.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8157354593276978,
+              "coordinate": [
+                102,
+                956,
+                380,
+                986
+              ],
+              "order": 20,
+              "polygon_points": [
+                [
+                  102.0,
+                  956.0
+                ],
+                [
+                  380.0,
+                  956.0
+                ],
+                [
+                  380.0,
+                  986.0
+                ],
+                [
+                  102.0,
+                  986.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6922663450241089,
+              "coordinate": [
+                195,
+                957,
+                217,
+                983
+              ],
+              "order": 21,
+              "polygon_points": [
+                [
+                  195.0,
+                  957.0
+                ],
+                [
+                  195.0,
+                  982.0
+                ],
+                [
+                  216.0,
+                  982.0
+                ],
+                [
+                  216.0,
+                  957.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.7943121194839478,
+              "coordinate": [
+                100,
+                1020,
+                885,
+                1057
+              ],
+              "order": 22,
+              "polygon_points": [
+                [
+                  100.0,
+                  1020.0
+                ],
+                [
+                  884.2589721679688,
+                  1027.002197265625
+                ],
+                [
+                  884.0000610351562,
+                  1056.0
+                ],
+                [
+                  99.7410888671875,
+                  1048.997802734375
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.3021698296070099,
+              "coordinate": [
+                216,
+                1022,
+                310,
+                1047
+              ],
+              "order": 23,
+              "polygon_points": [
+                [
+                  216.0,
+                  1022.0
+                ],
+                [
+                  216.0,
+                  1046.0
+                ],
+                [
+                  309.0,
+                  1046.0
+                ],
+                [
+                  309.0,
+                  1031.0
+                ],
+                [
+                  262.0,
+                  1022.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.6602734923362732,
+              "coordinate": [
+                356,
+                1027,
+                378,
+                1052
+              ],
+              "order": 24,
+              "polygon_points": [
+                [
+                  356.0,
+                  1027.0
+                ],
+                [
+                  377.0,
+                  1027.0
+                ],
+                [
+                  377.0,
+                  1051.0
+                ],
+                [
+                  356.0,
+                  1051.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7288926839828491,
+              "coordinate": [
+                557,
+                1027,
+                584,
+                1054
+              ],
+              "order": 25,
+              "polygon_points": [
+                [
+                  557.0,
+                  1027.0
+                ],
+                [
+                  583.0,
+                  1027.0
+                ],
+                [
+                  583.0,
+                  1053.0
+                ],
+                [
+                  557.0,
+                  1053.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 17,
+              "label": "paragraph_title",
+              "score": 0.8281297087669373,
+              "coordinate": [
+                99,
+                1076,
+                315,
+                1110
+              ],
+              "order": 26,
+              "polygon_points": [
+                [
+                  99.0,
+                  1076.0
+                ],
+                [
+                  315.0,
+                  1076.0
+                ],
+                [
+                  315.0,
+                  1110.0
+                ],
+                [
+                  99.0,
+                  1110.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8378260731697083,
+              "coordinate": [
+                88,
+                1130,
+                376,
+                1172
+              ],
+              "order": 27,
+              "polygon_points": [
+                [
+                  88.0,
+                  1130.0
+                ],
+                [
+                  376.0,
+                  1130.0
+                ],
+                [
+                  376.0,
+                  1172.0
+                ],
+                [
+                  88.0,
+                  1172.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8400406241416931,
+              "coordinate": [
+                178,
+                1132,
+                370,
+                1170
+              ],
+              "order": 28,
+              "polygon_points": [
+                [
+                  178.0,
+                  1132.0
+                ],
+                [
+                  370.0,
+                  1132.0
+                ],
+                [
+                  370.0,
+                  1170.0
+                ],
+                [
+                  178.0,
+                  1170.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.821186900138855,
+              "coordinate": [
+                98,
+                1197,
+                442,
+                1238
+              ],
+              "order": 29,
+              "polygon_points": [
+                [
+                  98.0,
+                  1197.0
+                ],
+                [
+                  442.0,
+                  1197.0
+                ],
+                [
+                  442.0,
+                  1238.0
+                ],
+                [
+                  98.0,
+                  1238.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.7974114418029785,
+              "coordinate": [
+                236,
+                1201,
+                363,
+                1234
+              ],
+              "order": 30,
+              "polygon_points": [
+                [
+                  236.0,
+                  1201.0
+                ],
+                [
+                  363.0,
+                  1201.0
+                ],
+                [
+                  363.0,
+                  1234.0
+                ],
+                [
+                  236.0,
+                  1234.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8322603106498718,
+              "coordinate": [
+                95,
+                1259,
+                869,
+                1343
+              ],
+              "order": 31,
+              "polygon_points": [
+                [
+                  95.0,
+                  1259.0
+                ],
+                [
+                  869.0,
+                  1259.0
+                ],
+                [
+                  869.0,
+                  1343.0
+                ],
+                [
+                  95.0,
+                  1343.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.8943033814430237,
+              "coordinate": [
+                476,
+                1268,
+                613,
+                1338
+              ],
+              "order": 32,
+              "polygon_points": [
+                [
+                  476.0,
+                  1268.0
+                ],
+                [
+                  613.0,
+                  1268.0
+                ],
+                [
+                  613.0,
+                  1338.0
+                ],
+                [
+                  476.0,
+                  1338.0
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "markdown": {
+        "text": "20. 已知椭圆 C:  $ \\frac{y^{2}}{a^{2}}+\\frac{x^{2}}{b^{2}}=1(a>b>0) $ 的离心率为  $ \\frac{\\sqrt{5}}{3} $，点  $ A(-2,0) $ 在 C 上.\n\n（1）求 C 的方程：\n\n（2）过点 $ (-2,3) $的直线交C于点P，Q两点，直线AP，AQ与y轴的交点分别为M，N，证明：线段MN的中点为定点.\n\n21. 已知函数  $ f(x)=\\left(\\frac{1}{x}+a\\right)\\ln(1+x) $.\n\n（1）当a=-1时，求曲线 $ y=f(x) $在点 $ (1,f(1)) $处的切线方程；\n\n（2）是否存在 a, b, 使得曲线  $ y = f\\left(\\frac{1}{x}\\right) $ 关于直线 x = b 对称，若存在，求 a, b 的值，若不存在，说明理由.\n\n（3）若  $ f(x) $ 在  $ (0,+\\infty) $ 存在极值，求 a 的取值范围.\n\n## 四、 选做题\n\n## 【选修4-4】（10分）\n\n22. 在直角坐标系 xOy 中，以坐标原点 O 为极点，x 轴正半轴为极轴建立极坐标系，曲线  $ C_1 $ 的极坐标方程为  $ \\rho = 2\\sin\\theta\\left(\\frac{\\pi}{4} \\leq \\theta \\leq \\frac{\\pi}{2}\\right) $，曲线  $ C_2 $： $ \\begin{cases} x = 2\\cos\\alpha \\\\ y = 2\\sin\\alpha \\end{cases} $（ $ \\alpha $ 为参数， $ \\frac{\\pi}{2} < \\alpha < \\pi $）。\n\n（1）写出 $ C_{1} $的直角坐标方程：\n\n（2）若直线  $ y = x + m $ 既与  $ C_{1} $ 没有公共点，也与  $ C_{2} $ 没有公共点，求 m 的取值范围.\n\n## 【选修4-5】（10分）\n\n23. 已知  $ f(x)=2|x|+|x-2| $.\n\n（1）求不等式  $ f(x) \\leq 6 - x $ 解集；\n\n（2）在直角坐标系 xOy 中，求不等式组  $ \\begin{cases} f(x) \\leq y \\\\ x + y - 6 \\leq 0 \\end{cases} $ 所确定的平面区域的面积.",
+        "images": {}
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/layout_det_res_3.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A18Z%2F-1%2F%2F34388b8a0746236cb81073272a17c5e3048071973ba514869843a513c3449b31"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/input_img_3.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A18Z%2F-1%2F%2Fc243f426073b10dd307618bada9db9b798cd11a5b756e0b66dcedb793ce4db8e"
+    },
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 1191,
+        "height": 1684,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": []
+        }
+      },
+      "markdown": {
+        "text": "",
+        "images": {}
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/layout_det_res_4.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A19Z%2F-1%2F%2F53c119564f7093ddf678bb630f579bce99a980fab019b5f7d688c7633f906ee6"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//5c097576-11ad-46e1-8314-ff0040547b23/input_img_4.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A49%3A19Z%2F-1%2F%2Fcfb949bde13bc219683089d255008d9ef66e642cd6eff4c93b3c59cd8fd671d9"
+    }
+  ]
+}

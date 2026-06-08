@@ -1,0 +1,400 @@
+2026-06-03 13:27:56 [INFO] 错题本生成系统 - API 服务
+2026-06-03 13:27:56 [INFO] API 地址: http://localhost:5001
+2026-06-03 13:27:56 [INFO] ==================================================
+2026-06-03 13:27:56 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-03 13:27:56 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-03 13:38:09 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:09] "[31m[1mGET /api/auth/me HTTP/1.1[0m" 401 -
+2026-06-03 13:38:47 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:47] "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-03 13:38:48 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:48] "GET /api/chat/my-sessions?limit=50 HTTP/1.1" 200 -
+2026-06-03 13:38:48 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:48] "GET /api/projects HTTP/1.1" 200 -
+2026-06-03 13:38:49 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:49] "GET /api/status HTTP/1.1" 200 -
+2026-06-03 13:38:49 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:49] "GET /api/models/options HTTP/1.1" 200 -
+2026-06-03 13:38:55 [INFO] 127.0.0.1 - - [03/Jun/2026 13:38:55] "GET /api/projects HTTP/1.1" 200 -
+2026-06-04 10:32:10 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:32:10 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:32:10 [INFO] ==================================================
+2026-06-04 10:32:10 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-04 10:32:10 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-04 10:32:10 [INFO]  * Restarting with stat
+2026-06-04 10:44:46 [ERROR] 数据库初始化失败，程序退出。
+2026-06-04 10:49:05 [ERROR] 数据库初始化失败: '_ConnectionRecord' object has no attribute 'engine'
+2026-06-04 10:49:05 [ERROR] Traceback (most recent call last):
+  File "C:\Users\YYang\Desktop\ctb\backend\web_app.py", line 272, in <module>
+    init_db()
+  File "C:\Users\YYang\Desktop\ctb\backend\db\__init__.py", line 86, in init_db
+    Base.metadata.create_all(bind=engine)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\sql\schema.py", line 5928, in create_all
+    bind._run_ddl_visitor(
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3267, in _run_ddl_visitor
+    with self.begin() as conn:
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3257, in begin
+    with self.connect() as conn:
+         ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3293, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3317, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 914, in __connect
+    )._exec_w_sync_on_first_run(self.dbapi_connection, self)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\event\attr.py", line 501, in _exec_w_sync_on_first_run
+    self(*args, **kw)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\event\attr.py", line 513, in __call__
+    fn(*args, **kw)
+  File "C:\Users\YYang\Desktop\ctb\backend\db\__init__.py", line 61, in _configure_database_connection
+    if is_sqlite_backend(connection_record.engine):
+                         ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: '_ConnectionRecord' object has no attribute 'engine'
+
+2026-06-04 10:50:06 [ERROR] 数据库初始化失败: '_ConnectionRecord' object has no attribute 'pool'
+2026-06-04 10:50:06 [ERROR] Traceback (most recent call last):
+  File "C:\Users\YYang\Desktop\ctb\backend\web_app.py", line 272, in <module>
+    init_db()
+  File "C:\Users\YYang\Desktop\ctb\backend\db\__init__.py", line 86, in init_db
+    Base.metadata.create_all(bind=engine)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\sql\schema.py", line 5928, in create_all
+    bind._run_ddl_visitor(
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3267, in _run_ddl_visitor
+    with self.begin() as conn:
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3257, in begin
+    with self.connect() as conn:
+         ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3293, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\engine\base.py", line 3317, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\pool\base.py", line 914, in __connect
+    )._exec_w_sync_on_first_run(self.dbapi_connection, self)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\event\attr.py", line 501, in _exec_w_sync_on_first_run
+    self(*args, **kw)
+  File "C:\Users\YYang\miniconda3\envs\ec_hsz\Lib\site-packages\sqlalchemy\event\attr.py", line 513, in __call__
+    fn(*args, **kw)
+  File "C:\Users\YYang\Desktop\ctb\backend\db\__init__.py", line 61, in _configure_database_connection
+    if is_sqlite_backend(connection_record.pool.engine):
+                         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: '_ConnectionRecord' object has no attribute 'pool'
+
+2026-06-04 10:51:52 [INFO] 数据库初始化成功: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:51:53 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:51:53 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:51:53 [INFO] ==================================================
+2026-06-04 10:52:02 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-04 10:52:02 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-04 10:52:02 [INFO]  * Restarting with stat
+2026-06-04 10:52:03 [ERROR] 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[缺少数据库驱动] 你配置了 PostgreSQL 但未安装驱动程序。
+请运行以下命令安装：
+
+  pip install "psycopg[binary]"
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+2026-06-04 10:52:03 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.OperationalError) connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+Multiple connection attempts failed. All failures were:
+- host: 'localhost', port: 5432, hostaddr: '127.0.0.1': connection failed: connection to server at "127.0.0.1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+- host: 'localhost', port: 5432, hostaddr: '::1': connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-06-04 10:52:03 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:52:03 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 10:52:04 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:52:04 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:52:04 [INFO] ==================================================
+2026-06-04 10:52:04 [WARNING]  * Debugger is active!
+2026-06-04 10:52:04 [INFO]  * Debugger PIN: 111-175-249
+2026-06-04 10:52:33 [INFO] 数据库初始化成功: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:52:33 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:52:33 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:52:33 [INFO] ==================================================
+2026-06-04 10:52:42 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-04 10:52:42 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-04 10:52:42 [INFO]  * Restarting with stat
+2026-06-04 10:52:44 [ERROR] 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[缺少数据库驱动] 你配置了 PostgreSQL 但未安装驱动程序。
+请运行以下命令安装：
+
+  pip install "psycopg[binary]"
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+2026-06-04 10:52:44 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.OperationalError) connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+Multiple connection attempts failed. All failures were:
+- host: 'localhost', port: 5432, hostaddr: '127.0.0.1': connection failed: connection to server at "127.0.0.1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+- host: 'localhost', port: 5432, hostaddr: '::1': connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-06-04 10:52:44 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:52:44 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 10:52:44 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:52:44 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:52:44 [INFO] ==================================================
+2026-06-04 10:52:44 [WARNING]  * Debugger is active!
+2026-06-04 10:52:44 [INFO]  * Debugger PIN: 111-175-249
+2026-06-04 10:53:22 [INFO]  * Detected change in 'C:\\Users\\YYang\\Desktop\\ctb\\backend\\db\\__init__.py', reloading
+2026-06-04 10:53:23 [INFO]  * Restarting with stat
+2026-06-04 10:53:24 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.OperationalError) connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+Multiple connection attempts failed. All failures were:
+- host: 'localhost', port: 5432, hostaddr: '127.0.0.1': connection failed: connection to server at "127.0.0.1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+- host: 'localhost', port: 5432, hostaddr: '::1': connection failed: connection to server at "::1", port 5432 failed: ��������:  ���ݿ� "ctb" ������
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-06-04 10:53:24 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:53:24 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 10:53:24 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:53:24 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:53:24 [INFO] ==================================================
+2026-06-04 10:53:24 [WARNING]  * Debugger is active!
+2026-06-04 10:53:24 [INFO]  * Debugger PIN: 111-175-249
+2026-06-04 10:55:59 [INFO] 数据库初始化成功: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:55:59 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:55:59 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:55:59 [INFO] ==================================================
+2026-06-04 10:56:09 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-04 10:56:09 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-04 10:56:09 [INFO]  * Restarting with stat
+2026-06-04 10:56:10 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.errors.FeatureNotSupported) extension "vector" is not available
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+[SQL: CREATE EXTENSION IF NOT EXISTS vector]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-06-04 10:56:10 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:56:10 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 10:56:10 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:56:10 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:56:10 [INFO] ==================================================
+2026-06-04 10:56:10 [WARNING]  * Debugger is active!
+2026-06-04 10:56:10 [INFO]  * Debugger PIN: 111-175-249
+2026-06-04 10:58:03 [INFO]  * Detected change in 'C:\\Users\\YYang\\Desktop\\ctb\\backend\\db\\__init__.py', reloading
+2026-06-04 10:58:03 [INFO]  * Restarting with stat
+2026-06-04 10:58:05 [ERROR] 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[缺少 pgvector 扩展] PostgreSQL 已连接，但数据库中无法创建 vector 扩展。
+请使用已安装 pgvector 的 PostgreSQL 镜像/实例，例如：
+
+  docker run -d --name pg-vector -e POSTGRES_PASSWORD=root -p 15432:5432 pgvector/pgvector:pg16
+
+或者在当前 PostgreSQL 实例中先安装 pgvector 扩展后再执行：
+
+  CREATE EXTENSION vector;
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+2026-06-04 10:58:05 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.errors.FeatureNotSupported) extension "vector" is not available
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+[SQL: CREATE EXTENSION IF NOT EXISTS vector]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-06-04 10:58:05 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 10:58:05 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 确保 PostgreSQL 已安装 pgvector 扩展，并可执行 CREATE EXTENSION vector;
+  4. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 10:58:05 [INFO] 错题本生成系统 - API 服务
+2026-06-04 10:58:05 [INFO] API 地址: http://localhost:5001
+2026-06-04 10:58:05 [INFO] ==================================================
+2026-06-04 10:58:05 [WARNING]  * Debugger is active!
+2026-06-04 10:58:05 [INFO]  * Debugger PIN: 111-175-249
+2026-06-04 11:15:27 [INFO] 数据库初始化成功: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 11:15:27 [INFO] 错题本生成系统 - API 服务
+2026-06-04 11:15:27 [INFO] API 地址: http://localhost:5001
+2026-06-04 11:15:27 [INFO] ==================================================
+2026-06-04 11:15:27 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://172.18.0.1:5001
+2026-06-04 11:15:27 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-04 11:15:27 [INFO]  * Restarting with stat
+2026-06-04 11:15:28 [ERROR] 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[缺少 pgvector 扩展] PostgreSQL 已连接，但数据库中无法创建 vector 扩展。
+请使用已安装 pgvector 的 PostgreSQL 镜像/实例，例如：
+
+  docker run -d --name pg-vector -e POSTGRES_PASSWORD=root -p 15432:5432 pgvector/pgvector:pg16
+
+或者在当前 PostgreSQL 实例中先安装 pgvector 扩展后再执行：
+
+  CREATE EXTENSION vector;
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+2026-06-04 11:15:28 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.errors.FeatureNotSupported) extension "vector" is not available
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+[SQL: CREATE EXTENSION IF NOT EXISTS vector]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-06-04 11:15:28 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-04 11:15:28 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 确保 PostgreSQL 已安装 pgvector 扩展，并可执行 CREATE EXTENSION vector;
+  4. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-04 11:15:28 [INFO] 错题本生成系统 - API 服务
+2026-06-04 11:15:28 [INFO] API 地址: http://localhost:5001
+2026-06-04 11:15:28 [INFO] ==================================================
+2026-06-04 11:15:28 [WARNING]  * Debugger is active!
+2026-06-04 11:15:28 [INFO]  * Debugger PIN: 111-175-249
+2026-06-05 10:23:27 [INFO] 数据库初始化成功: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-05 10:23:27 [INFO] 错题本生成系统 - API 服务
+2026-06-05 10:23:27 [INFO] API 地址: http://localhost:5001
+2026-06-05 10:23:27 [INFO] ==================================================
+2026-06-05 10:23:36 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.2.102:5001
+2026-06-05 10:23:36 [INFO] [33mPress CTRL+C to quit[0m
+2026-06-05 10:23:36 [INFO]  * Restarting with stat
+2026-06-05 10:23:38 [ERROR] 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[缺少 pgvector 扩展] PostgreSQL 已连接，但数据库中无法创建 vector 扩展。
+请使用已安装 pgvector 的 PostgreSQL 镜像/实例，例如：
+
+  docker run -d --name pg-vector -e POSTGRES_PASSWORD=root -p 15432:5432 pgvector/pgvector:pg16
+
+或者在当前 PostgreSQL 实例中先安装 pgvector 扩展后再执行：
+
+  CREATE EXTENSION vector;
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+2026-06-05 10:23:38 [WARNING] 无法连接到 PostgreSQL (postgresql+psycopg://postgres:***@localhost:5432/ctb): (psycopg.errors.FeatureNotSupported) extension "vector" is not available
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+[SQL: CREATE EXTENSION IF NOT EXISTS vector]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-06-05 10:23:38 [WARNING] 检测到开发模式，自动回退到本地 SQLite: sqlite:///C:\Users\YYang\Desktop\ctb\backend\runtime_data\error_book.db
+2026-06-05 10:23:38 [WARNING] 
+============================================================
+[提示] 如果你想使用 PostgreSQL，请检查以下几点：
+
+  1. 确保本地 PostgreSQL 服务已启动 (默认端口 5432)
+  2. 确保已创建名为 'ctb' 的数据库 (CREATE DATABASE ctb;)
+  3. 确保 PostgreSQL 已安装 pgvector 扩展，并可执行 CREATE EXTENSION vector;
+  4. 检查 .env 中的密码是否正确 (当前尝试密码: 123456)
+
+  * 如果没有安装 PostgreSQL，系统将继续使用 SQLite 运行。
+============================================================
+
+2026-06-05 10:23:38 [INFO] 错题本生成系统 - API 服务
+2026-06-05 10:23:38 [INFO] API 地址: http://localhost:5001
+2026-06-05 10:23:38 [INFO] ==================================================
+2026-06-05 10:23:38 [WARNING]  * Debugger is active!
+2026-06-05 10:23:38 [INFO]  * Debugger PIN: 100-435-415

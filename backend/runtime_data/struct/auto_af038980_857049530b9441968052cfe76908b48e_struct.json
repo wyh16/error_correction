@@ -1,0 +1,428 @@
+{
+  "layoutParsingResults": [
+    {
+      "prunedResult": {
+        "page_count": null,
+        "width": 580,
+        "height": 343,
+        "model_settings": {
+          "use_doc_preprocessor": true,
+          "use_layout_detection": true,
+          "use_chart_recognition": true,
+          "use_seal_recognition": false,
+          "use_ocr_for_image_block": false,
+          "format_block_content": false,
+          "merge_layout_blocks": true,
+          "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+          ],
+          "return_layout_polygon_points": true
+        },
+        "parsing_res_list": [
+          {
+            "block_label": "text",
+            "block_content": "1.  $ 765 \\div 15 = 51 $，如果除数15扩大5倍，要使商不变，那么被除数要(A)。\nA. 乘5\nB. 除以5\nC. 不变",
+            "block_bbox": [
+              0,
+              0,
+              551,
+              50
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                551.0,
+                0.0
+              ],
+              [
+                551.0,
+                50.0
+              ],
+              [
+                0.0,
+                50.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "2. 与  $ 762 \\div 67 $ 的商的位数相同的是( B )。\nA.  $ 263 \\div 32 $ B.  $ 659 \\div 56 $ C.  $ 458 \\div 85 $",
+            "block_bbox": [
+              0,
+              62,
+              523,
+              120
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+              [
+                0.0,
+                62.0
+              ],
+              [
+                523.0,
+                62.0
+              ],
+              [
+                523.0,
+                120.0
+              ],
+              [
+                0.0,
+                120.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": ".55×☐<1000，☐里最大能填(√)。\nA. 18 B. 19 C. 20",
+            "block_bbox": [
+              0,
+              133,
+              518,
+              201
+            ],
+            "block_id": 2,
+            "block_order": 3,
+            "group_id": 2,
+            "block_polygon_points": [
+              [
+                0.0,
+                133.0
+              ],
+              [
+                518.0,
+                133.0
+              ],
+              [
+                518.0,
+                201.0
+              ],
+              [
+                0.0,
+                201.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "求192里面有多少个32。应该列式是(B)。\nA.  $ 192 \\times 32 $ B.  $ 192 \\div 32 $ C.  $ 32 \\times 192 $",
+            "block_bbox": [
+              0,
+              215,
+              528,
+              272
+            ],
+            "block_id": 3,
+            "block_order": 4,
+            "group_id": 3,
+            "block_polygon_points": [
+              [
+                0.0,
+                215.0
+              ],
+              [
+                528.0,
+                215.0
+              ],
+              [
+                528.0,
+                272.0
+              ],
+              [
+                0.0,
+                272.0
+              ]
+            ]
+          },
+          {
+            "block_label": "text",
+            "block_content": "5. 两个数相除，商是26，余数是5，除数是34，被除数是(A)。\nA.  $ 34 \\times 26 + 5 $ B.  $ 34 \\times 5 + 26 $ C.  $ 34 \\times (26 + 5) $",
+            "block_bbox": [
+              0,
+              282,
+              567,
+              342
+            ],
+            "block_id": 4,
+            "block_order": 5,
+            "group_id": 4,
+            "block_polygon_points": [
+              [
+                -0.7978515625,
+                283.99005126953125
+              ],
+              [
+                566.0000610351562,
+                286.0
+              ],
+              [
+                565.7979125976562,
+                343.00994873046875
+              ],
+              [
+                -1.0,
+                341.0
+              ]
+            ]
+          }
+        ],
+        "doc_preprocessor_res": {
+          "model_settings": {
+            "use_doc_orientation_classify": true,
+            "use_doc_unwarping": true
+          },
+          "angle": 0
+        },
+        "layout_det_res": {
+          "boxes": [
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9326547384262085,
+              "coordinate": [
+                0,
+                0,
+                551,
+                50
+              ],
+              "order": 1,
+              "polygon_points": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  551.0,
+                  0.0
+                ],
+                [
+                  551.0,
+                  50.0
+                ],
+                [
+                  0.0,
+                  50.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8932130932807922,
+              "coordinate": [
+                0,
+                62,
+                523,
+                120
+              ],
+              "order": 2,
+              "polygon_points": [
+                [
+                  0.0,
+                  62.0
+                ],
+                [
+                  523.0,
+                  62.0
+                ],
+                [
+                  523.0,
+                  120.0
+                ],
+                [
+                  0.0,
+                  120.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.3821659982204437,
+              "coordinate": [
+                462,
+                100,
+                521,
+                118
+              ],
+              "order": 3,
+              "polygon_points": [
+                [
+                  462.0,
+                  100.0
+                ],
+                [
+                  462.0,
+                  117.0
+                ],
+                [
+                  520.0,
+                  117.0
+                ],
+                [
+                  520.0,
+                  102.0
+                ],
+                [
+                  518.0,
+                  100.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.8700872659683228,
+              "coordinate": [
+                0,
+                133,
+                518,
+                201
+              ],
+              "order": 4,
+              "polygon_points": [
+                [
+                  0.0,
+                  133.0
+                ],
+                [
+                  518.0,
+                  133.0
+                ],
+                [
+                  518.0,
+                  201.0
+                ],
+                [
+                  0.0,
+                  201.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 15,
+              "label": "inline_formula",
+              "score": 0.43002134561538696,
+              "coordinate": [
+                2,
+                134,
+                135,
+                162
+              ],
+              "order": 5,
+              "polygon_points": [
+                [
+                  2.0,
+                  138.0
+                ],
+                [
+                  2.0,
+                  161.0
+                ],
+                [
+                  134.0,
+                  160.0
+                ],
+                [
+                  132.0,
+                  136.0
+                ],
+                [
+                  126.0,
+                  134.0
+                ],
+                [
+                  8.0,
+                  134.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9039000272750854,
+              "coordinate": [
+                0,
+                215,
+                528,
+                272
+              ],
+              "order": 6,
+              "polygon_points": [
+                [
+                  0.0,
+                  215.0
+                ],
+                [
+                  528.0,
+                  215.0
+                ],
+                [
+                  528.0,
+                  272.0
+                ],
+                [
+                  0.0,
+                  272.0
+                ]
+              ]
+            },
+            {
+              "cls_id": 22,
+              "label": "text",
+              "score": 0.9138003587722778,
+              "coordinate": [
+                0,
+                282,
+                567,
+                342
+              ],
+              "order": 7,
+              "polygon_points": [
+                [
+                  -0.7978515625,
+                  283.99005126953125
+                ],
+                [
+                  566.0000610351562,
+                  286.0
+                ],
+                [
+                  565.7979125976562,
+                  343.00994873046875
+                ],
+                [
+                  -1.0,
+                  341.0
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "markdown": {
+        "text": "1.  $ 765 \\div 15 = 51 $，如果除数15扩大5倍，要使商不变，那么被除数要(A)。\n\nA. 乘5\n\nB. 除以5\n\nC. 不变\n\n2. 与  $ 762 \\div 67 $ 的商的位数相同的是( B )。\n\nA.  $ 263 \\div 32 $ B.  $ 659 \\div 56 $ C.  $ 458 \\div 85 $\n\n.55×☐<1000，☐里最大能填(√)。\n\nA. 18 B. 19 C. 20\n\n求192里面有多少个32。应该列式是(B)。\n\nA.  $ 192 \\times 32 $ B.  $ 192 \\div 32 $ C.  $ 32 \\times 192 $\n\n5. 两个数相除，商是26，余数是5，除数是34，被除数是(A)。\n\nA.  $ 34 \\times 26 + 5 $ B.  $ 34 \\times 5 + 26 $ C.  $ 34 \\times (26 + 5) $",
+        "images": {}
+      },
+      "outputImages": {
+        "layout_det_res": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//7b593082-2dc4-46d8-b2ee-651000ac35b1/layout_det_res_0.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A48%3A39Z%2F-1%2F%2F86b8df09b8d66264e8295781550631e87875543f34eb410a66896588d3f29e5d"
+      },
+      "inputImage": "https://pplines-online.bj.bcebos.com/deploy/official/paddleocr/pp-ocr-vl-16-online//7b593082-2dc4-46d8-b2ee-651000ac35b1/input_img_0.jpg?authorization=bce-auth-v1%2FALTAKDN8mY5KlNI7zaRpLmOqrw%2F2026-06-05T02%3A48%3A39Z%2F-1%2F%2F2ba1dd439dbd29bae14c369d3995094ebac028889533b026e074d5807a967ffb"
+    }
+  ]
+}

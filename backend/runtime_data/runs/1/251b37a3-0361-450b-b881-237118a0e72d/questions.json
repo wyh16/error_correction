@@ -1,0 +1,839 @@
+[
+  {
+    "question_id": "1",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "下列物理量最接近实际的是（）"
+      }
+    ],
+    "options": [
+      "A. 托起两个鸡蛋的力约为  $ 500 \\, N $",
+      "B. 水分子的直径约为  $ 10 \\, m $",
+      "C. 我国家庭电路的电压约为  $ 36 \\, V $",
+      "D. 人的正常体温约为  $ 37^{\\circ}C $"
+    ],
+    "option_images": null,
+    "has_formula": true,
+    "has_image": false,
+    "image_refs": null,
+    "knowledge_tags": [
+      "物理量估计",
+      "常见物理量"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "0"
+  },
+  {
+    "question_id": "2",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "如图所示的光现象中，由于光的反射形成的是（）"
+      }
+    ],
+    "options": [
+      "A. 水中倒影",
+      "B. 墙上的手影",
+      "C. 太阳光色散",
+      "D. 折断的铅笔"
+    ],
+    "option_images": [
+      "/images/img_in_image_box_124_587_308_723.jpg",
+      "/images/img_in_image_box_649_583_805_729.jpg",
+      "/images/img_in_image_box_126_755_317_887.jpg",
+      "/images/img_in_image_box_649_742_821_903.jpg"
+    ],
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_124_587_308_723.jpg",
+      "/images/img_in_image_box_649_583_805_729.jpg",
+      "/images/img_in_image_box_126_755_317_887.jpg",
+      "/images/img_in_image_box_649_742_821_903.jpg"
+    ],
+    "knowledge_tags": [
+      "光的反射",
+      "光现象"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "1"
+  },
+  {
+    "question_id": "3",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "如图所示，国画描绘的美景中蕴含了丰富的物态变化知识。以下分析正确的是（）"
+      }
+    ],
+    "options": [
+      "A. 图甲，湖面上厚厚的冰层是升华形成的",
+      "B. 图乙，荷叶上晶莹的露珠是凝固形成的",
+      "C. 图丙，山林间的缕缕薄雾是液化形成的",
+      "D. 图丁，枝头上的奇景雾凇是熔化形成的"
+    ],
+    "option_images": [
+      "/images/img_in_image_box_96_971_277_1104.jpg",
+      "/images/img_in_image_box_282_969_456_1104.jpg",
+      "/images/img_in_image_box_462_970_629_1103.jpg",
+      "/images/img_in_image_box_635_972_802_1101.jpg"
+    ],
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_96_971_277_1104.jpg",
+      "/images/img_in_image_box_282_969_456_1104.jpg",
+      "/images/img_in_image_box_462_970_629_1103.jpg",
+      "/images/img_in_image_box_635_972_802_1101.jpg"
+    ],
+    "knowledge_tags": [
+      "物态变化",
+      "升华",
+      "液化",
+      "凝固",
+      "熔化"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "2"
+  },
+  {
+    "question_id": "4",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "2023 年川渝田径赛在重庆奥体中心举行，图是 100m 短跑比赛的情境。以下描述正确的是（）"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_72_24_351_224.jpg"
+      }
+    ],
+    "options": [
+      "A. 运动员鞋底有凹凸不平的花纹是为了减小摩擦力",
+      "B. 运动员静止站立时受到的重力和支持力是平衡力",
+      "C 运动员快速冲刺使得周围空气流速变快压强变大",
+      "D. 运动员到达终点时受到惯性作用不能立即停下来"
+    ],
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_72_24_351_224.jpg"
+    ],
+    "knowledge_tags": [
+      "摩擦力",
+      "平衡力",
+      "流体压强",
+      "惯性"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "3"
+  },
+  {
+    "question_id": "5",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "5. 关于电和磁的知识，下列说法正确的是（）"
+      }
+    ],
+    "options": [
+      "A. 用电器的金属外壳应按规定接地",
+      "B. 奥斯特发现了电磁感应现象",
+      "C. 用丝绸摩擦过的玻璃棒带负电荷",
+      "D. 同名磁极靠近时会相互吸引"
+    ],
+    "option_images": null,
+    "has_formula": false,
+    "has_image": false,
+    "image_refs": null,
+    "knowledge_tags": [
+      "安全用电",
+      "电磁学",
+      "电荷"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "4"
+  },
+  {
+    "question_id": "6",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "6. 小明按托盘天平的使用要求，正确测量正方体木块的质量，天平平衡时，如图所示。下列说法正确的是（）"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_72_784_404_983.jpg"
+      }
+    ],
+    "options": [
+      "A. 天平的实质是省力杠杆",
+      "B. 被测木块的质量为 20.4g",
+      "C. 图中木块对托盘的压强小于砝码对托盘的压强",
+      "D. 测量结束后，可以直接用手将砝码放回砝码盒"
+    ],
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_72_784_404_983.jpg"
+    ],
+    "knowledge_tags": [
+      "天平",
+      "质量测量",
+      "压强"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "5"
+  },
+  {
+    "question_id": "7",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "7. 在美丽乡村建设的工地上，如图所示，工人借助动滑轮用  $ 250\\,N $ 的拉力，将  $ 450\\,N $ 的重物匀速提升  $ 2\\,m $，用时  $ 10\\,s $。则（）"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_63_1289_210_1554.jpg"
+      }
+    ],
+    "options": [
+      "A. 重物上升的速度为  $ 0.4 \\, m/s $",
+      "B. 动滑轮做的有用功为  $ 1000 \\, J $",
+      "C. 工人的拉力的功率为  $ 90 \\, W $",
+      "D. 动滑轮的机械效率为  $ 90\\% $"
+    ],
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_63_1289_210_1554.jpg"
+    ],
+    "knowledge_tags": [
+      "动滑轮",
+      "机械效率",
+      "功率"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "6"
+  },
+  {
+    "question_id": "8",
+    "section_title": "一、选择题（本题共8个小题，每小题只有一个选项最符合题意，每小题3分，共24分。）",
+    "question_type": "选择题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "8. 将一个定值电阻接入图甲所示电路的虚线框处，并将一个电压表（图中未画出）并联在某段电路两端，闭合开关，移动滑片 P，多次记录两电表示数；断开开关，只将定值电阻更换为小灯泡，再次获取数据并记录；将记录的数据绘制成如图乙所示的 I-U 图象。下列分析正确的是（）"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_93_447_266_595.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "甲"
+      },
+      {
+        "block_type": "text",
+        "content": "<table><thead><tr><th>U/V</th><th>I/A (a)</th><th>I/A (b)</th></tr></thead><tbody><tr><td>0</td><td></td><td>0.30</td></tr><tr><td>1</td><td>0.65</td><td>0.29</td></tr><tr><td>2</td><td>0.40</td><td>0.25</td></tr><tr><td>3</td><td>0.20</td><td>0.20</td></tr><tr><td>3.5</td><td>0.15</td><td>0.18</td></tr></tbody></table>"
+      },
+      {
+        "block_type": "text",
+        "content": "乙"
+      }
+    ],
+    "options": [
+      "A. 电源电压为  $ 3.5 \\, V $",
+      "B．图象 b 是用接入定值电阻时记录的数据绘制得到的",
+      "C. 定值电阻和灯泡两端电压各为  $ 3.5 \\, V $ 时，灯泡的电阻较大",
+      "D. 接入小灯泡后，将滑片 P 向右移动时，电压表的示数将变大"
+    ],
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_93_447_266_595.jpg"
+    ],
+    "knowledge_tags": [
+      "欧姆定律",
+      "电学实验"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "7"
+  },
+  {
+    "question_id": "9",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "9. 扬声器（喇叭）是可以扩大声音的设备，它的工作原理是通电导体在磁场中受到___的作用而运动，“扩大”是指将声音的___增大。"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": false,
+    "image_refs": null,
+    "knowledge_tags": [
+      "声现象",
+      "磁场对电流的作用"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "8"
+  },
+  {
+    "question_id": "10",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "10.2023年5月10日，天舟六号货运飞船搭乘火箭飞向中国空间站，如图所示，一起加速升空过程中，以火箭为参照物，飞船是___（选填“静止”或“运动”）的，飞船的机械能___（选填“增大”“减小”或“不变”）。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_98_1141_267_1389.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_98_1141_267_1389.jpg"
+    ],
+    "knowledge_tags": [
+      "机械运动",
+      "机械能"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "9"
+  },
+  {
+    "question_id": "11",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "11. 新能源太阳灶是一种烧水做饭的器具，太阳灶烧水时将太阳能转化为水的___能；将 2kg 的水从 20℃ 加热到 70℃，水吸收的热量为___J。[c_{水}=4.2×10^{3}J/(kg·℃)]"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": false,
+    "image_refs": null,
+    "knowledge_tags": [
+      "热学",
+      "比热容"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "10"
+  },
+  {
+    "question_id": "12",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "12. 如图所示的电路，电源电压恒为 6V，白炽灯泡  $ L_{1} $ 标有 “5V；0.25A”，白炽灯泡  $ L_{2} $ 标有 “6V；3W”，R 的阻值为10Ω。忽略温度对灯丝电阻的影响，只闭合开关 S₁ 时，灯泡___更亮；只闭合开关 S₂ 时，R 的功率为___W。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_85_149_300_341.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_85_149_300_341.jpg"
+    ],
+    "knowledge_tags": [
+      "电路分析",
+      "电功率"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "11"
+  },
+  {
+    "question_id": "13",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "13. 小莉模拟古人利用浮力打捞铁牛，模拟过程和测量数据如图所示。①把正方体 M 放在架空水槽底部的方孔处（忽略 M 与水槽的接触面积），往水槽内装入适量的水，把一质量与 M 相等的柱形薄壁水杯放入水中漂浮，如图甲所示；②向杯中装入质量为水杯质量 2 倍的铁砂时，杯底到 M 上表面的距离等于 M 的边长，如图乙所示，此时水杯浸入水中的深度 h=___cm；③用细线连接水杯和 M，使细线拉直且无拉力，再将铁砂从杯中取出，当铁砂取完后，M 恰好可被拉起，完成打捞后，如图丙所示。则 M 与水杯的底面积之比为  $ \\frac{S_{M}}{S_{杯}} = $ ___。"
+      },
+      {
+        "block_type": "text",
+        "content": "架空水槽"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_88_736_320_989.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "甲"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_346_759_571_990.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "乙"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_616_762_847_993.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "丙"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_88_736_320_989.jpg",
+      "/images/img_in_image_box_346_759_571_990.jpg",
+      "/images/img_in_image_box_616_762_847_993.jpg"
+    ],
+    "knowledge_tags": [
+      "浮力",
+      "压强"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "12"
+  },
+  {
+    "question_id": "14",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "14. 请按要求完成下列作图：在图中小车的重心 O 处画出小车所受重力的示意图。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_89_1085_351_1196.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_89_1085_351_1196.jpg"
+    ],
+    "knowledge_tags": [
+      "重力示意图"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "13"
+  },
+  {
+    "question_id": "15",
+    "section_title": "二、填空作图题（本题共6个小题，第14小题作图2分，其余每空1分，共12分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "15. 在如图中画出入射光线经凹透镜折射后的光线。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_90_1260_314_1411.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_90_1260_314_1411.jpg"
+    ],
+    "knowledge_tags": [
+      "凹透镜",
+      "光路图"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "14"
+  },
+  {
+    "question_id": "16",
+    "section_title": "三、实验探究题（本题共3个小题，15小题6分，16小题8分，17小题8分，共22分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "16. 小帅在探究水沸腾前后温度变化特点 实验中，安装烧杯和温度计时应先确定两者中___的位置；实验过程中，某时刻温度计的示数如图甲所示为___℃；图乙是水的温度随时间变化的关系图象，"
+      },
+      {
+        "block_type": "text",
+        "content": "分析图象可知：水在沸腾过程中温度 ___。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_94_91_384_433.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "甲"
+      },
+      {
+        "block_type": "text",
+        "content": "<table><thead><tr><th>t/min</th><th>t/°C</th></tr></thead><tbody><tr><td>0</td><td>90</td></tr><tr><td>0.5</td><td>98</td></tr><tr><td>1</td><td>100</td></tr><tr><td>1.5</td><td>100</td></tr><tr><td>2</td><td>100</td></tr><tr><td>2.5</td><td>100</td></tr></tbody></table>"
+      },
+      {
+        "block_type": "text",
+        "content": "乙"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_94_91_384_433.jpg"
+    ],
+    "knowledge_tags": [
+      "水沸腾",
+      "温度变化"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "15"
+  },
+  {
+    "question_id": "17",
+    "section_title": "三、实验探究题（本题共3个小题，15小题6分，16小题8分，17小题8分，共22分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "17. 小刚用焦距为  $ 10 \\, cm $ 的凸透镜探究凸透镜成像的规律，当蜡烛、凸透镜、光屏三者高度如图所示时，适当调节 ___ 的高度后便可开始实验；当蜡烛距凸透镜  $ 25 \\, cm $ 时，移动光屏，在光屏上承接到一个清晰缩小的像，生活中的 ___ 就是根据该成像规律制成的；把蜡烛适当靠近凸透镜，应将光屏 ___ （选填“靠近”或“远离”）凸透镜，才能再次承接到清晰的像。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_96_737_652_975.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_96_737_652_975.jpg"
+    ],
+    "knowledge_tags": [
+      "凸透镜成像规律"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "16"
+  },
+  {
+    "question_id": "18",
+    "section_title": "三、实验探究题（本题共3个小题，15小题6分，16小题8分，17小题8分，共22分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "18. 在测量小灯泡电阻的实验中，小会选用标有“2.5V”字样的小灯泡进行实验。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_89_1039_415_1287.jpg"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_428_1101_689_1274.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "（1）请用笔画线代替导线，将图甲所示电路补充完整___；"
+      },
+      {
+        "block_type": "text",
+        "content": "（2）连接电路时，开关应处于___状态。连接好电路，将滑片 P 移至最右端，接通电路后，发现小灯泡不发光，电压表示数约为 3V，其原因可能是小灯泡 ___；"
+      },
+      {
+        "block_type": "text",
+        "content": "（3）排除故障后，闭合开关，调节滑片P，电压表示数如图乙所示为___V，为测量小灯泡正常发光时的电阻，应将滑片P向___端滑动；"
+      },
+      {
+        "block_type": "text",
+        "content": "（4）下表是记录的实验数据，则小灯泡正常发光时的电阻约为___Ω（结果保留小数点后1位）；实验中发现灯泡越亮，温度越高，结合数据可知：灯丝温度越高，电阻越___："
+      },
+      {
+        "block_type": "text",
+        "content": "<table><tr><td>次数</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><td>U/V</td><td>1</td><td>2</td><td>2.5</td><td>2.8</td></tr><tr><td>I/A</td><td>0.18</td><td>0.28</td><td>0.30</td><td>0.31</td></tr></table>"
+      },
+      {
+        "block_type": "text",
+        "content": "（5）小会在实验过程中发现用力捏滑片与电阻丝接触处，灯泡发光明显变亮。请结合影响导体电阻大小的因素，分析产生这一现象可能的原因是 ___。"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": false,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_89_1039_415_1287.jpg",
+      "/images/img_in_image_box_428_1101_689_1274.jpg"
+    ],
+    "knowledge_tags": [
+      "伏安法测电阻",
+      "欧姆定律"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "17"
+  },
+  {
+    "question_id": "19",
+    "section_title": "三、实验探究题（本题共3个小题，15小题6分，16小题8分，17小题8分，共22分。）",
+    "question_type": "填空题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "19. 小婷在探究液体压强与哪些因素有关的实验中，在 U 形管接头处加装了一个 “三通接头”，如图甲所示。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_90_552_254_721.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "甲"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_271_567_959_727.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "乙"
+      },
+      {
+        "block_type": "text",
+        "content": "丙"
+      },
+      {
+        "block_type": "text",
+        "content": "T"
+      },
+      {
+        "block_type": "text",
+        "content": "戊"
+      },
+      {
+        "block_type": "text",
+        "content": "（1）U形管与探头连接时，阀门K应处于___（选填“打开”或“关闭”）状态，以确保U形管内的水面相平；组装完成后，轻压探头的橡皮膜到一定程度，U形管内液面有明显的高度差并保持稳定，说明装置___（选填“漏气”或“不漏气”）；"
+      },
+      {
+        "block_type": "text",
+        "content": "（2）比较图乙与___两图，可得出液体压强随深度的增加而增大；比较图丙与丁两图，还可初步得出液体在同一深度向各个方向的压强___；"
+      },
+      {
+        "block_type": "text",
+        "content": "（3）若需通过图丁和戊对比得出液体压强与液体密度的关系，应将图戊中的探头向___移动适当的距离；移动探头后，观察到U形管水面高度差为 $ \\Delta h $，此时探头受到盐水的压强为 $ p_{盐} $，小婷取出探头放回水中，当U形管水面高度差再次为 $ \\Delta h $时，测出探头在水中的深度为0.2m，则 $ p_{盐} = $ ___ Pa；"
+      },
+      {
+        "block_type": "text",
+        "content": "（4）小婷发现探头所处深度较浅时，U形管两液面的高度差不明显，可将U形管中的水换成密度更___的液体以方便读数；探究过程中，保持探头所处深度不变，将U形管逐渐向后倾斜，偏离竖直方向，U形管中两液面所对刻度线间的距离将___（选填“变大”“变小”或“不变”）。"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_90_552_254_721.jpg",
+      "/images/img_in_image_box_271_567_959_727.jpg"
+    ],
+    "knowledge_tags": [
+      "液体压强",
+      "U形管压强计"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "18"
+  },
+  {
+    "question_id": "20",
+    "section_title": "四、计算论述题（本题共3个小题，18小题6分，19小题8分，20小题8分，共22分。解题应写出必要的文字说明、步骤和公式，只写出最后结果的不能得分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "20. 如图所示的电路中，电源电压恒为 2V， $ R_{1} $ 的阻值为 10Ω， $ R_{2} $ 的阻值为 20Ω，闭合开关 S。求："
+      },
+      {
+        "block_type": "text",
+        "content": "（1）通过 $ R_{1} $的电流；"
+      },
+      {
+        "block_type": "text",
+        "content": "（2）通电50s， $ R_{2} $消耗的电能。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_90_3_251_200.jpg"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": false,
+    "image_refs": null,
+    "knowledge_tags": [
+      "欧姆定律",
+      "电功计算"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "19"
+  },
+  {
+    "question_id": "21",
+    "section_title": "四、计算论述题（本题共3个小题，18小题6分，19小题8分，20小题8分，共22分。解题应写出必要的文字说明、步骤和公式，只写出最后结果的不能得分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "R2"
+      },
+      {
+        "block_type": "text",
+        "content": "21. 桔槔是《天工开物》中记载的一种原始的汲水工具。如图所示，硬杆用细绳悬挂在树上，杆可绕O点自由旋转且与树之间无作用力，用细绳将重力为20N、容积为 $ 2.8\\times10^{-2}\\,\\text{m}^3 $的桶悬挂在B端，在A端重120N的拗石辅助下，人可轻松将一桶水从井中提起，OA:OB=3:2；悬挂桶的绳子始终保持在竖直方向上，忽略杆和绳的重力。"
+      },
+      {
+        "block_type": "text",
+        "content": "（1）桶装满水时，求水的质量；"
+      },
+      {
+        "block_type": "text",
+        "content": "（2）空桶在井中漂浮时，求桶排开水的体积；"
+      },
+      {
+        "block_type": "text",
+        "content": "（3）一重力为480N的人用桔槔将装满水的桶提出水面后（忽略桶外壁沾水），桔槔处于平衡状态时，人与地面的受力面积为500cm²，求人对地面的压强。"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_90_3_251_200.jpg"
+    ],
+    "knowledge_tags": [
+      "杠杆",
+      "浮力",
+      "压强"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "20"
+  },
+  {
+    "question_id": "22",
+    "section_title": "四、计算论述题（本题共3个小题，18小题6分，19小题8分，20小题8分，共22分。解题应写出必要的文字说明、步骤和公式，只写出最后结果的不能得分。）",
+    "question_type": "解答题",
+    "content_blocks": [
+      {
+        "block_type": "text",
+        "content": "22. 寒假期间，小丽在外婆家发现一闲置的旧电炉（如图甲），铭牌上标有“220V 484W”字样，电炉只有一根电阻丝。为检测电炉能否工作，将其单独接入家庭电路中，观察到表盘如图乙的电能表的指示灯在120s内闪烁了16次，忽略温度对电阻的影响。"
+      },
+      {
+        "block_type": "text",
+        "content": "（1）求电炉电阻丝的阻值："
+      },
+      {
+        "block_type": "text",
+        "content": "（2）求检测时电炉的实际功率；"
+      },
+      {
+        "block_type": "text",
+        "content": "（3）小丽想为外婆制作一个可调温的发热坐垫。在父母的陪同下，她拆下整根电阻丝并分成两段，将其中一段制作为阻值可调的电阻丝；将两段均可发热的电阻丝接入电源电压恒为  $ 10 \\, V $ 的电路中，在通过电阻丝的电流不超过其额定电流的情况下，坐垫的最大功率为  $ 27 \\, W $，求发热坐垫在最小功率状态下工作  $ 10 \\, s $ 产生的热量。"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_58_1_309_238.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "甲"
+      },
+      {
+        "block_type": "image",
+        "content": "/images/img_in_image_box_325_0_665_246.jpg"
+      },
+      {
+        "block_type": "text",
+        "content": "乙"
+      }
+    ],
+    "options": null,
+    "option_images": null,
+    "has_formula": true,
+    "has_image": true,
+    "image_refs": [
+      "/images/img_in_image_box_58_1_309_238.jpg",
+      "/images/img_in_image_box_325_0_665_246.jpg"
+    ],
+    "knowledge_tags": [
+      "电功率",
+      "电能",
+      "电阻"
+    ],
+    "needs_correction": false,
+    "ocr_issues": null,
+    "uid": "21"
+  }
+]

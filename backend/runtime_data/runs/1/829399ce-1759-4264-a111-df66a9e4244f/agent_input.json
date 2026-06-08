@@ -1,0 +1,34 @@
+[
+  [
+    {
+      "page_index": 0,
+      "blocks": [
+        {
+          "block_label": "text",
+          "block_content": "1.  $ 765 \\div 15 = 51 $，如果除数15扩大5倍，要使商不变，那么被除数要(A)。\nA. 乘5\nB. 除以5\nC. 不变",
+          "block_order": 1
+        },
+        {
+          "block_label": "text",
+          "block_content": "2. 与  $ 762 \\div 67 $ 的商的位数相同的是( B )。\nA.  $ 263 \\div 32 $ B.  $ 659 \\div 56 $ C.  $ 458 \\div 85 $",
+          "block_order": 2
+        },
+        {
+          "block_label": "text",
+          "block_content": ".55×☐<1000，☐里最大能填(√)。\nA. 18 B. 19 C. 20",
+          "block_order": 3
+        },
+        {
+          "block_label": "text",
+          "block_content": "求192里面有多少个32。应该列式是(B)。\nA.  $ 192 \\times 32 $ B.  $ 192 \\div 32 $ C.  $ 32 \\times 192 $",
+          "block_order": 4
+        },
+        {
+          "block_label": "text",
+          "block_content": "5. 两个数相除，商是26，余数是5，除数是34，被除数是(A)。\nA.  $ 34 \\times 26 + 5 $ B.  $ 34 \\times 5 + 26 $ C.  $ 34 \\times (26 + 5) $",
+          "block_order": 5
+        }
+      ]
+    }
+  ]
+]

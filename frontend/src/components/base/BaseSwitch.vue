@@ -3,6 +3,8 @@
  * BaseSwitch.vue
  * 通用开关控件，用于表达开启/关闭类设置。
  */
+import { Switch } from '@headlessui/vue'
+
 defineProps({
   modelValue: { type: Boolean, default: false },
   label: { type: String, default: '' },
@@ -22,26 +24,29 @@ const toggle = (value, disabled) => {
 </script>
 
 <template>
-  <button
-    type="button"
+  <div
     class="inline-flex items-center gap-2 transition-opacity"
     :class="disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'"
-    :aria-pressed="modelValue"
-    :disabled="disabled"
-    @click="toggle(!modelValue, disabled)"
   >
-    <span
-      class="relative h-4 w-7 rounded-full transition-colors"
-      :class="modelValue ? 'accent-bg' : 'bg-gray-300 dark:bg-white/[0.08]'"
+    <Switch
+      :model-value="modelValue"
+      :disabled="disabled"
+      class="inline-flex items-center gap-2"
+      @update:model-value="toggle($event, disabled)"
     >
       <span
-        class="absolute left-0.5 top-0.5 h-3 w-3 rounded-full bg-white transition-transform"
-        :class="modelValue ? 'translate-x-3' : 'translate-x-0'"
-      ></span>
-    </span>
-    <span v-if="label" class="text-xs text-gray-500 transition-colors dark:text-[#8a8f98]">
-      {{ label }}
-    </span>
-    <slot />
-  </button>
+        class="relative h-4 w-7 rounded-full transition-colors"
+        :class="modelValue ? 'accent-bg' : 'bg-gray-300 dark:bg-white/[0.08]'"
+      >
+        <span
+          class="absolute left-0.5 top-0.5 h-3 w-3 rounded-full bg-white transition-transform"
+          :class="modelValue ? 'translate-x-3' : 'translate-x-0'"
+        ></span>
+      </span>
+      <span v-if="label" class="text-xs text-gray-500 transition-colors dark:text-[#8a8f98]">
+        {{ label }}
+      </span>
+      <slot />
+    </Switch>
+  </div>
 </template>

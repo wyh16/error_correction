@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
+import { Popover, PopoverButton, PopoverPanel, TransitionRoot } from '@headlessui/vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -13,50 +14,100 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'open', 'close'])
-const rootRef = ref(null)
 
-function setOpen(value) {
-  if (value === props.modelValue) return
+type CloseFn = ((focusableElement?: HTMLElement | null) => void) | null
+
+const hiddenButtonId = `base-popover-button-${Math.random().toString(36).slice(2)}`
+const internalOpen = ref(false)
+const latestClose = ref<CloseFn>(null)
+
+const OpenStateSync = defineComponent({
+  name: 'BasePopoverOpenStateSync',
+  props: {
+    open: { type: Boolean, required: true },
+    closeFn: { type: Function, default: null },
+  },
+  emits: ['sync'],
+  setup(syncProps, { emit: syncEmit }) {
+    watch(
+      () => syncProps.open,
+      (open) => {
+        syncEmit('sync', open, syncProps.closeFn ?? null)
+      },
+      { immediate: true },
+    )
+    return () => null
+  },
+})
+
+function setOpen(value: boolean) {
+  if (value === internalOpen.value) return
+  const button = typeof document !== 'undefined'
+    ? document.getElementById(hiddenButtonId)
+    : null
+  if (!button) return
+  button.click()
+}
+
+function syncOpenState(value: boolean, closeFn: CloseFn) {
+  latestClose.value = closeFn
+  if (value === internalOpen.value) return
+  internalOpen.value = value
   emit('update:modelValue', value)
   emit(value ? 'open' : 'close')
 }
 
-function syncClickOutside(event) {
-  if (rootRef.value && !rootRef.value.contains(event.target)) {
-    setOpen(false)
-  }
-}
-
-onMounted(() => document.addEventListener('click', syncClickOutside))
-onUnmounted(() => document.removeEventListener('click', syncClickOutside))
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (value === internalOpen.value) return
+    if (!value && internalOpen.value) {
+      latestClose.value?.()
+      return
+    }
+    if (value && !internalOpen.value) {
+      setOpen(true)
+    }
+  },
+)
 </script>
 
 <template>
-  <div ref="rootRef" class="relative inline-block">
-    <div @click.stop="setOpen(!modelValue)">
-      <slot name="trigger" :open="modelValue" />
-    </div>
-    <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-100 ease-in"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="translate-y-1 opacity-0"
-    >
-      <div
-        v-if="modelValue"
-        class="absolute z-[70] mt-2"
-        :class="[
-          widthClass,
-          panelClass,
-          placement === 'top' ? 'bottom-full mb-2 mt-0' : 'top-full',
-          align === 'right' ? 'right-0' : align === 'center' ? 'left-1/2 -translate-x-1/2' : 'left-0',
-        ]"
-        @click.stop
-      >
-        <slot :close="() => setOpen(false)" />
+  <Popover as="div" class="relative inline-block">
+    <template #default="{ open, close }">
+      <OpenStateSync :open="open" :close-fn="close" @sync="syncOpenState" />
+
+      <PopoverButton :id="hiddenButtonId" class="sr-only">
+        打开弹出层
+      </PopoverButton>
+
+      <div @click.stop="setOpen(!open)">
+        <slot name="trigger" :open="open" />
       </div>
-    </Transition>
-  </div>
+
+      <TransitionRoot
+        :show="open"
+        enter="transition duration-150 ease-out"
+        enter-from="translate-y-1 opacity-0"
+        enter-to="translate-y-0 opacity-100"
+        leave="transition duration-100 ease-in"
+        leave-from="translate-y-0 opacity-100"
+        leave-to="translate-y-1 opacity-0"
+      >
+        <PopoverPanel
+          static
+          class="absolute z-[70] mt-2 focus:outline-none"
+          :class="[
+            widthClass,
+            panelClass,
+            placement === 'top' ? 'bottom-full mb-2 mt-0' : 'top-full',
+            align === 'right' ? 'right-0' : align === 'center' ? 'left-1/2 -translate-x-1/2' : 'left-0',
+          ]"
+          @click.stop
+        >
+          <slot :close="() => close()" />
+        </PopoverPanel>
+      </TransitionRoot>
+    </template>
+  </Popover>
 </template>

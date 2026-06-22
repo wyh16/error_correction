@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseSelect.vue
  * 自定义下拉选择器
  */
 import { onBeforeUnmount, ref } from 'vue'
-import { useClickOutside } from '@/composables/useClickOutside.js'
+import { useClickOutside } from '@/composables/useClickOutside'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeSideNav.vue
  * 落地页右侧浮动导航（Section 圆点 + 回到顶部按钮）

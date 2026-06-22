@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 首页工作流步骤卡片。
  *

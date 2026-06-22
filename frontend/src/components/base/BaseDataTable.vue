@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import BasePagination from './BasePagination.vue'
 import BaseSearchInput from './BaseSearchInput.vue'

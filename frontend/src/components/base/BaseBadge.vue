@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   value: { type: [String, Number], default: '' },
   tone: { type: String, default: 'accent' },

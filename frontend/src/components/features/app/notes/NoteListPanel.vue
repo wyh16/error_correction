@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * NoteListPanel.vue
  * 笔记库左侧列表面板。

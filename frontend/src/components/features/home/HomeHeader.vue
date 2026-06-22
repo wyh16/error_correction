@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeHeader.vue
  * 落地页顶部导航栏
  */
-import { useTheme } from '@/composables/useTheme.js'
+import { useTheme } from '@/composables/useTheme'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseLogo from '@/components/base/BaseLogo.vue'
 

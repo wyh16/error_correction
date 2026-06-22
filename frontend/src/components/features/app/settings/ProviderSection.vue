@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ProviderSection.vue
  * API Provider 配置区块

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * NoteDetailPanel.vue
  * 笔记库中间详情与编辑面板。
@@ -8,7 +8,7 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import BaseEmptyState from '@/components/base/BaseEmptyState.vue'
 import BasePopconfirm from '@/components/base/BasePopconfirm.vue'
 import BaseTag from '@/components/base/BaseTag.vue'
-import { renderMarkdown, typesetMath } from '@/utils/index.js'
+import { renderMarkdown, typesetMath } from '@/utils/index'
 
 const props = defineProps({
   note: { type: Object, default: null },

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomePill.vue
  * 落地页标签徽章

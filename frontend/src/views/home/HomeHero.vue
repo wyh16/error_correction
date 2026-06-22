@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeHero.vue
  * 落地页首屏 Hero 区

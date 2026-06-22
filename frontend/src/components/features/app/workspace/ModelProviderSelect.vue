@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 模型选择下拉框。
  *
@@ -12,7 +12,7 @@ import {
   ListboxOption,
   ListboxOptions,
 } from '@headlessui/vue'
-import { useToast } from '@/composables/useToast.js'
+import { useToast } from '@/composables/useToast'
 import deepseekLogo from '@/assets/deepseek.svg'
 import ernieLogo from '@/assets/ernie.svg'
 

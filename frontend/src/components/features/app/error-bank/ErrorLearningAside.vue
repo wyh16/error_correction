@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorLearningAside.vue
  * 错题库右侧学习分析栏。

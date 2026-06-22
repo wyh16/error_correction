@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseSurface.vue
  * 统一页面中的浅色/深色半透明容器外观，并支持按语义切换根标签。

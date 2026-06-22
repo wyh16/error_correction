@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 通用 Tooltip 组件。
  *

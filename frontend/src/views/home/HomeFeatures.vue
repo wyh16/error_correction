@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeFeatures.vue
  * 落地页功能特性展示

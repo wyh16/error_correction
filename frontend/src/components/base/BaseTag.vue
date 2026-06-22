@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseTag.vue
  * 通用标签组件，用于状态、分类、知识点等短文本标记。

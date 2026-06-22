@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorQuestionListPanel.vue
  * 错题库左侧题目列表面板。

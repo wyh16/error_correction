@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseInput.vue
  * 基础输入框组件（支持密码显隐、错误高亮、右侧附加元素）

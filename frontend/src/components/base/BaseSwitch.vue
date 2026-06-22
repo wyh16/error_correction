@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseSwitch.vue
  * 通用开关控件，用于表达开启/关闭类设置。

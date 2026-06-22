@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorQuestionDetailPanel.vue
  * 错题库中间题目详情面板。
@@ -11,7 +11,7 @@ import BasePopconfirm from '@/components/base/BasePopconfirm.vue'
 import BaseTabs from '@/components/base/BaseTabs.vue'
 import BaseTag from '@/components/base/BaseTag.vue'
 import BaseToolbarButton from '@/components/base/BaseToolbarButton.vue'
-import { formatOption, isHtml, sanitizeHtml } from '@/utils/index.js'
+import { formatOption, isHtml, sanitizeHtml } from '@/utils/index'
 
 const props = defineProps({
   question: { type: Object, default: null },

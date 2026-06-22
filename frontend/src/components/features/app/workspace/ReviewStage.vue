@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ReviewStage.vue
  * 工作台第二页：分割结果核对（擦除预览 / OCR 预览 / 分割中 / 题目列表）
@@ -9,7 +9,7 @@ import ErasePreview from '@/components/features/app/workspace/ErasePreview.vue'
 import OcrPreview from '@/components/features/app/workspace/OcrPreview.vue'
 import SplitLoading from '@/components/features/app/workspace/SplitLoading.vue'
 import QuestionList from '@/components/features/app/question/QuestionList.vue'
-import { renderMarkdown, typesetMath } from '@/utils/index.js'
+import { renderMarkdown, typesetMath } from '@/utils/index'
 
 const props = defineProps({
   uploadMode: String,

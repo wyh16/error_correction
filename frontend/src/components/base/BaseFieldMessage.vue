@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   message: { type: String, default: '' },
   type: { type: String, default: 'hint' },

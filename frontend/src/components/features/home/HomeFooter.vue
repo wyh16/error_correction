@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeFooter.vue
  * 落地页底部行动号召区

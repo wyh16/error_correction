@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BaseRadio from './BaseRadio.vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
 

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * StepIndicator.vue
  * 步骤指示器

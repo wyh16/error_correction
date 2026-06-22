@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   variant: { type: String, default: 'rect' },
   lines: { type: Number, default: 1 },

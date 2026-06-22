@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseDropdown.vue
  * 基础下拉菜单组件（支持自定义触发器和菜单内容）

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseSearchInput.vue
  * 搜索输入框（带图标 + 清除按钮）

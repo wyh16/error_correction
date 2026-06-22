@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 /**
  * QuestionCard.vue
  * 题目卡片（错题库列表项）
  */
 import { ref, computed } from 'vue'
 import BaseCard from '@/components/base/BaseCard.vue'
-import { isHtml, sanitizeHtml, formatOption } from '@/utils/index.js'
+import { isHtml, sanitizeHtml, formatOption } from '@/utils/index'
 
 const props = defineProps({
   question: { type: Object, required: true },

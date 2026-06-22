@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { useOverlay } from '@/composables/useOverlay.js'
+import { useOverlay } from '@/composables/useOverlay'
 
 const props = defineProps({
   open: { type: Boolean, default: false },

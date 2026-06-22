@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseCard.vue
  * 毛玻璃风格卡片容器

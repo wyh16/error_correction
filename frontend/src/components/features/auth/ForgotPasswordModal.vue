@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 忘记密码弹窗。
  *

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BasePanelTitle.vue
  * BasePanel header 内统一使用的标题文本。

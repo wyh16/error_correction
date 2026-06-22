@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BasePagination.vue
  * 通用分页组件，内部计算页码窗口和省略号。

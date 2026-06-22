@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BasePopconfirm.vue
  * 轻量二次确认浮层，用于替代 window.confirm。

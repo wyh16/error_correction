@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
 defineProps({

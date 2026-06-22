@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   modelValue: { type: [String, Number], default: '' },
   items: { type: Array, default: () => [] },

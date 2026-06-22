@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseTabs.vue
  * 通用标签页切换组件，只负责 tab header 和 modelValue 同步。

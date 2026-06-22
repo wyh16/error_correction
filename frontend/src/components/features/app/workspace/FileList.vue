@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * FileList.vue
  * 已上传文件列表

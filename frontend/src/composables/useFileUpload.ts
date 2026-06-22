@@ -1,0 +1,214 @@
+import { ref, reactive, computed, type Ref } from 'vue'
+import { fileKey } from '@/utils/index'
+import * as api from '@/api/index'
+
+type PendingFile = {
+  key: string
+  file: File
+}
+
+type FileProgressMap = Record<string, number>
+type UploadMode = string
+type WorkflowSteps = Record<string, number>
+type UploadQuestion = Record<string, unknown>
+
+type ToastFn = (type: string, message: string) => void
+
+export function useFileUpload(
+  pushToast: ToastFn,
+  S: Ref<WorkflowSteps>,
+  questions: Ref<UploadQuestion[]>,
+  selectedIds: Set<string | number>,
+  splitCompleted: Ref<boolean>,
+  splitting: Ref<boolean>,
+  uploadMode: Ref<UploadMode>,
+) {
+  const uploadBusy = ref(false)
+  const uploadReady = ref(false)
+  const pendingFiles = reactive<PendingFile[]>([])
+  const pendingPreviewUrls = computed(() =>
+    pendingFiles.filter(pf => pf.file).map(pf => URL.createObjectURL(pf.file))
+  )
+  const fileProgress = reactive<FileProgressMap>({})
+  const waitingKeys = reactive(new Set<string>())
+  const uploadQueue = reactive<File[][]>([])
+  let activeXhr: XMLHttpRequest | null = null
+  let fakeProgressTimer: number | null = null
+  let fakeProgressKeys: string[] = []
+
+  const setProgress = (key: string, p: number) => { fileProgress[key] = Math.max(0, Math.min(100, Number(p) || 0)) }
+
+  const stopFakeProgress = () => {
+    if (fakeProgressTimer) {
+      window.clearInterval(fakeProgressTimer)
+      fakeProgressTimer = null
+    }
+    fakeProgressKeys = []
+  }
+
+  const startFakeProgress = (keys: string[]) => {
+    stopFakeProgress()
+    fakeProgressKeys = Array.from(keys || [])
+    const tick = () => {
+      if (!uploadBusy.value) { stopFakeProgress(); return }
+      for (const key of fakeProgressKeys) {
+        const current = Number(fileProgress[key] || 0)
+        const cap = 82
+        if (current >= cap) continue
+        let inc = current < 55 ? 1 + Math.random() * 3 : current < 75 ? 0.4 + Math.random() * 1.1 : 0.08 + Math.random() * 0.25
+        setProgress(key, Math.min(cap, current + inc))
+      }
+    }
+    tick()
+    fakeProgressTimer = window.setInterval(tick, 360)
+  }
+
+  const handleUpload = (files: File[], { resetSession = false }: { resetSession?: boolean } = {}) => {
+    const uploadFiles = Array.from(files || []).filter(f => pendingFiles.some(x => x.key === fileKey(f)))
+    if (!uploadFiles.length) return
+    uploadBusy.value = true
+    const step = S.value
+    const keys = uploadFiles.map(f => fileKey(f))
+    for (const k of keys) waitingKeys.delete(k)
+    startFakeProgress(keys)
+
+    const formData = new FormData()
+    if (resetSession) formData.append('reset_session', '1')
+    for (const f of uploadFiles) {
+      formData.append('files', f)
+      formData.append('file_key', fileKey(f))
+    }
+
+    activeXhr = api.uploadFiles(formData, {
+      onProgress: (ratio) => {
+        const pct = Math.max(0, Math.min(95, ratio * 95))
+        for (const k of keys) {
+          if (pendingFiles.some(x => x.key === k)) setProgress(k, Math.max(fileProgress[k] || 0, pct))
+        }
+      },
+      onSuccess: () => {
+        stopFakeProgress()
+        uploadBusy.value = false
+        activeXhr = null
+        for (const k of keys) {
+          if (pendingFiles.some(x => x.key === k)) setProgress(k, 100)
+        }
+        uploadReady.value = pendingFiles.length > 0
+        pushToast('success', '上传成功')
+        pumpUploadQueue()
+      },
+      onError: (error) => {
+        stopFakeProgress()
+        uploadBusy.value = false
+        activeXhr = null
+        pushToast('error', error instanceof Error ? error.message : String(error))
+        pumpUploadQueue()
+      },
+      onAbort: () => {
+        stopFakeProgress()
+        uploadBusy.value = false
+        activeXhr = null
+        pumpUploadQueue()
+      },
+    })
+  }
+
+  const pumpUploadQueue = () => {
+    if (uploadBusy.value || !uploadQueue.length) return
+    const next = uploadQueue.shift()
+    if (next && next.length) handleUpload(next)
+  }
+
+  const enqueueUpload = (files: File[] | FileList | null | undefined) => {
+    const list = Array.from(files || [])
+    if (!list.length) return
+    if (splitCompleted.value || splitting.value) { pushToast('error', '已分割完成，请先重新开始'); return }
+    const isFreshStart = pendingFiles.length === 0
+    for (const f of list) {
+      const k = fileKey(f)
+      if (pendingFiles.some(x => x.key === k)) continue
+      pendingFiles.push({ key: k, file: f })
+      setProgress(k, 0)
+    }
+    if (uploadBusy.value) {
+      for (const f of list) waitingKeys.add(fileKey(f))
+      uploadQueue.push(list)
+      return
+    }
+    handleUpload(list, { resetSession: isFreshStart })
+  }
+
+  const doCancelFile = async (key: string, step: unknown) => {
+    try {
+      if (fakeProgressKeys.length) fakeProgressKeys = fakeProgressKeys.filter(k => k !== key)
+      if (!fakeProgressKeys.length) stopFakeProgress()
+      const data = await api.cancelFile(key)
+      const idx = pendingFiles.findIndex(x => x.key === key)
+      if (idx >= 0) pendingFiles.splice(idx, 1)
+      delete fileProgress[key]
+      waitingKeys.delete(key)
+      questions.value = []
+      selectedIds.clear()
+      splitCompleted.value = false
+      if (!pendingFiles.length) {
+        uploadReady.value = false
+      }
+      pushToast('success', data.message || '已撤销')
+      if (!pendingFiles.length && activeXhr) {
+        try { activeXhr.abort() } catch (_) {}
+      }
+    } catch (_) { pushToast('error', '撤销失败: 网络错误') }
+  }
+
+  const removePendingFile = async (key: string) => {
+    if (!key || splitting.value || splitCompleted.value) return
+    if (uploadBusy.value || uploadReady.value) { await doCancelFile(key, S.value); return }
+    const idx = pendingFiles.findIndex(x => x.key === key)
+    if (idx >= 0) pendingFiles.splice(idx, 1)
+    delete fileProgress[key]
+    waitingKeys.delete(key)
+    for (let i = uploadQueue.length - 1; i >= 0; i--) {
+      uploadQueue[i] = (uploadQueue[i] || []).filter(f => fileKey(f) !== key)
+      if (!uploadQueue[i].length) uploadQueue.splice(i, 1)
+    }
+  }
+
+  const doReset = async (
+    modelOptionsData: Ref<{ default_option_id?: string | number } | null> | null,
+    selectedLlmOptionId: Ref<string | number | null>,
+    step: unknown,
+  ) => {
+    if (activeXhr) {
+      try { activeXhr.abort() } catch (_) {}
+      activeXhr = null
+    }
+    stopFakeProgress()
+    try {
+      await api.resetUploadSession()
+    } catch (_) {
+      // Ignore backend cleanup failures during client reset.
+    }
+    uploadBusy.value = false
+    uploadReady.value = false
+    splitting.value = false
+    splitCompleted.value = false
+    pendingFiles.splice(0, pendingFiles.length)
+    for (const k of Object.keys(fileProgress)) delete fileProgress[k]
+    waitingKeys.clear()
+    uploadQueue.splice(0, uploadQueue.length)
+    questions.value = []
+    selectedIds.clear()
+    
+    if (modelOptionsData && modelOptionsData.value && modelOptionsData.value.default_option_id) {
+      selectedLlmOptionId.value = modelOptionsData.value.default_option_id
+    }
+    pushToast('success', '已重置')
+  }
+
+  return {
+    uploadBusy, uploadReady, pendingFiles, pendingPreviewUrls,
+    fileProgress, waitingKeys,
+    enqueueUpload, removePendingFile, stopFakeProgress, doReset,
+  }
+}
+

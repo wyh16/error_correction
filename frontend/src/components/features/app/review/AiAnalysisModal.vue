@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * AiAnalysisModal.vue
  * AI 分析弹窗（知识点讲解）

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeWorkflow.vue
  * 落地页工作流程展示

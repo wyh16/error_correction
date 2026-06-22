@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
 /**
  * NoteView.vue
  * 笔记库工作台：顶部筛选 + 统计卡片 + 左侧列表 + 中间详情 + 右侧信息栏。
  */
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import * as api from '@/api/index.js'
-import { getNotePreviewText } from '@/utils/index.js'
+import * as api from '@/api/index'
+import { getNotePreviewText } from '@/utils/index'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseStat from '@/components/base/BaseStat.vue'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
@@ -14,8 +14,8 @@ import NoteDetailPanel from '@/components/features/app/notes/NoteDetailPanel.vue
 import NoteInsightAside from '@/components/features/app/notes/NoteInsightAside.vue'
 import NoteListPanel from '@/components/features/app/notes/NoteListPanel.vue'
 import NoteToolbar from '@/components/features/app/notes/NoteToolbar.vue'
-import { useProjects } from '@/composables/useProjects.js'
-import { useToast } from '@/composables/useToast.js'
+import { useProjects } from '@/composables/useProjects'
+import { useToast } from '@/composables/useToast'
 
 defineProps({
   embedded: { type: Boolean, default: false },

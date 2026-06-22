@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeView.vue
  * 首页总装页面，负责组合 Hero、功能、流程、演示和页脚。
@@ -6,7 +6,7 @@
  * 这里还集中处理首页滚动吸附、区块导航、高亮指示器和进场动画。
  */
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useTheme } from '@/composables/useTheme.js'
+import { useTheme } from '@/composables/useTheme'
 
 const { initTheme } = useTheme()
 

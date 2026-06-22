@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * SelectionPanel.vue
  * 题目选择面板

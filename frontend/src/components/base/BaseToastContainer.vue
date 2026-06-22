@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseToastContainer.vue
  * Linear-like global toast stack.

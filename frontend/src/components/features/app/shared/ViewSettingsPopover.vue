@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ViewSettingsPopover.vue
  * app 内通用的视图筛选与设置弹出框。
  */
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
-import { useClickOutside } from '@/composables/useClickOutside.js'
+import { useClickOutside } from '@/composables/useClickOutside'
 import BaseSearchableSelect from '@/components/base/BaseSearchableSelect.vue'
 
 const props = defineProps({

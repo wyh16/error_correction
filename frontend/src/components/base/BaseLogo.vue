@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseLogo.vue
  * 品牌 Logo（支持呼吸动画、多尺寸）

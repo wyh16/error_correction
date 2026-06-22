@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseSearchableSelect.vue
  * Search-first selector for large option sets such as subjects and knowledge tags.
  */
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { useClickOutside } from '@/composables/useClickOutside.js'
+import { useClickOutside } from '@/composables/useClickOutside'
 
 const props = defineProps({
   modelValue: { type: [String, Array], default: '' },

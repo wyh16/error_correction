@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorQuestionListItem.vue
  * 错题库左侧列表中的单道题目卡片。
  */
 import BaseTag from '@/components/base/BaseTag.vue'
-import { calculateQuestionPriority, getQuestionSnippet } from '@/utils/index.js'
+import { calculateQuestionPriority, getQuestionSnippet } from '@/utils/index'
 
 const props = defineProps({
   question: { type: Object, required: true },

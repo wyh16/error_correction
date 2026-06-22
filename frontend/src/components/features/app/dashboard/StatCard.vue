@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * StatCard.vue
  * 统计数字卡片组件，带数字滚动动画。

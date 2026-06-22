@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * SearchHubView.vue
  * 库页面：Linear Projects 风格的项目列表。
@@ -14,8 +14,8 @@ import BaseSegmented from '@/components/base/BaseSegmented.vue'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
 import ErrorBankView from '@/views/app/ErrorBankView.vue'
 import NoteView from '@/views/app/NoteView.vue'
-import { useProjects } from '@/composables/useProjects.js'
-import { useToast } from '@/composables/useToast.js'
+import { useProjects } from '@/composables/useProjects'
+import { useToast } from '@/composables/useToast'
 
 defineProps({
   mode: { type: String, default: 'library' },

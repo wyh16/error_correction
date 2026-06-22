@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   columns: { type: Array, default: () => [] },
   rows: { type: Array, default: () => [] },

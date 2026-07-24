@@ -6,6 +6,7 @@ const props = defineProps({
   modelValue: { type: [String, Number, Array], default: '' },
   items: { type: Array, default: () => [] },
   multiple: { type: Boolean, default: false },
+  ghost: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
@@ -37,20 +38,24 @@ function toggle(value) {
 </script>
 
 <template>
-  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white/70 dark:border-white/[0.08] dark:bg-white/[0.025]">
+  <div :class="ghost ? '' : 'overflow-hidden rounded-xl border border-slate-200 bg-white/70 dark:border-white/[0.08] dark:bg-white/[0.025]'">
     <Disclosure
       v-for="item in items"
       :key="`${item.value}-${openValues.includes(item.value) ? 'open' : 'closed'}`"
       v-slot="{ open }"
       as="div"
       :default-open="openValues.includes(item.value)"
-      class="border-b border-slate-200/70 last:border-b-0 dark:border-white/[0.06]"
+      :class="ghost ? '' : 'border-b border-slate-200/70 last:border-b-0 dark:border-white/[0.06]'"
     >
       <DisclosureButton
         class="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 dark:text-[#f7f8f8] dark:hover:bg-white/[0.04]"
+        :class="ghost ? 'rounded-lg' : ''"
         @click="toggle(item.value)"
       >
-        <span class="min-w-0 truncate">{{ item.label }}</span>
+        <span class="flex min-w-0 items-center gap-2.5">
+          <i v-if="item.icon" class="fa-solid shrink-0 text-xs text-slate-400 dark:text-[#8a8f98]" :class="item.icon"></i>
+          <span class="min-w-0 truncate">{{ item.label }}</span>
+        </span>
         <i class="fa-solid fa-chevron-down shrink-0 text-[10px] text-slate-400 transition-transform" :class="open ? 'rotate-180' : ''"></i>
       </DisclosureButton>
 

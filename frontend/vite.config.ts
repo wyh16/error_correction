@@ -14,6 +14,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(rootDir, 'src'),
+      // Vitest（jsdom）会把模板里的 /logo.svg 当模块解析，Windows 下会因非法
+      // file URL 报错；映射到 public 下的真实文件。开发/构建时该路径由静态资源服务，别名不生效。
+      '/logo.svg': resolve(rootDir, 'public/logo.svg'),
     },
   },
   css: {

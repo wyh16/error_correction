@@ -1,166 +1,142 @@
 /**
- * 组件状态逻辑测试
- * 对应后端 tests/test_web_helpers.py 的测试风格，测试组件内部状态管理
+ * 全局状态组合式函数测试。
+ * 覆盖 useWorkspaceToast 的队列行为和 usePageTransition 的遮罩生命周期，
+ * 以及 BaseToastContainer 的渲染（jsdom + @vue/test-utils）。
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import App from '../App.vue'
-
-/* ── 辅助函数 ── */
-
-/** 创建最小化的系统状态 mock 响应 */
-const mockStatusResponse = (overrides = {}) => ({
-  success: true,
-  status: {
-    paddleocr_configured: true,
-    available_models: [
-      { value: 'openai', label: 'gpt-4o-mini', configured: true, status: '配置成功' },
-      { value: 'anthropic', label: 'claude-sonnet-4-20250514', configured: false, status: '未配置' },
-    ],
-    langsmith_enabled: false,
-    ...overrides,
-  },
-})
-
-/** 挂载 App 组件并 mock fetch 返回系统状态 */
-const mountApp = async (statusOverrides = {}) => {
-  global.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve(mockStatusResponse(statusOverrides)),
-  })
-
-  const wrapper = mount(App, {
-    global: {
-      stubs: {
-        Listbox: true,
-        ListboxButton: true,
-        ListboxOptions: true,
-        ListboxOption: true,
-        teleport: true,
-      },
-    },
-  })
-
-  // 等待 onMounted 中的 fetchStatus 完成
-  await vi.waitFor(() => {
-    expect(global.fetch).toHaveBeenCalled()
-  })
-
-  return wrapper
-}
+import BaseToastContainer from '../components/base/BaseToastContainer.vue'
+import { usePageTransition } from '../composables/usePageTransition'
+import { useWorkspaceToast } from '../composables/useWorkspaceToast'
 
 beforeEach(() => {
-  // mock localStorage
-  const store = {}
-  vi.stubGlobal('localStorage', {
-    getItem: vi.fn((key) => store[key] ?? null),
-    setItem: vi.fn((key, val) => { store[key] = val }),
-    removeItem: vi.fn((key) => { delete store[key] }),
-  })
-
-  // mock matchMedia
-  vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
+  vi.useFakeTimers()
 })
 
 afterEach(() => {
-  vi.restoreAllMocks()
-  document.body.style.overflow = ''
-  document.documentElement.classList.remove('dark')
+  vi.useRealTimers()
 })
 
-describe('主题切换', () => {
-  it('默认浅色模式，html 不含 dark 类', async () => {
-    const wrapper = await mountApp()
-    expect(document.documentElement.classList.contains('dark')).toBe(false)
-    wrapper.unmount()
+describe('useWorkspaceToast', () => {
+  it('pushToast 插入字符串消息并归一化为 title', () => {
+    const { toasts, pushToast } = useWorkspaceToast()
+    pushToast('success', '保存成功', 0)
+    expect(toasts.value).toHaveLength(1)
+    expect(toasts.value[0]).toMatchObject({ type: 'success', title: '保存成功', description: '' })
   })
 
-  it('localStorage 存储 dark 时启用暗色模式', async () => {
-    localStorage.getItem.mockReturnValue('dark')
-    const wrapper = await mountApp()
-    expect(document.documentElement.classList.contains('dark')).toBe(true)
-    wrapper.unmount()
-  })
-})
-
-describe('Toast 通知', () => {
-  it('渲染 toast 消息', async () => {
-    const wrapper = await mountApp()
-
-    // 触发一个 toast —— 通过点击"重新开始"按钮
-    const resetBtn = wrapper.findAll('button').find((b) => b.text().includes('重新开始'))
-    await resetBtn.trigger('click')
-
-    // 应该出现 toast
-    const toasts = wrapper.findAll('[class*="ring-1"]')
-    expect(toasts.length).toBeGreaterThan(0)
-    wrapper.unmount()
-  })
-})
-
-describe('图片预览弹窗', () => {
-  it('默认关闭状态', async () => {
-    const wrapper = await mountApp()
-    const modal = wrapper.find('.img-modal')
-    expect(modal.isVisible()).toBe(false)
-    wrapper.unmount()
-  })
-
-  it('ESC 键关闭弹窗', async () => {
-    const wrapper = await mountApp()
-
-    // 模拟打开弹窗
-    const event = new KeyboardEvent('keydown', { key: 'Escape' })
-    document.dispatchEvent(event)
-
-    const modal = wrapper.find('.img-modal')
-    expect(modal.isVisible()).toBe(false)
-    wrapper.unmount()
-  })
-})
-
-describe('步骤指示器', () => {
-  it('初始状态步骤为 1', async () => {
-    const wrapper = await mountApp()
-
-    // 第一个步骤圆圈应高亮
-    const circles = wrapper.findAll('.step-circle')
-    expect(circles.length).toBe(4)
-
-    // 第一个步骤应有 blue 高亮样式（当前步骤用 border-blue 表示）
-    expect(circles[0].classes().some((c) => c.includes('border-blue'))).toBe(true)
-    wrapper.unmount()
-  })
-})
-
-describe('文件上传区域', () => {
-  it('上传区域可通过键盘聚焦', async () => {
-    const wrapper = await mountApp()
-    const dropZone = wrapper.find('[role="button"]')
-    expect(dropZone.exists()).toBe(true)
-    expect(dropZone.attributes('tabindex')).toBe('0')
-    wrapper.unmount()
-  })
-})
-
-describe('safeLocalStorage 异常处理', () => {
-  it('getItem 异常时返回空字符串降级值', async () => {
-    localStorage.getItem.mockImplementation(() => {
-      throw new Error('Quota exceeded')
+  it('pushToast 支持对象消息与 action', () => {
+    const { toasts, pushToast } = useWorkspaceToast()
+    pushToast('info', { title: '有新版本', description: '点击查看', action: { label: '查看' } }, 0)
+    expect(toasts.value[0]).toMatchObject({
+      title: '有新版本',
+      description: '点击查看',
+      action: { label: '查看' },
     })
-    const wrapper = await mountApp()
-    // 确保组件仍能正常渲染
-    expect(wrapper.exists()).toBe(true)
-    wrapper.unmount()
   })
 
-  it('setItem 异常时不抛出错误', async () => {
-    localStorage.setItem.mockImplementation(() => {
-      throw new Error('Quota exceeded')
+  it('超时后自动移除对应 toast', () => {
+    const { toasts, pushToast } = useWorkspaceToast()
+    pushToast('info', '短暂提示', 1000)
+    expect(toasts.value).toHaveLength(1)
+    vi.advanceTimersByTime(1100)
+    expect(toasts.value).toHaveLength(0)
+  })
+
+  it('队列最多保留最近 5 条', () => {
+    const { toasts, pushToast } = useWorkspaceToast()
+    for (let i = 1; i <= 7; i++) pushToast('info', `第 ${i} 条`, 0)
+    expect(toasts.value).toHaveLength(5)
+    // 新消息插在队首，最旧的两条被裁掉。
+    expect(toasts.value[0].title).toBe('第 7 条')
+    expect(toasts.value[4].title).toBe('第 3 条')
+  })
+
+  it('dismissToast 按 id 移除', () => {
+    const { toasts, pushToast, dismissToast } = useWorkspaceToast()
+    pushToast('info', 'A', 0)
+    pushToast('info', 'B', 0)
+    dismissToast(toasts.value[1].id)
+    expect(toasts.value).toHaveLength(1)
+    expect(toasts.value[0].title).toBe('B')
+  })
+})
+
+describe('usePageTransition', () => {
+  it('show 置为 loading，notifyEnterCompleted 后 Promise 才 resolve', async () => {
+    const { loading, show, hide, notifyEnterCompleted } = usePageTransition()
+    const resolved = vi.fn()
+    show().then(resolved)
+    expect(loading.value).toBe(true)
+
+    // 遮罩淡入完成前 Promise 不应 resolve。
+    await Promise.resolve()
+    expect(resolved).not.toHaveBeenCalled()
+
+    notifyEnterCompleted()
+    await Promise.resolve()
+    expect(resolved).toHaveBeenCalled()
+
+    // 收尾：恢复隐藏状态，避免模块级状态泄漏到其它用例。
+    hide(0)
+    vi.advanceTimersByTime(10)
+    expect(loading.value).toBe(false)
+  })
+
+  it('hide 按 delay 延迟关闭遮罩', () => {
+    const { loading, show, hide, notifyEnterCompleted } = usePageTransition()
+    show()
+    notifyEnterCompleted()
+    hide(400)
+    expect(loading.value).toBe(true)
+    vi.advanceTimersByTime(399)
+    expect(loading.value).toBe(true)
+    vi.advanceTimersByTime(2)
+    expect(loading.value).toBe(false)
+  })
+
+  it('loading 中再次 show 会复用进入流程并取消未执行的 hide', async () => {
+    const { loading, show, hide, notifyEnterCompleted } = usePageTransition()
+    show()
+    notifyEnterCompleted()
+    hide(400)
+
+    // hide 尚未生效时再次 show：应保持 loading 并取消定时关闭。
+    const resolved = vi.fn()
+    show().then(resolved)
+    vi.advanceTimersByTime(500)
+    expect(loading.value).toBe(true)
+
+    notifyEnterCompleted()
+    await Promise.resolve()
+    expect(resolved).toHaveBeenCalled()
+
+    hide(0)
+    vi.advanceTimersByTime(10)
+    expect(loading.value).toBe(false)
+  })
+})
+
+describe('BaseToastContainer 渲染', () => {
+  it('渲染 toast 标题与描述，点击关闭派发 dismiss', async () => {
+    const wrapper = mount(BaseToastContainer, {
+      props: {
+        toasts: [
+          { id: 1, type: 'success', title: '操作成功', description: '数据已保存', action: null },
+        ],
+      },
     })
-    const wrapper = await mountApp()
-    // 确保组件仍能正常渲染，不会因 setItem 异常崩溃
-    expect(wrapper.exists()).toBe(true)
-    wrapper.unmount()
+    expect(wrapper.text()).toContain('操作成功')
+    expect(wrapper.text()).toContain('数据已保存')
+
+    await wrapper.find('button').trigger('click')
+    expect(wrapper.emitted('dismiss')?.[0]).toEqual([1])
+  })
+
+  it('缺省标题时按类型回退默认文案', () => {
+    const wrapper = mount(BaseToastContainer, {
+      props: { toasts: [{ id: 2, type: 'error' }] },
+    })
+    expect(wrapper.text()).toContain('Error')
   })
 })

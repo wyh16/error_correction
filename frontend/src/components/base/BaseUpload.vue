@@ -10,6 +10,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: true },
   disabled: { type: Boolean, default: false },
   maxSize: { type: Number, default: 0 },
+  maxCount: { type: Number, default: 0 },
   error: { type: String, default: '' },
 })
 
@@ -35,8 +36,16 @@ function normalize(fileList) {
     else accepted.push(file)
   })
 
+  // maxCount 限制总数量：超出剩余容量的文件按 count 原因拒绝
+  let kept = accepted
+  if (props.maxCount > 0) {
+    const capacity = Math.max(props.maxCount - (props.multiple ? props.modelValue.length : 0), 0)
+    kept = accepted.slice(0, capacity)
+    accepted.slice(capacity).forEach(file => rejected.push({ file, reason: 'count' }))
+  }
+
   if (rejected.length) emit('reject', rejected)
-  return props.multiple ? [...props.modelValue, ...accepted] : accepted.slice(0, 1)
+  return props.multiple ? [...props.modelValue, ...kept] : kept.slice(0, 1)
 }
 
 function commit(fileList, event) {

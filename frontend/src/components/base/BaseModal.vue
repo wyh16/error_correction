@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -19,11 +19,36 @@ const props = defineProps({
   bodyClass: { type: String, default: 'px-6 py-5' },
   blurBackdrop: { type: Boolean, default: true },
   sidebarOffset: { type: Number, default: null },
+  // 持久模式：点击遮罩不关闭，只轻微晃动面板提示用户需要显式操作
+  persistent: { type: Boolean, default: false },
+  // 是否显示默认头部右上角的关闭按钮
+  showClose: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['close'])
 
 const close = () => emit('close')
+
+// persistent 时的晃动反馈：短暂加上 shake 类再移除，让动画可以重复触发。
+const shaking = ref(false)
+let shakeTimer: ReturnType<typeof setTimeout> | undefined
+const shake = () => {
+  shaking.value = true
+  clearTimeout(shakeTimer)
+  shakeTimer = setTimeout(() => {
+    shaking.value = false
+  }, 350)
+}
+
+/** Headless UI 的 Dialog 在点击遮罩/按下 Esc 时触发，persistent 模式下拦截为晃动提示。 */
+const requestClose = () => {
+  if (props.persistent) {
+    shake()
+    return
+  }
+  close()
+}
+
 const { overlayRef, overlayStyle, backdropStyle: overlayBackdropStyle } = useOverlay(
   computed(() => props.open),
   { onClose: close, closeOnEscape: false, trapFocus: false },
@@ -41,7 +66,7 @@ const panelStyle = computed(() => ({
 
 <template>
   <TransitionRoot appear as="template" :show="open">
-    <Dialog as="div" class="relative z-[100]" @close="close">
+    <Dialog as="div" class="relative z-[100]" @close="requestClose">
       <TransitionChild
         as="template"
         enter="transition duration-300 ease-out"
@@ -71,7 +96,7 @@ const panelStyle = computed(() => ({
             <DialogPanel
               ref="overlayRef"
               class="relative w-full rounded-xl border border-slate-200/60 bg-white shadow-2xl dark:border-[#2f3336] dark:bg-[#1b1b1d]"
-              :class="maxWidth"
+              :class="[maxWidth, shaking ? 'modal-shake' : '']"
             >
               <DialogTitle v-if="$slots.header" class="sr-only">
                 {{ title }}
@@ -90,6 +115,7 @@ const panelStyle = computed(() => ({
                     </DialogTitle>
                   </div>
                   <button
+                    v-if="showClose"
                     type="button"
                     @click="close"
                     class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:text-[#8a8f98] dark:hover:bg-white/[0.04] dark:hover:text-[#d0d6e0]"
@@ -118,6 +144,30 @@ const panelStyle = computed(() => ({
 .dialog-backdrop {
   backdrop-filter: blur(var(--dialog-backdrop-blur, 8px));
   -webkit-backdrop-filter: blur(var(--dialog-backdrop-blur, 8px));
+}
+
+/* persistent 模式下点击遮罩的晃动提示。 */
+.modal-shake {
+  animation: modal-shake 0.35s ease-in-out;
+}
+
+@keyframes modal-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 </style>

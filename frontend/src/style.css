@@ -429,6 +429,18 @@ mjx-container[jax="SVG"]>svg {
   background: rgba(255, 255, 255, 0.22);
 }
 
+/* 隐藏原生滚动条但保留滚动能力：Base 组件弹层（Select / Cascader / Transfer 等）使用 */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* ============================================================
    侧边栏动画性能优化
    ============================================================ */

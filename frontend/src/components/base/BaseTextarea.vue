@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
 const props = defineProps({
@@ -14,6 +14,7 @@ const props = defineProps({
   required: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   resize: { type: String, default: 'vertical' },
+  autosize: { type: Boolean, default: false },
   textareaClass: { type: String, default: '' },
 })
 
@@ -21,6 +22,28 @@ const emit = defineEmits(['update:modelValue'])
 const countText = computed(() => {
   if (!props.maxlength) return ''
   return `${String(props.modelValue || '').length}/${props.maxlength}`
+})
+
+const textareaRef = ref(null)
+
+// autosize：先重置为 auto 再取 scrollHeight，rows 决定的初始高度即最小高度
+function resizeToContent() {
+  const el = textareaRef.value
+  if (!el || !props.autosize) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
+function onInput(event) {
+  emit('update:modelValue', event.target.value)
+  resizeToContent()
+}
+
+onMounted(resizeToContent)
+watch(() => props.modelValue, () => nextTick(resizeToContent))
+watch(() => props.autosize, (value) => {
+  if (value) nextTick(resizeToContent)
+  else if (textareaRef.value) textareaRef.value.style.height = ''
 })
 </script>
 
@@ -33,6 +56,7 @@ const countText = computed(() => {
       <span v-if="countText" class="text-xs text-slate-400 dark:text-[#62666d]">{{ countText }}</span>
     </div>
     <textarea
+      ref="textareaRef"
       :value="modelValue"
       :name="name"
       :rows="rows"
@@ -44,10 +68,10 @@ const countText = computed(() => {
       class="w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white/[0.03] dark:text-white dark:placeholder-white/25"
       :class="[
         error ? 'border-rose-500/50 focus:border-rose-500/50' : 'border-gray-200 focus:border-[rgb(var(--accent-rgb)/0.4)] dark:border-white/[0.08] dark:focus:border-[rgb(var(--accent-rgb)/0.4)]',
-        resize === 'none' ? 'resize-none' : resize === 'horizontal' ? 'resize-x' : 'resize-y',
+        autosize ? 'resize-none overflow-hidden' : resize === 'none' ? 'resize-none' : resize === 'horizontal' ? 'resize-x' : 'resize-y',
         textareaClass,
       ]"
-      @input="emit('update:modelValue', $event.target.value)"
+      @input="onInput"
     ></textarea>
     <BaseFieldMessage v-if="error" :message="error" type="error" />
     <BaseFieldMessage v-else-if="hint" :message="hint" />

@@ -9,6 +9,8 @@ const props = defineProps({
   placement: { type: String, default: 'right' },
   widthClass: { type: String, default: 'w-full max-w-md' },
   closeOnBackdrop: { type: Boolean, default: true },
+  persistent: { type: Boolean, default: false },
+  showClose: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['close'])
@@ -31,7 +33,7 @@ const enterFrom = computed(() => {
 })
 
 function closeFromBackdrop() {
-  if (props.closeOnBackdrop) emit('close')
+  if (props.closeOnBackdrop && !props.persistent) emit('close')
 }
 </script>
 
@@ -62,7 +64,7 @@ function closeFromBackdrop() {
             <h2 v-if="title" class="text-base font-bold text-slate-900 dark:text-[#f7f8f8]">{{ title }}</h2>
             <p v-if="description" class="mt-1 text-sm leading-5 text-slate-500 dark:text-[#8a8f98]">{{ description }}</p>
           </div>
-          <button type="button" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]" @click="emit('close')">
+          <button v-if="showClose" type="button" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]" @click="emit('close')">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </header>

@@ -8,6 +8,8 @@ defineProps({
   compact: { type: Boolean, default: false },
   sortKey: { type: String, default: '' },
   sortDirection: { type: String, default: '' },
+  striped: { type: Boolean, default: false },
+  stickyHeader: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['sort', 'row-click'])
@@ -26,7 +28,8 @@ function sortIcon(column, sortKey, sortDirection) {
 
 <template>
   <div class="overflow-hidden rounded-xl border border-slate-200 bg-white/80 dark:border-white/[0.08] dark:bg-white/[0.03]">
-    <div class="overflow-x-auto custom-scrollbar">
+    <!-- stickyHeader 需要一个有限高度的滚动容器才能生效 -->
+    <div class="overflow-x-auto custom-scrollbar" :class="stickyHeader ? 'max-h-[360px] overflow-y-auto' : ''">
       <table class="min-w-full divide-y divide-slate-200 dark:divide-white/[0.06]">
         <thead class="bg-slate-50/80 dark:bg-white/[0.025]">
           <tr>
@@ -35,7 +38,11 @@ function sortIcon(column, sortKey, sortDirection) {
               :key="column.key"
               scope="col"
               class="whitespace-nowrap px-4 text-xs font-bold uppercase text-slate-500 dark:text-[#8a8f98]"
-              :class="[compact ? 'py-2' : 'py-3', column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left']"
+              :class="[
+                compact ? 'py-2' : 'py-3',
+                column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left',
+                stickyHeader ? 'sticky top-0 z-10 bg-slate-50 dark:bg-[#1b1b1e]' : '',
+              ]"
             >
               <button
                 v-if="column.sortable"
@@ -66,6 +73,7 @@ function sortIcon(column, sortKey, sortDirection) {
             v-else
             :key="row[rowKey] ?? index"
             class="transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.035]"
+            :class="striped ? 'odd:bg-transparent even:bg-slate-50/60 dark:even:bg-white/[0.02]' : ''"
             @click="emit('row-click', row)"
           >
             <td

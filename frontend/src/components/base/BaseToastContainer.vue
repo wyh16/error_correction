@@ -6,6 +6,8 @@
 defineProps({
   toasts: { type: Array, default: () => [] },
   sidebarOffset: { type: Number, default: 0 },
+  // 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left'
+  position: { type: String, default: 'bottom-right' },
 })
 
 const emit = defineEmits(['dismiss'])
@@ -26,6 +28,13 @@ const fallbackTitleMap = {
 
 const titleOf = (toast) => toast.title || toast.message || fallbackTitleMap[toast.type] || 'Notice'
 
+const positionClassMap = {
+  'bottom-right': 'bottom-5 right-5',
+  'top-right': 'top-5 right-5',
+  'bottom-left': 'bottom-5 left-5',
+  'top-left': 'top-5 left-5',
+}
+
 const onLeave = (el) => {
   const { left, top, width, height } = el.getBoundingClientRect()
   el.style.left = `${left}px`
@@ -38,7 +47,8 @@ const onLeave = (el) => {
 
 <template>
   <div
-    class="pointer-events-none fixed bottom-5 right-5 z-[200] flex w-[calc(100vw-2.5rem)] max-w-[26.5rem] flex-col items-stretch gap-2"
+    class="pointer-events-none fixed z-[200] flex w-[calc(100vw-2.5rem)] max-w-[26.5rem] flex-col items-stretch gap-2"
+    :class="positionClassMap[position] || positionClassMap['bottom-right']"
     :style="{ '--sidebar-offset': `${sidebarOffset}px` }"
   >
     <TransitionGroup

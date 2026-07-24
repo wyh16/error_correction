@@ -1,170 +1,129 @@
 /**
- * API 交互测试
- * 对应后端 tests/test_question_tools.py 的测试风格，测试 fetch 调用与错误处理
+ * API 客户端工具测试（src/api/client.ts）。
+ * 覆盖请求体构造、JSON 安全解析、成功断言与 XHR 结果分发的成功 / 失败路径。
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { mount } from '@vue/test-utils'
-import App from '../App.vue'
+import { describe, it, expect, vi } from 'vitest'
+import {
+  assertJsonSuccess,
+  buildModelBody,
+  createNetworkError,
+  handleXhrJsonResult,
+  readJsonSafely,
+} from '../api/client'
 
-/* ── 辅助函数 ── */
-
-const statusOk = {
-  ok: true,
-  json: () => Promise.resolve({
-    success: true,
-    status: {
-      paddleocr_configured: true,
-      available_models: [
-        { value: 'openai', label: 'gpt-4o-mini', configured: true, status: '配置成功' },
-      ],
-      langsmith_enabled: false,
-    },
-  }),
+/** 构造一个最小的 Response 替身：只需要 ok / status / json()。 */
+function fakeResponse(body: unknown, { ok = true, status = 200, invalidJson = false } = {}) {
+  return {
+    ok,
+    status,
+    json: () => (invalidJson ? Promise.reject(new Error('bad json')) : Promise.resolve(body)),
+  } as unknown as Response
 }
 
-const mountApp = async () => {
-  global.fetch = vi.fn().mockResolvedValue(statusOk)
-
-  const wrapper = mount(App, {
-    global: {
-      stubs: {
-        Listbox: true,
-        ListboxButton: true,
-        ListboxOptions: true,
-        ListboxOption: true,
-      },
-    },
+describe('buildModelBody', () => {
+  it('仅必填参数时只包含 model_provider 与附加字段', () => {
+    expect(buildModelBody('openai', undefined, undefined, null, { page: 1 })).toEqual({
+      model_provider: 'openai',
+      page: 1,
+    })
   })
 
-  await vi.waitFor(() => {
-    expect(global.fetch).toHaveBeenCalled()
-  })
-
-  return wrapper
-}
-
-beforeEach(() => {
-  vi.stubGlobal('localStorage', {
-    getItem: vi.fn(() => null),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-  })
-  vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-  document.body.style.overflow = ''
-  document.documentElement.classList.remove('dark')
-})
-
-describe('fetchStatus', () => {
-  it('成功获取系统状态', async () => {
-    const wrapper = await mountApp()
-
-    // fetchStatus 在 onMounted 中调用
-    expect(global.fetch).toHaveBeenCalledWith('/api/status')
-    wrapper.unmount()
-  })
-
-  it('HTTP 错误时显示错误状态', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
+  it('可选参数存在时全部并入请求体', () => {
+    expect(buildModelBody('openai', 'gpt-4o-mini', 'custom', 7)).toEqual({
+      model_provider: 'openai',
+      model_name: 'gpt-4o-mini',
+      provider_source: 'custom',
+      provider_id: 7,
     })
-
-    const wrapper = mount(App, {
-      global: {
-        stubs: {
-          Listbox: true,
-          ListboxButton: true,
-          ListboxOptions: true,
-          ListboxOption: true,
-        },
-      },
-    })
-
-    await vi.waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled()
-    })
-
-    // 应显示错误 pill
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    const errorPill = wrapper.find('[class*="bg-rose"]')
-    expect(errorPill.exists()).toBe(true)
-    wrapper.unmount()
-  })
-
-  it('网络异常时显示错误信息', async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network Error'))
-
-    const wrapper = mount(App, {
-      global: {
-        stubs: {
-          Listbox: true,
-          ListboxButton: true,
-          ListboxOptions: true,
-          ListboxOption: true,
-        },
-      },
-    })
-
-    await vi.waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled()
-    })
-
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    const errorPill = wrapper.find('[class*="bg-rose"]')
-    expect(errorPill.exists()).toBe(true)
-    wrapper.unmount()
   })
 })
 
-describe('doSplit', () => {
-  it('未上传文件时点击分割按钮无效', async () => {
-    const wrapper = await mountApp()
-    const splitBtn = wrapper.findAll('button').find((b) => b.text().includes('启动 AI 智能分割'))
+describe('readJsonSafely', () => {
+  it('正常 JSON 返回解析结果', async () => {
+    await expect(readJsonSafely(fakeResponse({ success: true }))).resolves.toEqual({ success: true })
+  })
 
-    // 按钮应处于禁用状态
-    expect(splitBtn.attributes('disabled')).toBeDefined()
-    wrapper.unmount()
+  it('JSON 解析失败时返回 null 而不是抛错', async () => {
+    await expect(readJsonSafely(fakeResponse(null, { invalidJson: true }))).resolves.toBeNull()
   })
 })
 
-describe('doExport', () => {
-  it('未选择题目时导出按钮禁用', async () => {
-    const wrapper = await mountApp()
-    const exportBtn = wrapper.findAll('button').find((b) => b.text().includes('导出错题本'))
+describe('assertJsonSuccess', () => {
+  it('HTTP 成功且 success=true 时返回数据', async () => {
+    const data = await assertJsonSuccess(fakeResponse({ success: true, items: [1] }))
+    expect(data.items).toEqual([1])
+  })
 
-    expect(exportBtn.attributes('disabled')).toBeDefined()
-    wrapper.unmount()
+  it('HTTP 错误时抛出带 status / code / quota 的 ApiError', async () => {
+    const resp = fakeResponse(
+      { success: false, error: '配额不足', code: 'quota_exceeded', quota: { left: 0 } },
+      { ok: false, status: 429 },
+    )
+    const error = await assertJsonSuccess(resp).catch(e => e)
+    expect(error.message).toBe('配额不足')
+    expect(error.status).toBe(429)
+    expect(error.code).toBe('quota_exceeded')
+    expect(error.quota).toEqual({ left: 0 })
+  })
+
+  it('HTTP 成功但 success=false 时使用后端 message 抛错', async () => {
+    const error = await assertJsonSuccess(fakeResponse({ success: false, message: '参数不合法' })).catch(e => e)
+    expect(error.message).toBe('参数不合法')
+    expect(error.status).toBe(200)
+  })
+
+  it('响应体不可解析时回退到 fallback 文案', async () => {
+    const error = await assertJsonSuccess(
+      fakeResponse(null, { ok: false, status: 502, invalidJson: true }),
+      '服务暂不可用',
+    ).catch(e => e)
+    expect(error.message).toBe('服务暂不可用')
+    expect(error.status).toBe(502)
+  })
+
+  it('无 fallback 且无消息时回退到 HTTP 状态码文案', async () => {
+    const error = await assertJsonSuccess(fakeResponse(null, { ok: false, status: 500, invalidJson: true })).catch(e => e)
+    expect(error.message).toBe('HTTP 500')
   })
 })
 
-describe('doReset', () => {
-  it('重置后状态归初始值', async () => {
-    const wrapper = await mountApp()
-
-    // 点击重置
-    const resetBtn = wrapper.findAll('button').find((b) => b.text().includes('重新开始'))
-    await resetBtn.trigger('click')
-
-    // 分割按钮应回到禁用（因为没有上传文件）
-    const splitBtn = wrapper.findAll('button').find((b) => b.text().includes('启动 AI 智能分割'))
-    expect(splitBtn.attributes('disabled')).toBeDefined()
-    wrapper.unmount()
+describe('handleXhrJsonResult', () => {
+  it('2xx 且 success=true 时调用 onSuccess', () => {
+    const onSuccess = vi.fn()
+    const onError = vi.fn()
+    handleXhrJsonResult({ status: 200 } as XMLHttpRequest, { success: true }, '失败', onSuccess, onError)
+    expect(onSuccess).toHaveBeenCalledWith({ success: true })
+    expect(onError).not.toHaveBeenCalled()
   })
 
-  it('重置后选择首个已配置模型', async () => {
-    // 提供多个模型，第一个已配置的是 openai
-    const wrapper = await mountApp()
-    const resetBtn = wrapper.findAll('button').find((b) => b.text().includes('重新开始'))
-    await resetBtn.trigger('click')
+  it('非 2xx 时调用 onError 并携带错误详情', () => {
+    const onError = vi.fn()
+    handleXhrJsonResult(
+      { status: 413 } as XMLHttpRequest,
+      { success: false, error: '文件过大', code: 'too_large' },
+      '上传失败',
+      undefined,
+      onError,
+    )
+    const error = onError.mock.calls[0][0]
+    expect(error.message).toBe('文件过大')
+    expect(error.status).toBe(413)
+    expect(error.code).toBe('too_large')
+  })
 
-    // 验证 fetch 被调用（说明组件正常运行）
-    expect(global.fetch).toHaveBeenCalledWith('/api/status')
-    wrapper.unmount()
+  it('2xx 但 success=false 时也走 onError 且回退 fallback 文案', () => {
+    const onError = vi.fn()
+    handleXhrJsonResult({ status: 200 } as XMLHttpRequest, { success: false }, '上传失败', undefined, onError)
+    expect(onError.mock.calls[0][0].message).toBe('上传失败')
+  })
+})
+
+describe('createNetworkError', () => {
+  it('生成的错误默认字段为 null', () => {
+    const error = createNetworkError('网络异常')
+    expect(error.message).toBe('网络异常')
+    expect(error.status).toBeNull()
+    expect(error.code).toBeNull()
+    expect(error.quota).toBeNull()
   })
 })

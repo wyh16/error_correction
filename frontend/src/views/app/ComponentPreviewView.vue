@@ -24,7 +24,6 @@ import BaseDropdown from '@/components/base/BaseDropdown.vue'
 import BaseEmptyState from '@/components/base/BaseEmptyState.vue'
 import BaseForm from '@/components/base/BaseForm.vue'
 import BaseFormItem from '@/components/base/BaseFormItem.vue'
-import BaseGhostButton from '@/components/base/BaseGhostButton.vue'
 import BaseInput from '@/components/base/BaseInput.vue'
 import BaseListGroup from '@/components/base/BaseListGroup.vue'
 import BaseListItem from '@/components/base/BaseListItem.vue'
@@ -620,9 +619,9 @@ function handleCatalogSearch() {
                   <BaseToolbarButton icon="fa-pen" title="编辑" />
                   <BaseToolbarButton icon="fa-trash-can" variant="danger" title="删除" />
                   <BaseTooltip text="用于弱操作或图标按钮说明" placement="bottom">
-                    <BaseGhostButton>
+                    <BaseButton variant="glass">
                       <i class="fa-solid fa-circle-info"></i>
-                    </BaseGhostButton>
+                    </BaseButton>
                   </BaseTooltip>
                 </div>
               </BaseSurface>

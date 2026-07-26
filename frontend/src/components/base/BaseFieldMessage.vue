@@ -1,17 +1,22 @@
 <script setup lang="ts">
-defineProps({
-  message: { type: String, default: '' },
-  type: { type: String, default: 'hint' },
+interface Props {
+  message?: string
+  type?: 'hint' | 'error' | 'success' | 'warning'
+}
+
+withDefaults(defineProps<Props>(), {
+  message: '',
+  type: 'hint',
 })
 
-const toneClass = {
+const toneClass: Record<string, string> = {
   hint: 'text-slate-500 dark:text-[#8a8f98]',
   error: 'text-rose-500 dark:text-rose-300',
   success: 'text-emerald-600 dark:text-emerald-300',
   warning: 'text-amber-600 dark:text-amber-300',
 }
 
-const iconClass = {
+const iconClass: Record<string, string> = {
   hint: 'fa-circle-info',
   error: 'fa-circle-exclamation',
   success: 'fa-circle-check',

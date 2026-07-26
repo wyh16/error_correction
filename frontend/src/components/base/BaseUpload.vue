@@ -2,21 +2,42 @@
 import { computed, ref } from 'vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
-const props = defineProps({
-  modelValue: { type: Array, default: () => [] },
-  label: { type: String, default: '' },
-  description: { type: String, default: '' },
-  accept: { type: String, default: '' },
-  multiple: { type: Boolean, default: true },
-  disabled: { type: Boolean, default: false },
-  maxSize: { type: Number, default: 0 },
-  maxCount: { type: Number, default: 0 },
-  error: { type: String, default: '' },
+export interface UploadRejection {
+  file: File
+  reason: 'size' | 'count'
+}
+
+interface Props {
+  modelValue?: File[]
+  label?: string
+  description?: string
+  accept?: string
+  multiple?: boolean
+  disabled?: boolean
+  maxSize?: number
+  maxCount?: number
+  error?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  label: '',
+  description: '',
+  accept: '',
+  multiple: true,
+  disabled: false,
+  maxSize: 0,
+  maxCount: 0,
+  error: '',
 })
 
-const emit = defineEmits(['update:modelValue', 'change', 'reject'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', files: File[]): void
+  (e: 'change', files: File[], event?: Event): void
+  (e: 'reject', rejected: UploadRejection[]): void
+}>()
 
-const fileInput = ref(null)
+const fileInput = ref<HTMLInputElement | null>(null)
 const dragging = ref(false)
 
 const acceptText = computed(() => props.accept || 'Any file type')
@@ -26,10 +47,10 @@ function openDialog() {
   fileInput.value?.click()
 }
 
-function normalize(fileList) {
+function normalize(fileList: FileList | File[] | null) {
   const files = Array.from(fileList || [])
-  const accepted = []
-  const rejected = []
+  const accepted: File[] = []
+  const rejected: UploadRejection[] = []
 
   files.forEach((file) => {
     if (props.maxSize && file.size > props.maxSize) rejected.push({ file, reason: 'size' })
@@ -48,30 +69,32 @@ function normalize(fileList) {
   return props.multiple ? [...props.modelValue, ...kept] : kept.slice(0, 1)
 }
 
-function commit(fileList, event) {
+function commit(fileList: FileList | File[] | null, event?: Event) {
   if (props.disabled) return
   const next = normalize(fileList)
   emit('update:modelValue', next)
   emit('change', next, event)
 }
 
-function onInput(event) {
-  commit(event.target.files, event)
-  event.target.value = ''
+function onInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  commit(target.files, event)
+  target.value = ''
 }
 
-function onDrop(event) {
+function onDrop(event: DragEvent) {
   dragging.value = false
-  commit(event.dataTransfer.files, event)
+  commit(event.dataTransfer?.files ?? null, event)
 }
 
-function remove(index) {
+function remove(index: number) {
+  if (props.disabled) return
   const next = props.modelValue.filter((_, itemIndex) => itemIndex !== index)
   emit('update:modelValue', next)
   emit('change', next)
 }
 
-function formatSize(size) {
+function formatSize(size: number) {
   if (size < 1024) return `${size} B`
   if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`
   return `${(size / 1024 / 1024).toFixed(1)} MB`
@@ -93,8 +116,8 @@ function formatSize(size) {
       @click="openDialog"
       @keydown.enter.prevent="openDialog"
       @keydown.space.prevent="openDialog"
-      @dragenter.prevent="dragging = true"
-      @dragover.prevent="dragging = true"
+      @dragenter.prevent="!disabled && (dragging = true)"
+      @dragover.prevent="!disabled && (dragging = true)"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
     >
@@ -117,7 +140,7 @@ function formatSize(size) {
         <i class="fa-regular fa-file-lines shrink-0 text-slate-400 dark:text-[#62666d]"></i>
         <span class="min-w-0 flex-1 truncate text-slate-700 dark:text-[#d0d6e0]">{{ file.name }}</span>
         <span class="shrink-0 text-xs text-slate-400 dark:text-[#62666d]">{{ formatSize(file.size) }}</span>
-        <button type="button" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]" @click.stop="remove(index)">
+        <button type="button" class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:text-slate-400 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]" :disabled="disabled" @click.stop="remove(index)">
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
       </div>

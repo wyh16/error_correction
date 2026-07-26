@@ -3,16 +3,24 @@
  * BaseWatermark.vue
  * 水印容器：用离屏 canvas 生成平铺水印图，覆盖在内容之上且不拦截交互。
  */
-import { ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
-  // 水印文案，传数组时渲染多行
-  content: { type: [String, Array], default: '' },
-  rotate: { type: Number, default: -22 },
-  // [水平间距, 垂直间距]，单位 px
-  gap: { type: Array, default: () => [100, 100] },
-  fontSize: { type: Number, default: 14 },
-  opacity: { type: Number, default: 0.15 },
+interface Props {
+  /** 水印文案，传数组时渲染多行 */
+  content?: string | string[]
+  rotate?: number
+  /** [水平间距, 垂直间距]，单位 px */
+  gap?: [number, number]
+  fontSize?: number
+  opacity?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  content: '',
+  rotate: -22,
+  gap: () => [100, 100],
+  fontSize: 14,
+  opacity: 0.15,
 })
 
 const dataUrl = ref('')
@@ -62,14 +70,50 @@ watch(
   render,
   { deep: true, immediate: true },
 )
+
+// —— 防篡改：监听水印节点被移除或属性被改，触发时强制重建 ——
+const hostEl = ref<HTMLElement | null>(null)
+const markEl = ref<HTMLElement | null>(null)
+// key 变化时 Vue 会销毁并重建水印节点，从而恢复被篡改的 style/class
+const restoreKey = ref(0)
+let observer: MutationObserver | null = null
+
+function observe() {
+  if (!observer || !hostEl.value) return
+  observer.disconnect()
+  // 宿主容器监听 childList（水印节点被删）；水印节点监听 attributes（style/class 被改）
+  observer.observe(hostEl.value, { childList: true })
+  if (markEl.value) observer.observe(markEl.value, { attributes: true })
+}
+
+onMounted(() => {
+  observer = new MutationObserver(() => {
+    // 先断开监听，避免自身重建产生的 DOM 变更再次触发回调造成死循环
+    observer?.disconnect()
+    restoreKey.value += 1
+    // 等待新节点渲染完成后重新挂载监听
+    nextTick(observe)
+  })
+  observe()
+})
+
+// markEl 随 v-if / key 变化重建后需要重新监听
+watch(markEl, () => observe())
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  observer = null
+})
 </script>
 
 <template>
-  <div class="relative">
+  <div ref="hostEl" class="relative">
     <slot />
     <!-- 水印层盖在内容上方但 pointer-events-none，不影响选中和点击 -->
     <div
       v-if="dataUrl"
+      ref="markEl"
+      :key="restoreKey"
       class="pointer-events-none absolute inset-0 z-10"
       :style="{ backgroundImage: `url(${dataUrl})`, backgroundRepeat: 'repeat' }"
       aria-hidden="true"

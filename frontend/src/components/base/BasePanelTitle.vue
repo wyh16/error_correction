@@ -3,9 +3,14 @@
  * BasePanelTitle.vue
  * BasePanel header 内统一使用的标题文本。
  */
-defineProps({
-  as: { type: String, default: 'h3' },
-  icon: { type: String, default: '' },
+interface Props {
+  as?: string
+  icon?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  as: 'h3',
+  icon: '',
 })
 </script>
 

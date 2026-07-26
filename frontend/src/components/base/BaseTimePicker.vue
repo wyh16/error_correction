@@ -1,24 +1,41 @@
 <script setup lang="ts">
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
-defineProps({
-  modelValue: { type: String, default: '' },
-  label: { type: String, default: '' },
-  hint: { type: String, default: '' },
-  error: { type: String, default: '' },
-  name: { type: String, default: '' },
-  min: { type: String, default: '' },
-  max: { type: String, default: '' },
-  step: { type: [Number, String], default: 60 },
-  required: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
+interface Props {
+  modelValue?: string
+  label?: string
+  hint?: string
+  error?: string
+  name?: string
+  min?: string
+  max?: string
+  step?: number | string
+  required?: boolean
+  disabled?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  hint: '',
+  error: '',
+  name: '',
+  min: '',
+  max: '',
+  step: 60,
+  required: false,
+  disabled: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'change', value: string, event: Event): void
+}>()
 
-function update(event) {
-  emit('update:modelValue', event.target.value)
-  emit('change', event.target.value, event)
+function update(event: Event) {
+  const value = (event.target as HTMLInputElement).value
+  emit('update:modelValue', value)
+  emit('change', value, event)
 }
 </script>
 

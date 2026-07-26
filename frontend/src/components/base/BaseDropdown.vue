@@ -3,41 +3,31 @@
  * BaseDropdown.vue
  * 基础下拉菜单组件（支持自定义触发器和菜单内容）
  */
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, type PropType } from 'vue'
 import { Menu, MenuButton, MenuItems, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false
-  },
-  position: {
-    type: String,
-    default: 'bottom' // 'top', 'bottom', 'left', 'right'
-  },
-  align: {
-    type: String,
-    default: 'right' // 'left', 'right', 'center'
-  },
-  width: {
-    type: String,
-    default: 'w-48'
-  },
-  offset: {
-    type: String,
-    default: 'mt-1' // 控制外边距
-  },
-  panelClass: {
-    type: String,
-    default: 'rounded-lg border bg-white shadow-lg dark:bg-[#15151e] dark:border-white/[0.08] py-1'
-  },
-  wrapperClass: {
-    type: String,
-    default: 'inline-block'
-  }
+interface Props {
+  modelValue?: boolean
+  position?: 'top' | 'bottom' | 'left' | 'right'
+  align?: 'left' | 'right' | 'center' | 'start' | 'end'
+  width?: string
+  /** 控制外边距的类，如 'mt-1' */
+  offset?: string
+  panelClass?: string
+  wrapperClass?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  position: 'bottom',
+  align: 'right',
+  width: 'w-48',
+  offset: 'mt-1',
+  panelClass: 'rounded-lg border bg-white shadow-lg dark:bg-[#15151e] dark:border-white/[0.08] py-1',
+  wrapperClass: 'inline-block',
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 type CloseFn = (() => void) | null
 
@@ -49,7 +39,7 @@ const OpenStateSync = defineComponent({
   name: 'BaseDropdownOpenStateSync',
   props: {
     open: { type: Boolean, required: true },
-    closeFn: { type: Function, default: null },
+    closeFn: { type: Function as PropType<NonNullable<CloseFn>>, default: null },
   },
   emits: ['sync'],
   setup(syncProps, { emit: syncEmit }) {

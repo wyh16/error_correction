@@ -7,25 +7,50 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import BaseCalendar from './BaseCalendar.vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
-  modelValue: { type: String, default: '' },
-  label: { type: String, default: '' },
-  placeholder: { type: String, default: '' },
-  hint: { type: String, default: '' },
-  error: { type: String, default: '' },
-  name: { type: String, default: '' },
-  min: { type: String, default: '' },
-  max: { type: String, default: '' },
-  required: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  clearable: { type: Boolean, default: true },
+interface Props {
+  modelValue?: string
+  label?: string
+  placeholder?: string
+  hint?: string
+  error?: string
+  name?: string
+  min?: string
+  max?: string
+  required?: boolean
+  disabled?: boolean
+  clearable?: boolean
+  // 自定义禁用逻辑：返回 true 的日期格子不可点选并置灰
+  disabledDate?: ((date: Date) => boolean) | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  placeholder: '',
+  hint: '',
+  error: '',
+  name: '',
+  min: '',
+  max: '',
+  required: false,
+  disabled: false,
+  clearable: true,
+  disabledDate: null,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'change', value: string, date: Date | null): void
+}>()
 
 const rootRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
 const open = ref(false)
+
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪
+const { panelStyle, isOutside } = useDropdownPosition(open, rootRef, panelRef, { offset: 8 })
 
 const showClear = computed(() => props.clearable && Boolean(props.modelValue) && !props.disabled)
 
@@ -45,11 +70,10 @@ function clear() {
   emit('change', '', null)
 }
 
-// 点击组件外部时收起弹层（弹层与触发器都在 rootRef 内）
+// 点击触发器与弹层之外时收起（弹层已 Teleport，需同时排除两者）
 function onPointerDown(event: PointerEvent) {
   if (!open.value) return
-  const target = event.target as Node | null
-  if (rootRef.value && target && !rootRef.value.contains(target)) open.value = false
+  if (isOutside(event.target)) open.value = false
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -108,22 +132,27 @@ onBeforeUnmount(() => {
       <!-- 表单提交场景下携带字段值 -->
       <input v-if="name" type="hidden" :name="name" :value="modelValue" :required="required" />
 
-      <Transition
-        enter-active-class="transition duration-150 ease-out"
-        enter-from-class="translate-y-1 opacity-0"
-        enter-to-class="translate-y-0 opacity-100"
-        leave-active-class="transition duration-100 ease-in"
-        leave-from-class="translate-y-0 opacity-100"
-        leave-to-class="translate-y-1 opacity-0"
-      >
-        <div
-          v-if="open"
-          role="dialog"
-          class="absolute left-0 top-full z-[70] mt-2 w-72 rounded-xl bg-white shadow-xl shadow-black/10 dark:bg-[#1b1b1f] dark:shadow-black/40"
+      <Teleport to="body">
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="translate-y-1 opacity-0"
+          enter-to-class="translate-y-0 opacity-100"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="translate-y-0 opacity-100"
+          leave-to-class="translate-y-1 opacity-0"
         >
-          <BaseCalendar :model-value="modelValue" :min="min" :max="max" @change="select" />
-        </div>
-      </Transition>
+          <div
+            v-if="open"
+            ref="panelRef"
+            role="dialog"
+            :style="panelStyle"
+            class="w-72 rounded-xl bg-white shadow-xl shadow-black/10 dark:bg-[#1b1b1f] dark:shadow-black/40"
+            @keydown="onKeydown"
+          >
+            <BaseCalendar :model-value="modelValue" :min="min" :max="max" :disabled-date="disabledDate" @change="select" />
+          </div>
+        </Transition>
+      </Teleport>
     </div>
     <BaseFieldMessage v-if="error" :message="error" type="error" />
     <BaseFieldMessage v-else-if="hint" :message="hint" />

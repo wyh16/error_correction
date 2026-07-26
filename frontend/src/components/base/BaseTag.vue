@@ -3,19 +3,31 @@
  * BaseTag.vue
  * 通用标签组件，用于状态、分类、知识点等短文本标记。
  */
-const props = defineProps({
-  tone: { type: String, default: 'neutral' },
-  size: { type: String, default: 'sm' },
-  active: { type: Boolean, default: false },
-  // 是否显示右侧关闭按钮，点击后抛出 close 事件（由调用方决定移除逻辑）
-  closable: { type: Boolean, default: false },
-  // 前置图标，传 fa-* 类名，如 'fa-tag'
-  icon: { type: String, default: '' },
+type TagTone = 'neutral' | 'accent' | 'rose' | 'amber' | 'emerald' | 'blue'
+
+interface Props {
+  tone?: TagTone
+  size?: 'xs' | 'sm'
+  active?: boolean
+  /** 是否显示右侧关闭按钮，点击后抛出 close 事件（由调用方决定移除逻辑） */
+  closable?: boolean
+  /** 前置图标，传 fa-* 类名，如 'fa-tag' */
+  icon?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  tone: 'neutral',
+  size: 'sm',
+  active: false,
+  closable: false,
+  icon: '',
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{
+  close: []
+}>()
 
-const toneClass = {
+const toneClass: Record<TagTone, string> = {
   neutral: 'border-gray-200 bg-gray-100/80 text-gray-500 dark:border-white/[0.06] dark:bg-white/[0.045] dark:text-[#8a8f98]',
   accent: 'accent-bg-soft accent-text accent-border',
   rose: 'border-rose-500/20 bg-rose-500/10 text-rose-500 dark:text-rose-300',

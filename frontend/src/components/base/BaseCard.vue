@@ -3,9 +3,14 @@
  * BaseCard.vue
  * 毛玻璃风格卡片容器
  */
-defineProps({
-  padding: { type: String, default: 'p-4' },
-  rounded: { type: String, default: 'rounded-lg' },
+interface Props {
+  padding?: string
+  rounded?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  padding: 'p-4',
+  rounded: 'rounded-lg',
 })
 </script>
 

@@ -6,23 +6,38 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ImageModal from './ImageModal.vue'
 
-const props = defineProps({
-  src: { type: String, default: '' },
-  alt: { type: String, default: '' },
-  // cover | contain | fill | none | scale-down
-  fit: { type: String, default: 'cover' },
-  // 数字或纯数字字符串按 px 写进 inline style，其余字符串当 Tailwind 类拼进 class
-  width: { type: [String, Number], default: '' },
-  height: { type: [String, Number], default: '' },
-  // 首次进入视口才加载真实图片
-  lazy: { type: Boolean, default: false },
-  // 悬停显示放大镜遮罩，点击打开全屏预览
-  previewable: { type: Boolean, default: false },
+interface Props {
+  src?: string
+  alt?: string
+  fit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+  /** 数字或纯数字字符串按 px 写进 inline style，其余字符串当 Tailwind 类拼进 class */
+  width?: string | number
+  height?: string | number
+  /** 首次进入视口才加载真实图片 */
+  lazy?: boolean
+  /** 悬停显示放大镜遮罩，点击打开全屏预览 */
+  previewable?: boolean
+  /** 加载失败时的回退图地址，优先于 fallback 插槽；回退图也失败才显示兜底 */
+  fallbackSrc?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  src: '',
+  alt: '',
+  fit: 'cover',
+  width: '',
+  height: '',
+  lazy: false,
+  previewable: false,
+  fallbackSrc: '',
 })
 
-const emit = defineEmits(['load', 'error'])
+const emit = defineEmits<{
+  load: [event: Event]
+  error: [event: Event]
+}>()
 
-const fitClass = {
+const fitClass: Record<string, string> = {
   cover: 'object-cover',
   contain: 'object-contain',
   fill: 'object-fill',
@@ -30,36 +45,40 @@ const fitClass = {
   'scale-down': 'object-scale-down',
 }
 
-function isPixelValue(value) {
+function isPixelValue(value: string | number): boolean {
   return typeof value === 'number' || /^\d+(\.\d+)?$/.test(String(value))
 }
 
 const containerStyle = computed(() => {
-  const style = {}
+  const style: Record<string, string> = {}
   if (props.width !== '' && isPixelValue(props.width)) style.width = `${props.width}px`
   if (props.height !== '' && isPixelValue(props.height)) style.height = `${props.height}px`
   return style
 })
 
 const containerClass = computed(() => {
-  const classes = []
+  const classes: string[] = []
   if (props.width !== '' && !isPixelValue(props.width)) classes.push(String(props.width))
   if (props.height !== '' && !isPixelValue(props.height)) classes.push(String(props.height))
   return classes
 })
 
 // loading -> loaded / error 三态；src 变化时重置重新走一遍流程
-const status = ref('loading')
+const status = ref<'loading' | 'loaded' | 'error'>('loading')
+// 原图失败后切换到 fallbackSrc；回退图也失败才进入 error 态
+const useFallback = ref(false)
 watch(() => props.src, () => {
   status.value = 'loading'
+  useFallback.value = false
 })
 
 // 懒加载：进入视口前不给 img 绑真实 src，保持骨架
 const revealed = ref(!props.lazy)
-const containerRef = ref(null)
-let observer = null
+const containerRef = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 
-const shownSrc = computed(() => (revealed.value ? props.src : ''))
+const currentSrc = computed(() => (useFallback.value ? props.fallbackSrc : props.src))
+const shownSrc = computed(() => (revealed.value ? currentSrc.value : ''))
 
 onMounted(() => {
   if (!props.lazy || revealed.value) return
@@ -74,19 +93,25 @@ onMounted(() => {
     // 提前 100px 触发，滚动到附近就开始加载，减少可见等待
     { rootMargin: '100px' },
   )
-  observer.observe(containerRef.value)
+  if (containerRef.value) observer.observe(containerRef.value)
 })
 
 onBeforeUnmount(() => {
   if (observer) observer.disconnect()
 })
 
-function onLoad(event) {
+function onLoad(event: Event) {
   status.value = 'loaded'
   emit('load', event)
 }
 
-function onError(event) {
+function onError(event: Event) {
+  // 首次失败且有 fallbackSrc：换回退图重试，不进入 error 态
+  if (!useFallback.value && props.fallbackSrc) {
+    useFallback.value = true
+    status.value = 'loading'
+    return
+  }
   status.value = 'error'
   emit('error', event)
 }
@@ -148,7 +173,7 @@ function closePreview() {
 
     <ImageModal
       :open="previewOpen"
-      :src="src"
+      :src="currentSrc"
       :scale="previewScale"
       @update:scale="previewScale = $event"
       @close="closePreview"

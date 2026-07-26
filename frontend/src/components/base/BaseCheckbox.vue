@@ -1,38 +1,65 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
-const props = defineProps({
-  modelValue: { type: [Boolean, Array, String, Number], default: false },
-  value: { type: [String, Number, Boolean], default: true },
-  trueValue: { type: [String, Number, Boolean], default: true },
-  falseValue: { type: [String, Number, Boolean], default: false },
-  label: { type: String, default: '' },
-  description: { type: String, default: '' },
-  name: { type: String, default: '' },
-  disabled: { type: Boolean, default: false },
-  required: { type: Boolean, default: false },
-  indeterminate: { type: Boolean, default: false },
-  error: { type: Boolean, default: false },
+type CheckboxValue = string | number | boolean
+
+interface Props {
+  modelValue?: boolean | CheckboxValue[] | string | number
+  value?: CheckboxValue
+  trueValue?: CheckboxValue
+  falseValue?: CheckboxValue
+  label?: string
+  description?: string
+  name?: string
+  disabled?: boolean
+  required?: boolean
+  indeterminate?: boolean
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  value: true,
+  trueValue: true,
+  falseValue: false,
+  label: '',
+  description: '',
+  name: '',
+  disabled: false,
+  required: false,
+  indeterminate: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean | CheckboxValue | CheckboxValue[]): void
+  (e: 'change', value: boolean | CheckboxValue | CheckboxValue[], event: Event): void
+}>()
+
+const inputEl = ref<HTMLInputElement | null>(null)
+
+// 同步原生 indeterminate 属性，保证辅助技术与表单语义正确
+watchEffect(() => {
+  if (inputEl.value) inputEl.value.indeterminate = props.indeterminate
+})
 
 const checked = computed(() => {
   if (Array.isArray(props.modelValue)) return props.modelValue.includes(props.value)
   return props.modelValue === props.trueValue
 })
 
-function toggle(event) {
+function toggle(event: Event) {
   if (props.disabled) return
 
-  let nextValue
+  let nextValue: boolean | CheckboxValue | CheckboxValue[]
+  const isChecked = (event.target as HTMLInputElement).checked
   if (Array.isArray(props.modelValue)) {
     const next = new Set(props.modelValue)
-    if (event.target.checked) next.add(props.value)
+    if (isChecked) next.add(props.value)
     else next.delete(props.value)
     nextValue = [...next]
   } else {
-    nextValue = event.target.checked ? props.trueValue : props.falseValue
+    nextValue = isChecked ? props.trueValue : props.falseValue
   }
 
   emit('update:modelValue', nextValue)
@@ -47,6 +74,7 @@ function toggle(event) {
   >
     <span class="relative mt-0.5 inline-flex h-4 w-4 shrink-0">
       <input
+        ref="inputEl"
         class="peer sr-only"
         type="checkbox"
         :name="name"

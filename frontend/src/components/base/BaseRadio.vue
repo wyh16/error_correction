@@ -1,21 +1,36 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  modelValue: { type: [String, Number, Boolean], default: '' },
-  value: { type: [String, Number, Boolean], required: true },
-  label: { type: String, default: '' },
-  description: { type: String, default: '' },
-  name: { type: String, default: '' },
-  disabled: { type: Boolean, default: false },
-  required: { type: Boolean, default: false },
-  error: { type: Boolean, default: false },
+type RadioValue = string | number | boolean
+
+interface Props {
+  modelValue?: RadioValue
+  value: RadioValue
+  label?: string
+  description?: string
+  name?: string
+  disabled?: boolean
+  required?: boolean
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  description: '',
+  name: '',
+  disabled: false,
+  required: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: RadioValue): void
+  (e: 'change', value: RadioValue, event: Event): void
+}>()
 const checked = computed(() => props.modelValue === props.value)
 
-function select(event) {
+function select(event: Event) {
   if (props.disabled) return
   emit('update:modelValue', props.value)
   emit('change', props.value, event)
@@ -31,7 +46,7 @@ function select(event) {
       <input
         class="peer sr-only"
         type="radio"
-        :name="name"
+        :name="name || undefined"
         :value="value"
         :checked="checked"
         :disabled="disabled"

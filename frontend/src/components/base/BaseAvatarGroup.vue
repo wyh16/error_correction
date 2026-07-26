@@ -1,3 +1,12 @@
+<script lang="ts">
+export interface AvatarGroupItem {
+  src?: string
+  name?: string
+  icon?: string
+  tone?: 'accent' | 'neutral' | 'blue' | 'emerald' | 'rose'
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseAvatarGroup.vue
@@ -7,18 +16,27 @@ import { computed } from 'vue'
 import BaseAvatar from './BaseAvatar.vue'
 import BaseTooltip from './BaseTooltip.vue'
 
-const props = defineProps({
-  // 每项透传给 BaseAvatar：{ src?, name?, icon?, tone? }
-  avatars: { type: Array, default: () => [] },
-  // 最多展示个数，0 表示全部展示不折叠
-  max: { type: Number, default: 0 },
-  // 统一应用到每个头像的尺寸（xs | sm | md | lg）
-  size: { type: String, default: 'md' },
-  overlap: { type: Boolean, default: true },
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg'
+
+interface Props {
+  /** 每项透传给 BaseAvatar：{ src?, name?, icon?, tone? } */
+  avatars?: AvatarGroupItem[]
+  /** 最多展示个数，0 表示全部展示不折叠 */
+  max?: number
+  /** 统一应用到每个头像的尺寸（xs | sm | md | lg） */
+  size?: AvatarSize
+  overlap?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  avatars: () => [],
+  max: 0,
+  size: 'md',
+  overlap: true,
 })
 
 // 负间距跟头像尺寸联动，保证不同 size 下重叠比例观感一致
-const spaceClass = {
+const spaceClass: Record<AvatarSize, string> = {
   xs: '-space-x-1.5',
   sm: '-space-x-2',
   md: '-space-x-2.5',
@@ -26,7 +44,7 @@ const spaceClass = {
 }
 
 // +N 徽章的尺寸与 BaseAvatar 的 sizeClass 保持一致
-const counterSizeClass = {
+const counterSizeClass: Record<AvatarSize, string> = {
   xs: 'h-6 w-6 text-[10px]',
   sm: 'h-8 w-8 text-xs',
   md: 'h-10 w-10 text-xs',

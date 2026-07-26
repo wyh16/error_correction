@@ -5,26 +5,37 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
-  disabled: { type: Boolean, default: false },
-  // 提前触发距离（px）：sentinel 距视口底部小于该值即触发
-  distance: { type: Number, default: 50 },
-  // 外部滚动容器选择器；为空时组件自身作为滚动容器
-  target: { type: String, default: '' },
-  // 自身滚动模式下的最大高度，数字按 px
-  maxHeight: { type: [String, Number], default: '' },
-  loading: { type: Boolean, default: false },
-  noMore: { type: Boolean, default: false },
+interface Props {
+  disabled?: boolean
+  /** 提前触发距离（px）：sentinel 距视口底部小于该值即触发 */
+  distance?: number
+  /** 外部滚动容器选择器；为空时组件自身作为滚动容器 */
+  target?: string
+  /** 自身滚动模式下的最大高度，数字按 px */
+  maxHeight?: string | number
+  loading?: boolean
+  noMore?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  disabled: false,
+  distance: 50,
+  target: '',
+  maxHeight: '',
+  loading: false,
+  noMore: false,
 })
 
-const emit = defineEmits(['load'])
+const emit = defineEmits<{
+  load: []
+}>()
 
-const rootRef = ref(null)
-const sentinelRef = ref(null)
+const rootRef = ref<HTMLElement | null>(null)
+const sentinelRef = ref<HTMLElement | null>(null)
 
-let observer = null
+let observer: IntersectionObserver | null = null
 
-const rootStyle = computed(() => {
+const rootStyle = computed<Record<string, string>>(() => {
   if (props.target || props.maxHeight === '' || props.maxHeight === null) return {}
   return { maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight }
 })

@@ -1,3 +1,11 @@
+<script lang="ts">
+export interface FloatButtonMenuItem {
+  icon: string
+  label: string
+  value?: string | number
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseFloatButton.vue
@@ -5,24 +13,43 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-const props = defineProps({
-  // 主按钮图标
-  icon: { type: String, default: 'fa-plus' },
-  // accent | emerald | amber | rose | blue，主按钮实心底色
-  tone: { type: String, default: 'accent' },
-  // 距视口右侧 / 底部的偏移（px）
-  position: { type: Object, default: () => ({ right: 24, bottom: 24 }) },
-  // 悬停主按钮时左侧的气泡提示文字
-  tooltip: { type: String, default: '' },
-  // 子菜单项：{ icon, label, value }，非空时点击主按钮切换展开
-  menu: { type: Array, default: () => [] },
-  // 右上角徽标数字，0 不显示，超过 99 显示 99+
-  badge: { type: Number, default: 0 },
+type FloatButtonTone = 'accent' | 'emerald' | 'amber' | 'rose' | 'blue'
+
+interface FloatButtonPosition {
+  right?: number
+  bottom?: number
+}
+
+interface Props {
+  /** 主按钮图标 */
+  icon?: string
+  /** 主按钮实心底色 */
+  tone?: FloatButtonTone
+  /** 距视口右侧 / 底部的偏移（px） */
+  position?: FloatButtonPosition
+  /** 悬停主按钮时左侧的气泡提示文字 */
+  tooltip?: string
+  /** 子菜单项，非空时点击主按钮切换展开 */
+  menu?: FloatButtonMenuItem[]
+  /** 右上角徽标数字，0 不显示，超过 99 显示 99+ */
+  badge?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  icon: 'fa-plus',
+  tone: 'accent',
+  position: () => ({ right: 24, bottom: 24 }),
+  tooltip: '',
+  menu: () => [],
+  badge: 0,
 })
 
-const emit = defineEmits(['click', 'select'])
+const emit = defineEmits<{
+  click: []
+  select: [item: FloatButtonMenuItem]
+}>()
 
-const toneClass = {
+const toneClass: Record<FloatButtonTone, string> = {
   accent: 'accent-bg',
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
@@ -30,7 +57,7 @@ const toneClass = {
   blue: 'bg-blue-500',
 }
 
-const rootRef = ref(null)
+const rootRef = ref<HTMLElement | null>(null)
 const open = ref(false)
 const hovering = ref(false)
 // 当前悬停的子菜单项下标，-1 表示无
@@ -52,15 +79,15 @@ function handleMainClick() {
   }
 }
 
-function handleSelect(item) {
+function handleSelect(item: FloatButtonMenuItem) {
   emit('select', item)
   open.value = false
 }
 
 /** 点击组件区域外时收起菜单。 */
-function onDocumentClick(event) {
+function onDocumentClick(event: MouseEvent) {
   if (!open.value) return
-  if (rootRef.value && !rootRef.value.contains(event.target)) open.value = false
+  if (rootRef.value && event.target instanceof Node && !rootRef.value.contains(event.target)) open.value = false
 }
 
 onMounted(() => {

@@ -3,10 +3,15 @@
  * BaseEmptyState.vue
  * Linear 风格空状态组件 — 居中图标 + 标题 + 描述 + 操作按钮
  */
-defineProps({
-  icon: { type: String, default: '' },
-  title: { type: String, required: true },
-  description: { type: String, default: '' },
+interface Props {
+  icon?: string
+  title: string
+  description?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  icon: '',
+  description: '',
 })
 </script>
 

@@ -1,22 +1,53 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import BaseRadio from './BaseRadio.vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
-defineProps({
-  modelValue: { type: [String, Number, Boolean], default: '' },
-  options: { type: Array, default: () => [] },
-  label: { type: String, default: '' },
-  description: { type: String, default: '' },
-  name: { type: String, default: '' },
-  required: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  error: { type: String, default: '' },
-  direction: { type: String, default: 'vertical' },
+type RadioValue = string | number | boolean
+
+export interface RadioGroupOption {
+  label: string
+  value: RadioValue
+  description?: string
+  disabled?: boolean
+}
+
+// 模块级计数器：未传 name 时自动生成唯一 name，保证同组 radio 成组、方向键可用
+let groupSeed = 0
+
+interface Props {
+  modelValue?: RadioValue
+  options?: RadioGroupOption[]
+  label?: string
+  description?: string
+  name?: string
+  required?: boolean
+  disabled?: boolean
+  error?: string
+  direction?: 'vertical' | 'horizontal'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  options: () => [],
+  label: '',
+  description: '',
+  name: '',
+  required: false,
+  disabled: false,
+  error: '',
+  direction: 'vertical',
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const generatedName = `base-radio-group-${++groupSeed}`
+const groupName = computed(() => props.name || generatedName)
 
-function select(value, event) {
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: RadioValue): void
+  (e: 'change', value: RadioValue, event?: Event): void
+}>()
+
+function select(value: RadioValue, event?: Event) {
   emit('update:modelValue', value)
   emit('change', value, event)
 }
@@ -39,7 +70,7 @@ function select(value, event) {
         :value="option.value"
         :label="option.label"
         :description="option.description"
-        :name="name"
+        :name="groupName"
         :disabled="disabled || option.disabled"
         :required="required"
         :error="Boolean(error)"

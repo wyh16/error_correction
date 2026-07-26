@@ -8,22 +8,59 @@ import {
   ComboboxOptions,
   TransitionRoot,
 } from '@headlessui/vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
-  modelValue: { type: [String, Number, Object], default: '' },
-  options: { type: Array, default: () => [] },
-  placeholder: { type: String, default: '请选择' },
-  searchPlaceholder: { type: String, default: '搜索' },
-  labelKey: { type: String, default: 'label' },
-  valueKey: { type: String, default: 'value' },
-  clearable: { type: Boolean, default: true },
+export interface ComboboxOption {
+  label?: string
+  value?: string | number
+  [key: string]: unknown
+}
+
+interface Props {
+  modelValue?: string | number | Record<string, unknown>
+  options?: Array<string | number | ComboboxOption>
+  placeholder?: string
+  searchPlaceholder?: string
+  labelKey?: string
+  valueKey?: string
+  clearable?: boolean
+  // 是否禁用整个选择器
+  disabled?: boolean
+  // 错误态：红色边框
+  error?: boolean
+  // 尺寸：sm | md（默认）| lg
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  options: () => [],
+  placeholder: '请选择',
+  searchPlaceholder: '搜索',
+  labelKey: 'label',
+  valueKey: 'value',
+  clearable: true,
+  disabled: false,
+  error: false,
+  size: 'md',
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string | number): void
+  (e: 'change', value: string | number, option: ComboboxOption | null): void
+}>()
 const query = ref('')
 
-const normalizedOptions = computed(() =>
-  props.options.map((option) => (typeof option === 'object' ? option : { label: String(option), value: option })),
+const sizeClass = computed(() => {
+  if (props.size === 'sm') return 'h-8 px-2.5 text-xs'
+  if (props.size === 'lg') return 'h-12 px-3.5 text-base'
+  return 'h-10 px-3 text-sm'
+})
+
+const normalizedOptions = computed<ComboboxOption[]>(() =>
+  props.options.map((option) =>
+    (typeof option === 'object' && option !== null ? option : { label: String(option), value: option }) as ComboboxOption,
+  ),
 )
 
 const selectedOption = computed(() =>
@@ -40,16 +77,23 @@ const filteredOptions = computed(() => {
 
 const selectedProxy = computed({
   get: () => selectedOption.value,
-  set: (option) => {
-    const value = option?.[props.valueKey] ?? ''
+  set: (option: ComboboxOption | null) => {
+    const value = (option?.[props.valueKey] ?? '') as string | number
     emit('update:modelValue', value)
     emit('change', value, option ?? null)
   },
 })
 
 function clear() {
+  if (props.disabled) return
   selectedProxy.value = null
 }
+
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪；open 状态经 TransitionRoot 钩子同步
+const triggerRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
+const panelOpen = ref(false)
+const { panelStyle } = useDropdownPosition(panelOpen, triggerRef, panelRef, { matchWidth: 'exact' })
 </script>
 
 <template>
@@ -57,19 +101,28 @@ function clear() {
     v-slot="{ open }"
     v-model="selectedProxy"
     nullable
+    :disabled="disabled"
     as="div"
     class="relative"
   >
-    <div class="relative">
+    <div ref="triggerRef" class="relative">
       <ComboboxButton
-        class="flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 text-left text-sm transition-colors hover:bg-slate-50 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+        class="flex w-full items-center justify-between gap-2 rounded-lg border bg-white text-left transition-colors dark:bg-white/[0.03]"
+        :class="[
+          sizeClass,
+          error ? 'border-rose-500/50' : 'border-slate-200 dark:border-white/[0.08]',
+          disabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'hover:bg-slate-50 dark:hover:bg-white/[0.06]',
+        ]"
+        :disabled="disabled"
         @click="query = ''"
       >
         <span class="min-w-0 flex-1 truncate" :class="selectedOption ? 'text-slate-800 dark:text-[#d0d6e0]' : 'text-slate-400 dark:text-[#62666d]'">
           {{ selectedOption?.[labelKey] || placeholder }}
         </span>
         <button
-          v-if="clearable && selectedOption"
+          v-if="clearable && selectedOption && !disabled"
           type="button"
           class="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]"
           @click.stop="clear"
@@ -80,19 +133,23 @@ function clear() {
       </ComboboxButton>
     </div>
 
-    <TransitionRoot
-      :show="open"
-      enter="transition duration-150 ease-out"
-      enter-from="opacity-0 -translate-y-1"
-      enter-to="opacity-100 translate-y-0"
-      leave="transition duration-100 ease-in"
-      leave-from="opacity-100 translate-y-0"
-      leave-to="opacity-0 -translate-y-1"
-    >
-      <ComboboxOptions
-        static
-        class="absolute left-0 top-full z-[70] mt-1 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/10 focus:outline-none dark:border-white/[0.08] dark:bg-[#1b1b1f] dark:shadow-black/40"
+    <Teleport to="body">
+      <TransitionRoot
+        :show="open"
+        enter="transition duration-150 ease-out"
+        enter-from="opacity-0 -translate-y-1"
+        enter-to="opacity-100 translate-y-0"
+        leave="transition duration-100 ease-in"
+        leave-from="opacity-100 translate-y-0"
+        leave-to="opacity-0 -translate-y-1"
+        @before-enter="panelOpen = true"
+        @after-leave="panelOpen = false"
       >
+        <div ref="panelRef" :style="panelStyle">
+          <ComboboxOptions
+            static
+            class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/10 focus:outline-none dark:border-white/[0.08] dark:bg-[#1b1b1f] dark:shadow-black/40"
+          >
         <div class="border-b border-slate-200 p-2 dark:border-white/[0.06]">
           <ComboboxInput
             :display-value="() => ''"
@@ -121,7 +178,9 @@ function clear() {
             没有匹配项
           </div>
         </div>
-      </ComboboxOptions>
-    </TransitionRoot>
+          </ComboboxOptions>
+        </div>
+      </TransitionRoot>
+    </Teleport>
   </Combobox>
 </template>

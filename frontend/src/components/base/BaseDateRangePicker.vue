@@ -4,22 +4,50 @@
  * 日期范围选择器：双月并排面板，两次点击确定起止日期，支持 hover 预览区间
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
+interface DayCell {
+  value: string
+  label: number
+  muted: boolean
+  today: boolean
+  disabled: boolean
+}
+
+interface Props {
   // ['YYYY-MM-DD', 'YYYY-MM-DD'] 或空数组
-  modelValue: { type: Array, default: () => [] },
-  min: { type: String, default: '' },
-  max: { type: String, default: '' },
-  placeholder: { type: String, default: '开始日期 → 结束日期' },
-  disabled: { type: Boolean, default: false },
-  clearable: { type: Boolean, default: false },
+  modelValue?: string[]
+  min?: string
+  max?: string
+  placeholder?: string
+  disabled?: boolean
+  clearable?: boolean
+  // 错误态：红色边框
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  min: '',
+  max: '',
+  placeholder: '开始日期 → 结束日期',
+  disabled: false,
+  clearable: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string[]): void
+  (e: 'change', value: string[]): void
+}>()
 
-const rootRef = ref(null)
+const rootRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
 const open = ref(false)
 const today = new Date()
+
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪
+const { panelStyle, isOutside } = useDropdownPosition(open, rootRef, panelRef)
 
 // 左面板锚点月（每月 1 号），右面板恒为锚点 +1 月
 const anchor = ref(new Date(today.getFullYear(), today.getMonth(), 1))
@@ -30,7 +58,7 @@ const hovered = ref('')
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六']
 
-function formatDate(date) {
+function formatDate(date: Date) {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')
@@ -55,7 +83,7 @@ const displayRange = computed(() => {
 })
 
 // 以锚点月偏移 offset 个月生成 42 格（6 周补齐，跨月日期标记 muted）
-function makeDays(offset) {
+function makeDays(offset: number): DayCell[] {
   const year = anchor.value.getFullYear()
   const month = anchor.value.getMonth() + offset
   const first = new Date(year, month, 1)
@@ -82,7 +110,7 @@ const panels = computed(() => [0, 1].map(offset => {
   }
 }))
 
-function moveMonth(delta) {
+function moveMonth(delta: number) {
   anchor.value = new Date(anchor.value.getFullYear(), anchor.value.getMonth() + delta, 1)
 }
 
@@ -106,7 +134,7 @@ function close() {
   hovered.value = ''
 }
 
-function handleDayClick(day) {
+function handleDayClick(day: DayCell) {
   if (day.disabled) return
   // 第一次点击：进入选择态，旧区间从面板上消失（modelValue 在确认前保持不变）
   if (!pickingStart.value) {
@@ -121,12 +149,12 @@ function handleDayClick(day) {
   close()
 }
 
-function handleDayHover(day) {
+function handleDayHover(day: DayCell) {
   if (!pickingStart.value || day.disabled) return
   hovered.value = day.value
 }
 
-function dayClass(day) {
+function dayClass(day: DayCell) {
   const { start, end } = displayRange.value
   // 跨月溢出格与相邻面板的当月格是同一天，muted 格不参与高亮，避免区间在两个面板重复出现
   const isEndpoint = !day.muted && (day.value === start || day.value === end)
@@ -144,14 +172,13 @@ function clearValue() {
   emit('change', [])
 }
 
-// 点击组件外部时收起弹层（触发器与弹层都在 rootRef 内）
-function onDocPointerDown(event) {
+// 点击触发器与弹层之外时收起（弹层已 Teleport，需同时排除两者）
+function onDocPointerDown(event: PointerEvent) {
   if (!open.value) return
-  const target = event.target
-  if (rootRef.value && target && !rootRef.value.contains(target)) close()
+  if (isOutside(event.target)) close()
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') close()
 }
 
@@ -174,9 +201,11 @@ onBeforeUnmount(() => {
         :aria-expanded="open"
         class="flex h-9 w-full items-center rounded-md border bg-white pl-9 pr-8 text-left text-sm outline-none transition-colors dark:bg-white/[0.03]"
         :class="[
-          open
-            ? 'border-[rgb(var(--accent-rgb)/0.4)]'
-            : 'border-slate-200 hover:border-slate-300 dark:border-white/[0.08] dark:hover:border-white/[0.16]',
+          error
+            ? 'border-rose-500/50 hover:border-rose-500/50'
+            : open
+              ? 'border-[rgb(var(--accent-rgb)/0.4)]'
+              : 'border-slate-200 hover:border-slate-300 dark:border-white/[0.08] dark:hover:border-white/[0.16]',
           disabled ? 'cursor-not-allowed opacity-50 hover:border-slate-200 dark:hover:border-white/[0.08]' : '',
         ]"
         @click="toggle"
@@ -198,20 +227,24 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="-translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-100 ease-in"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="-translate-y-1 opacity-0"
-    >
-      <div
-        v-if="open"
-        role="dialog"
-        class="absolute left-0 top-full z-50 mt-1 flex rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
-        @mouseleave="hovered = ''"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-150 ease-out"
+        enter-from-class="-translate-y-1 opacity-0"
+        enter-to-class="translate-y-0 opacity-100"
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="translate-y-0 opacity-100"
+        leave-to-class="-translate-y-1 opacity-0"
       >
+        <div
+          v-if="open"
+          ref="panelRef"
+          role="dialog"
+          :style="panelStyle"
+          class="flex rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+          @keydown="onKeydown"
+          @mouseleave="hovered = ''"
+        >
         <div
           v-for="(panel, panelIndex) in panels"
           :key="panel.title"
@@ -259,7 +292,8 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
-      </div>
-    </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>

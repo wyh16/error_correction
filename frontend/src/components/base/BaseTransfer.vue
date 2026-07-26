@@ -6,22 +6,41 @@
 import { computed, ref, watch } from 'vue'
 import BaseCheckbox from './BaseCheckbox.vue'
 
-const props = defineProps({
+export interface TransferOption {
+  label: string
+  value: string | number
+  disabled?: boolean
+}
+
+type TransferValue = Array<string | number>
+
+interface Props {
   // 目标侧（右列）已持有的 value 数组
-  modelValue: { type: Array, default: () => [] },
+  modelValue?: TransferValue
   // 全量候选项 { label, value, disabled? }
-  options: { type: Array, default: () => [] },
-  titles: { type: Array, default: () => ['源列表', '目标列表'] },
+  options?: TransferOption[]
+  titles?: string[]
   // 是否在两列头部下方显示按 label 过滤的搜索框
-  searchable: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
+  searchable?: boolean
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  options: () => [],
+  titles: () => ['源列表', '目标列表'],
+  searchable: false,
+  disabled: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: TransferValue): void
+  (e: 'change', value: TransferValue, direction: 'toTarget' | 'toSource', moved: TransferValue): void
+}>()
 
 // 两侧各自的勾选值，移动或外部值变化后需要清理
-const sourceChecked = ref([])
-const targetChecked = ref([])
+const sourceChecked = ref<TransferValue>([])
+const targetChecked = ref<TransferValue>([])
 const sourceQuery = ref('')
 const targetQuery = ref('')
 
@@ -31,10 +50,10 @@ const sourceItems = computed(() => props.options.filter(item => !targetSet.value
 // 目标侧按 modelValue 顺序展示，让新移入的项排在末尾；值在 options 中不存在时忽略
 const targetItems = computed(() => {
   const byValue = new Map(props.options.map(item => [item.value, item]))
-  return props.modelValue.map(value => byValue.get(value)).filter(Boolean)
+  return props.modelValue.map(value => byValue.get(value)).filter((item): item is TransferOption => Boolean(item))
 })
 
-function filterItems(items, query) {
+function filterItems(items: TransferOption[], query: string) {
   const keyword = query.trim().toLowerCase()
   if (!keyword) return items
   return items.filter(item => String(item.label).toLowerCase().includes(keyword))
@@ -44,7 +63,7 @@ const filteredSource = computed(() => filterItems(sourceItems.value, sourceQuery
 const filteredTarget = computed(() => filterItems(targetItems.value, targetQuery.value))
 
 // 全选框只统计「当前可见且未禁用」的项，搜索过滤后全选不会误勾隐藏项
-function allState(items, checked) {
+function allState(items: TransferOption[], checked: TransferValue) {
   const enabled = items.filter(item => !item.disabled).map(item => item.value)
   const checkedCount = enabled.filter(value => checked.includes(value)).length
   return {
@@ -56,7 +75,7 @@ function allState(items, checked) {
 const sourceAll = computed(() => allState(filteredSource.value, sourceChecked.value))
 const targetAll = computed(() => allState(filteredTarget.value, targetChecked.value))
 
-function toggleAll(side) {
+function toggleAll(side: 'source' | 'target') {
   if (props.disabled) return
   const items = side === 'source' ? filteredSource.value : filteredTarget.value
   const checkedRef = side === 'source' ? sourceChecked : targetChecked
@@ -75,13 +94,13 @@ watch(() => props.modelValue, () => {
   targetChecked.value = targetChecked.value.filter(value => targetSet.value.has(value))
 })
 
-function move(direction) {
+function move(direction: 'toTarget' | 'toSource') {
   if (props.disabled) return
   const checkedRef = direction === 'toTarget' ? sourceChecked : targetChecked
   if (!checkedRef.value.length) return
   // 按 options 原始顺序移动，避免目标列表顺序随勾选顺序抖动
   const orderIndex = new Map(props.options.map((item, index) => [item.value, index]))
-  const moved = [...checkedRef.value].sort((a, b) => orderIndex.get(a) - orderIndex.get(b))
+  const moved = [...checkedRef.value].sort((a, b) => (orderIndex.get(a) ?? 0) - (orderIndex.get(b) ?? 0))
   const next = direction === 'toTarget'
     ? [...props.modelValue, ...moved]
     : props.modelValue.filter(value => !moved.includes(value))

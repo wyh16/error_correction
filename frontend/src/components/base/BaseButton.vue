@@ -16,29 +16,52 @@
  * - secondary: 次级浅色玻璃按钮
  * - cta: 强强调按钮，常用于主要转化操作
  * - ghost: 轻量幽灵按钮，适合弱操作或工具操作
+ * - danger: 危险操作按钮，红色系（rose 色板）
+ * - glass: 毛玻璃拟态按钮（原 BaseGhostButton 样式）
  */
 import { computed } from 'vue'
+
+type ButtonVariant = 'primary' | 'secondary' | 'cta' | 'ghost' | 'danger' | 'glass'
+type ButtonSize = 'sm' | 'md' | 'lg'
 
 /**
  * 组件对外暴露的基础能力：
  * - variant: 决定按钮风格
  * - size: 决定按钮高度、字号和圆角
  * - to / href: 决定按钮是否退化为导航入口
- * - type / disabled: 仅在渲染为原生 button 时生效
+ * - type: 仅在渲染为原生 button 时生效
+ * - disabled: 原生 button 使用 disabled 属性；链接形态用 aria-disabled + 阻止点击
  * - loading: 加载中展示旋转图标并禁止点击
  * - icon: 在文本前渲染一个 fa-* 图标
  * - block: 占满父容器宽度，常用于表单提交按钮
  */
-const props = defineProps({
-  variant: { type: String, default: 'primary' },   // primary | secondary | cta | ghost
-  size: { type: String, default: 'md' },            // sm | md | lg
-  to: { type: String, default: '' },                // RouterLink 目标
-  href: { type: String, default: '' },              // 普通链接
-  type: { type: String, default: 'button' },        // button | submit
-  disabled: { type: Boolean, default: false },
-  loading: { type: Boolean, default: false },       // 加载中：显示 spinner 并禁用点击
-  icon: { type: String, default: '' },              // 前置图标，如 'fa-plus'
-  block: { type: Boolean, default: false },         // 是否占满整行
+interface Props {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  /** RouterLink 目标 */
+  to?: string
+  /** 普通链接 */
+  href?: string
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
+  /** 加载中：显示 spinner 并禁用点击 */
+  loading?: boolean
+  /** 前置图标，如 'fa-plus' */
+  icon?: string
+  /** 是否占满整行 */
+  block?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'primary',
+  size: 'md',
+  to: '',
+  href: '',
+  type: 'button',
+  disabled: false,
+  loading: false,
+  icon: '',
+  block: false,
 })
 
 /**
@@ -57,22 +80,41 @@ const tag = computed(() => {
   return 'button'
 })
 
+const isLink = computed(() => Boolean(props.to || props.href))
+
 /**
  * 给不同根节点注入对应属性。
  *
  * 这里刻意只传“当前标签真正需要的属性”：
- * - RouterLink 只拿到 `to`
- * - a 标签只拿到 `href`
+ * - RouterLink 只拿到 `to`（disabled 时以 aria-disabled 标注）
+ * - a 标签只拿到 `href`（disabled 时移除 href 并标注 aria-disabled）
  * - button 才拿到 `type` 和 `disabled`
  *
  * 这样能避免把无效属性错误地挂到别的元素上。
  */
 const bindProps = computed(() => {
-  if (props.to) return { to: props.to }
-  if (props.href) return { href: props.href }
+  if (props.to) {
+    return props.disabled
+      ? { to: props.to, 'aria-disabled': 'true', tabindex: -1 }
+      : { to: props.to }
+  }
+  if (props.href) {
+    // disabled 链接移除 href：既阻止导航也让其退出 tab 序列
+    return props.disabled
+      ? { 'aria-disabled': 'true', tabindex: -1 }
+      : { href: props.href }
+  }
   // loading 期间同样禁用按钮，避免重复触发提交类操作。
   return { type: props.type, disabled: props.disabled || props.loading }
 })
+
+/** 链接形态没有原生 disabled，需要在捕获点击时手动拦截。 */
+function onClick(event: MouseEvent) {
+  if (isLink.value && (props.disabled || props.loading)) {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+  }
+}
 </script>
 
 <template>
@@ -90,13 +132,18 @@ const bindProps = computed(() => {
       // block 模式下占满整行；链接形态没有原生 disabled，用 pointer-events 拦截 loading 点击。
       block ? 'w-full' : '',
       loading ? 'pointer-events-none opacity-70' : '',
+      // 链接形态的禁用态：原生 disabled 不生效，手动补禁用样式并拦截点击
+      isLink && disabled ? 'pointer-events-none cursor-not-allowed opacity-50' : '',
       {
         'base-button--primary': variant === 'primary',
         'base-button--secondary': variant === 'secondary',
         'base-button--cta': variant === 'cta',
         'base-button--ghost': variant === 'ghost',
+        'base-button--danger': variant === 'danger',
+        'base-button--glass': variant === 'glass',
       },
     ]"
+    @click="onClick"
   >
     <!--
       仅 primary / cta 显示内部纹理。
@@ -260,6 +307,56 @@ const bindProps = computed(() => {
 }
 :root.dark .base-button--ghost::before {
   background: transparent;
+}
+
+/*
+  Danger:
+  危险操作按钮。红色系（rose 色板，对齐项目现有 bg-rose-500 / hover:bg-rose-400 的用法），
+  适合“删除”“清空”“不可逆操作”这类需要警示的入口。
+*/
+.base-button--danger {
+  background: linear-gradient(to bottom, rgba(244, 63, 94, 0.95), rgba(225, 29, 72, 0.95)); /* rose-500 -> rose-600 */
+  color: #fff;
+  border: none;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+.base-button--danger:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+    0 0 20px 0 rgba(244, 63, 94, 0.25);
+}
+.base-button--danger::before {
+  background: linear-gradient(to bottom, rgba(251, 113, 133, 0.95), rgba(244, 63, 94, 0.95)); /* rose-400 -> rose-500 */
+}
+
+/*
+  Glass:
+  毛玻璃拟态按钮（原 BaseGhostButton 的样式）。
+  半透明白底 + 细描边，适合置于图片 / 渐变背景之上的次要操作。
+*/
+.base-button--glass {
+  background: rgba(255, 255, 255, 0.6);
+  color: rgba(51, 65, 85, 1); /* text-slate-700 */
+  border: 1px solid rgba(226, 232, 240, 0.6); /* border-slate-200/60 */
+  font-weight: 700;
+  border-radius: 0.75rem; /* rounded-xl，覆盖尺寸层的圆角 */
+}
+.base-button--glass:hover {
+  border-color: rgba(203, 213, 225, 1); /* hover:border-slate-300 */
+}
+.base-button--glass::before {
+  background: rgba(255, 255, 255, 0.8);
+}
+:root.dark .base-button--glass {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(203, 213, 225, 1); /* dark:text-slate-300 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+:root.dark .base-button--glass:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+:root.dark .base-button--glass::before {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /*

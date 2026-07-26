@@ -38,7 +38,6 @@ export { default as BaseFieldMessage } from './BaseFieldMessage.vue'
 export { default as BaseFloatButton } from './BaseFloatButton.vue'
 export { default as BaseForm } from './BaseForm.vue'
 export { default as BaseFormItem } from './BaseFormItem.vue'
-export { default as BaseGhostButton } from './BaseGhostButton.vue'
 export { default as BaseHighlight } from './BaseHighlight.vue'
 export { default as BaseImage } from './BaseImage.vue'
 export { default as BaseInfiniteScroll } from './BaseInfiniteScroll.vue'
@@ -101,6 +100,7 @@ export { default as BaseUpload } from './BaseUpload.vue'
 export { default as BaseVirtualList } from './BaseVirtualList.vue'
 export { default as BaseWatermark } from './BaseWatermark.vue'
 export { default as ImageModal } from './ImageModal.vue'
+
 export {
   BASE_COMPONENT_API_DOCS,
   BASE_COMPONENT_COUNT,

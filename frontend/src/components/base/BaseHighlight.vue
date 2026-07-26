@@ -5,16 +5,23 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps({
-  text: { type: String, default: '' },
-  // 单个关键词或关键词数组
-  keywords: { type: [String, Array], default: '' },
-  caseSensitive: { type: Boolean, default: false },
-  highlightClass: { type: String, default: 'accent-bg-soft accent-text rounded px-0.5' },
+interface Props {
+  text?: string
+  /** 单个关键词或关键词数组 */
+  keywords?: string | string[]
+  caseSensitive?: boolean
+  highlightClass?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  text: '',
+  keywords: '',
+  caseSensitive: false,
+  highlightClass: 'accent-bg-soft accent-text rounded px-0.5',
 })
 
 // 转义正则元字符，保证关键词按字面匹配（如 'C++'、'1.5'）
-function escapeRegExp(word) {
+function escapeRegExp(word: string): string {
   return word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 

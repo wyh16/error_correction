@@ -1,17 +1,38 @@
+<script lang="ts">
+export interface CommandItem {
+  id?: string | number
+  label: string
+  description?: string
+  group?: string
+  icon?: string
+  action?: () => void
+}
+</script>
+
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { useOverlay } from '@/composables/useOverlay'
 
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  items: { type: Array, default: () => [] },
-  placeholder: { type: String, default: '搜索命令' },
+interface Props {
+  open?: boolean
+  items?: CommandItem[]
+  placeholder?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  open: false,
+  items: () => [],
+  placeholder: '搜索命令',
 })
 
-const emit = defineEmits(['update:open', 'select'])
+const emit = defineEmits<{
+  'update:open': [open: boolean]
+  select: [item: CommandItem]
+}>()
+
 const query = ref('')
 const activeIndex = ref(0)
-const inputRef = ref(null)
+const inputRef = ref<HTMLInputElement | null>(null)
 const { overlayRef, overlayStyle, backdropStyle } = useOverlay(
   computed(() => props.open),
   { onClose: close },
@@ -43,12 +64,12 @@ function close() {
   emit('update:open', false)
 }
 
-function move(delta) {
+function move(delta: number) {
   if (!filteredItems.value.length) return
   activeIndex.value = (activeIndex.value + delta + filteredItems.value.length) % filteredItems.value.length
 }
 
-function select(item = filteredItems.value[activeIndex.value]) {
+function select(item: CommandItem | undefined = filteredItems.value[activeIndex.value]) {
   if (!item) return
   emit('select', item)
   item.action?.()

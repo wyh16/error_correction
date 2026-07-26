@@ -1,33 +1,68 @@
-<script setup lang="ts">
-import { computed, ref } from 'vue'
+<script lang="ts">
+export interface TreeItem {
+  value: string | number
+  label: string
+  icon?: string
+  children?: TreeItem[]
+}
+</script>
 
-const props = defineProps({
-  items: { type: Array, default: () => [] },
-  modelValue: { type: [String, Number], default: '' },
-  defaultExpanded: { type: Array, default: () => [] },
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
+interface Props {
+  items?: TreeItem[]
+  modelValue?: string | number
+  defaultExpanded?: Array<string | number>
+  /** 受控展开集合：传入后展开状态完全由外部驱动（配合 v-model:expanded） */
+  expanded?: Array<string | number>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  modelValue: '',
+  defaultExpanded: () => [],
+  expanded: undefined,
 })
 
-const emit = defineEmits(['update:modelValue', 'select'])
-const expanded = ref(new Set(props.defaultExpanded))
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number]
+  'update:expanded': [values: Array<string | number>]
+  select: [item: TreeItem]
+}>()
 
-function hasChildren(item) {
+// 传了 expanded 即受控模式，内部集合只在非受控时使用
+const controlled = computed(() => props.expanded !== undefined)
+const innerExpanded = ref(new Set<string | number>(props.defaultExpanded))
+
+// defaultExpanded 变更时以新值重置展开集合（取舍：不保留用户手动展开项，实现简单且行为可预期）
+watch(() => props.defaultExpanded, value => {
+  innerExpanded.value = new Set(value)
+}, { deep: true })
+
+const expandedSet = computed(() =>
+  controlled.value ? new Set(props.expanded) : innerExpanded.value,
+)
+
+function hasChildren(item: TreeItem): boolean {
   return Array.isArray(item.children) && item.children.length > 0
 }
 
-function toggle(item) {
+function toggle(item: TreeItem) {
   if (!hasChildren(item)) return
-  const next = new Set(expanded.value)
+  const next = new Set(expandedSet.value)
   if (next.has(item.value)) next.delete(item.value)
   else next.add(item.value)
-  expanded.value = next
+  if (controlled.value) emit('update:expanded', [...next])
+  else innerExpanded.value = next
 }
 
-function select(item) {
+function select(item: TreeItem) {
   emit('update:modelValue', item.value)
   emit('select', item)
 }
 
-const isExpanded = computed(() => item => expanded.value.has(item.value))
+const isExpanded = computed(() => (item: TreeItem) => expandedSet.value.has(item.value))
 </script>
 
 <template>
@@ -58,7 +93,9 @@ const isExpanded = computed(() => item => expanded.value.has(item.value))
         :model-value="modelValue"
         :items="item.children"
         :default-expanded="defaultExpanded"
+        :expanded="expanded"
         @update:model-value="emit('update:modelValue', $event)"
+        @update:expanded="emit('update:expanded', $event)"
         @select="emit('select', $event)"
       />
     </li>

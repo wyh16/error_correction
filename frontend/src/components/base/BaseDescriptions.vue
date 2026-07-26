@@ -1,3 +1,10 @@
+<script lang="ts">
+export interface DescriptionItem {
+  label: string
+  value?: unknown
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseDescriptions.vue
@@ -5,22 +12,30 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps({
-  // 数据项数组，每项为 { label, value }
-  items: { type: Array, default: () => [] },
-  // sm 及以上屏幕的列数（1-4），小屏固定单列
-  columns: { type: Number, default: 2 },
-  // 列表上方的标题，为空时不渲染
-  title: { type: String, default: '' },
-  // 带边框的表格风格：每个单元格有边框，标签列使用浅色背景
-  bordered: { type: Boolean, default: false },
-  // 尺寸：sm 更紧凑的内边距和字号，md（默认）
-  size: { type: String, default: 'md' },
+interface Props {
+  /** 数据项数组，每项为 { label, value } */
+  items?: DescriptionItem[]
+  /** sm 及以上屏幕的列数（1-4），小屏固定单列 */
+  columns?: 1 | 2 | 3 | 4
+  /** 列表上方的标题，为空时不渲染 */
+  title?: string
+  /** 带边框的表格风格：每个单元格有边框，标签列使用浅色背景 */
+  bordered?: boolean
+  /** 尺寸：sm 更紧凑的内边距和字号，md（默认） */
+  size?: 'sm' | 'md'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  columns: 2,
+  title: '',
+  bordered: false,
+  size: 'md',
 })
 
 /** 列数只支持 1-4 的静态映射，避免动态类名被 Tailwind 摇树掉。 */
 const colsClass = computed(() => {
-  const map = {
+  const map: Record<number, string> = {
     1: 'sm:grid-cols-1',
     2: 'sm:grid-cols-2',
     3: 'sm:grid-cols-3',

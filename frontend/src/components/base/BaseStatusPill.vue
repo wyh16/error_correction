@@ -3,31 +3,44 @@
  * BaseStatusPill.vue
  * 通用状态徽标，用统一视觉表达加载中、正常、异常、占位等状态。
  */
-defineProps({
-  label: { type: String, default: '' },
-  loading: { type: Boolean, default: false },
-  ok: { type: Boolean, default: false },
-  placeholder: { type: Boolean, default: false },
+interface Props {
+  label?: string
+  loading?: boolean
+  ok?: boolean
+  placeholder?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  label: '',
+  loading: false,
+  ok: false,
+  placeholder: false,
 })
+
+interface StatusFlags {
+  loading?: boolean
+  ok?: boolean
+  placeholder?: boolean
+}
 
 /**
  * 根据状态选择徽标颜色和图标。
  */
-const getToneClass = ({ loading, ok, placeholder }) => {
+const getToneClass = ({ loading, ok, placeholder }: StatusFlags) => {
   if (loading) return 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
   if (placeholder) return 'border-gray-200 bg-gray-100 text-gray-500 dark:border-white/[0.05] dark:bg-white/[0.03] dark:text-[#62666d]'
   if (ok) return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
   return 'border-rose-500/20 bg-rose-500/10 text-rose-500 dark:text-rose-400'
 }
 
-const getIconClass = ({ loading, ok, placeholder }) => {
+const getIconClass = ({ loading, ok, placeholder }: StatusFlags) => {
   if (loading) return 'fa-spinner animate-spin'
   if (placeholder) return 'fa-hourglass-start'
   if (ok) return 'fa-check'
   return 'fa-xmark'
 }
 
-const getIconKey = ({ loading, ok, placeholder }) => {
+const getIconKey = ({ loading, ok, placeholder }: StatusFlags) => {
   if (loading) return 'loading'
   if (placeholder) return 'placeholder'
   if (ok) return 'ok'

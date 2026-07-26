@@ -5,16 +5,24 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps({
-  spinning: { type: Boolean, default: true },
-  // sm | md | lg
-  size: { type: String, default: 'md' },
-  tip: { type: String, default: '' },
-  // 全屏模式：Teleport 到 body，覆盖整个视口
-  fullscreen: { type: Boolean, default: false },
+type SpinSize = 'sm' | 'md' | 'lg'
+
+interface Props {
+  spinning?: boolean
+  size?: SpinSize
+  tip?: string
+  /** 全屏模式：Teleport 到 body，覆盖整个视口 */
+  fullscreen?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  spinning: true,
+  size: 'md',
+  tip: '',
+  fullscreen: false,
 })
 
-const sizeClass = {
+const sizeClass: Record<SpinSize, string> = {
   sm: 'h-4 w-4',
   md: 'h-6 w-6',
   lg: 'h-9 w-9',

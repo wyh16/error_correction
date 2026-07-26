@@ -1,10 +1,17 @@
 <script setup lang="ts">
-defineProps({
-  variant: { type: String, default: 'rect' },
-  lines: { type: Number, default: 1 },
-  animated: { type: Boolean, default: true },
-  // 传入 Tailwind 圆角类（如 rounded-md）覆盖各形态的默认圆角，空字符串保持默认
-  rounded: { type: String, default: '' },
+interface Props {
+  variant?: 'rect' | 'text' | 'circle'
+  lines?: number
+  animated?: boolean
+  /** 传入 Tailwind 圆角类（如 rounded-md）覆盖各形态的默认圆角，空字符串保持默认 */
+  rounded?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  variant: 'rect',
+  lines: 1,
+  animated: true,
+  rounded: '',
 })
 </script>
 

@@ -1,12 +1,30 @@
+<script lang="ts">
+export interface MenuItem {
+  value: string | number
+  label: string
+  icon?: string
+  badge?: string | number
+  disabled?: boolean
+}
+</script>
+
 <script setup lang="ts">
-defineProps({
-  modelValue: { type: [String, Number], default: '' },
-  items: { type: Array, default: () => [] },
+interface Props {
+  modelValue?: string | number
+  items?: MenuItem[]
+}
+
+withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  items: () => [],
 })
 
-const emit = defineEmits(['update:modelValue', 'select'])
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number]
+  select: [item: MenuItem]
+}>()
 
-function select(item) {
+function select(item: MenuItem) {
   if (item.disabled) return
   emit('update:modelValue', item.value)
   emit('select', item)

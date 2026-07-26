@@ -1,37 +1,57 @@
+<script lang="ts">
+export interface TourStep {
+  /** 目标元素的 CSS 选择器 */
+  target: string
+  title: string
+  description?: string
+  placement?: 'top' | 'bottom' | 'left' | 'right'
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseTour.vue
  * 新手引导：遮罩挖孔高亮目标元素，配合步骤卡片逐步讲解，支持上一步/下一步与完成。
  */
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch, type CSSProperties } from 'vue'
+import { Z_TOUR } from '@/composables/useOverlay'
 
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  // 步骤：{ target: CSS 选择器, title, description, placement? }，placement 默认 bottom
-  steps: { type: Array, default: () => [] },
-  // 点击遮罩是否关闭
-  maskClosable: { type: Boolean, default: true },
+interface Props {
+  open?: boolean
+  steps?: TourStep[]
+  /** 点击遮罩是否关闭 */
+  maskClosable?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  open: false,
+  steps: () => [],
+  maskClosable: true,
 })
 
-const emit = defineEmits(['update:open', 'change', 'finish'])
+const emit = defineEmits<{
+  'update:open': [open: boolean]
+  change: [index: number]
+  finish: []
+}>()
 
 // 挖孔相对目标元素的外扩距离与卡片距目标的间距（px）
 const HOLE_PADDING = 6
 const CARD_GAP = 12
 
 const index = ref(0)
-const rect = ref(null)
-const cardRef = ref(null)
+const rect = ref<DOMRect | null>(null)
+const cardRef = ref<HTMLElement | null>(null)
 // 初始放到视口外，避免首次定位前在原点闪现；步骤间不重置以获得平滑移动
-const cardStyle = ref({ top: '-9999px', left: '-9999px' })
+const cardStyle = ref<CSSProperties>({ top: '-9999px', left: '-9999px' })
 // 首次定位不做位移动画（否则卡片会从视口外飞入），之后的切步才平滑移动
 const cardPlaced = ref(false)
 
 const total = computed(() => props.steps.length)
-const step = computed(() => props.steps[index.value] || null)
+const step = computed<TourStep | null>(() => props.steps[index.value] || null)
 const isLast = computed(() => index.value >= total.value - 1)
 
-const holeStyle = computed(() => {
+const holeStyle = computed<CSSProperties>(() => {
   if (!rect.value) return {}
   return {
     top: `${rect.value.top - HOLE_PADDING}px`,
@@ -46,7 +66,7 @@ function close() {
 }
 
 /** 从 from 开始沿 dir 方向找第一个能命中目标元素的步骤。 */
-function findStep(from, dir) {
+function findStep(from: number, dir: number): { i: number, el: Element } | null {
   let i = from
   while (i >= 0 && i < total.value) {
     // querySelector 不接受空字符串，target 缺失的步骤直接视为未命中
@@ -59,7 +79,7 @@ function findStep(from, dir) {
 }
 
 /** 定位某一步：目标缺失时沿方向跳过，全部缺失则直接关闭。 */
-async function locate(from, dir = 1) {
+async function locate(from: number, dir = 1): Promise<boolean> {
   await nextTick()
   const found = findStep(from, dir)
   if (!found) {
@@ -86,8 +106,8 @@ async function placeCard() {
   const placement = step.value?.placement || 'bottom'
   const cw = card.offsetWidth
   const ch = card.offsetHeight
-  let top
-  let left
+  let top: number
+  let left: number
   if (placement === 'top') {
     top = r.top - CARD_GAP - ch
     left = r.left + r.width / 2 - cw / 2
@@ -139,7 +159,7 @@ function remeasure() {
   placeCard()
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') close()
 }
 
@@ -176,7 +196,7 @@ onBeforeUnmount(removeListeners)
 
 <template>
   <Teleport to="body">
-    <div v-if="props.open" class="fixed inset-0 z-[9999]">
+    <div v-if="props.open" class="fixed inset-0" :style="{ zIndex: Z_TOUR }">
       <!-- 透明点击层：maskClosable 时点击关闭；同时阻断引导期间对页面的误操作 -->
       <div class="absolute inset-0" @click="onMaskClick"></div>
 

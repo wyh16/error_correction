@@ -1,25 +1,45 @@
+<script lang="ts">
+export interface CarouselItem {
+  image?: string
+  title?: string
+  description?: string
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseCarousel.vue
- * 轮播图组件，支持图片/文字幻灯片、自动播放、循环、指示器与箭头模式。
+ * 轮播图组件，支持图片/文字幻灯片、自动播放、循环、指示器、箭头与触摸滑动。
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
-  // 幻灯片数据 { image?, title?, description? }：有 image 渲染图片，否则渲染文字卡片
-  items: { type: Array, default: () => [] },
-  autoplay: { type: Boolean, default: false },
-  interval: { type: Number, default: 4000 },
-  // 指示器样式：dots 圆点 | line 线条 | none 不显示
-  indicator: { type: String, default: 'dots' },
-  // 箭头显示时机：hover 悬停出现 | always 常驻 | never 不显示
-  arrow: { type: String, default: 'hover' },
-  loop: { type: Boolean, default: true },
-  // 容器高度交给调用方控制，方便适配横幅 / 卡片等不同场景
-  heightClass: { type: String, default: 'h-56' },
+interface Props {
+  /** 幻灯片数据 { image?, title?, description? }：有 image 渲染图片，否则渲染文字卡片 */
+  items?: CarouselItem[]
+  autoplay?: boolean
+  interval?: number
+  /** 指示器样式：dots 圆点 | line 线条 | none 不显示 */
+  indicator?: 'dots' | 'line' | 'none'
+  /** 箭头显示时机：hover 悬停出现 | always 常驻 | never 不显示 */
+  arrow?: 'hover' | 'always' | 'never'
+  loop?: boolean
+  /** 容器高度交给调用方控制，方便适配横幅 / 卡片等不同场景 */
+  heightClass?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  autoplay: false,
+  interval: 4000,
+  indicator: 'dots',
+  arrow: 'hover',
+  loop: true,
+  heightClass: 'h-56',
 })
 
-const emit = defineEmits(['change'])
+const emit = defineEmits<{
+  change: [index: number]
+}>()
 
 const current = ref(0)
 const count = computed(() => props.items.length)
@@ -28,7 +48,7 @@ const count = computed(() => props.items.length)
 const canPrev = computed(() => props.loop || current.value > 0)
 const canNext = computed(() => props.loop || current.value < count.value - 1)
 
-function goTo(index) {
+function goTo(index: number) {
   current.value = index
 }
 
@@ -45,11 +65,14 @@ function next() {
 watch(current, value => emit('change', value))
 
 // items 异步加载或删项后索引可能越界，归位到最后一张避免轨道滑出空白区
-watch(count, value => {
+watch(count, (value, oldValue) => {
   if (current.value >= value) current.value = Math.max(0, value - 1)
+  // items 异步加载（0/1 → N）后重启定时器，否则 autoplay 永不启动；反向收缩时停表
+  if (value > 1 && oldValue <= 1) startTimer()
+  else if (value <= 1) stopTimer()
 })
 
-let timer = null
+let timer: ReturnType<typeof setInterval> | null = null
 const hovering = ref(false)
 
 function stopTimer() {
@@ -61,7 +84,7 @@ function stopTimer() {
 
 function startTimer() {
   stopTimer()
-  if (!props.autoplay || hovering.value || count.value <= 1) return
+  if (!props.autoplay || hovering.value || dragging.value || count.value <= 1) return
   timer = setInterval(() => {
     // 不循环时滚到最后一张就停住，避免定时器空转
     if (!props.loop && current.value >= count.value - 1) {
@@ -88,8 +111,51 @@ watch(() => [props.autoplay, props.interval], startTimer)
 onMounted(startTimer)
 onBeforeUnmount(stopTimer)
 
+// —— 触摸/指针滑动：水平位移超过阈值切换上一张/下一张 ——
+const SWIPE_THRESHOLD = 50
+const dragging = ref(false)
+let pointerId = -1
+let startX = 0
+const dragOffset = ref(0)
+
+function onPointerDown(event: PointerEvent) {
+  if (count.value <= 1) return
+  // 只响应主键 / 触摸
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+  dragging.value = true
+  pointerId = event.pointerId
+  startX = event.clientX
+  dragOffset.value = 0
+  // 拖动期间暂停 autoplay，松手恢复
+  stopTimer()
+}
+
+function onPointerMove(event: PointerEvent) {
+  if (!dragging.value || event.pointerId !== pointerId) return
+  dragOffset.value = event.clientX - startX
+}
+
+function endDrag(event: PointerEvent) {
+  if (!dragging.value || event.pointerId !== pointerId) return
+  const delta = dragOffset.value
+  dragging.value = false
+  pointerId = -1
+  dragOffset.value = 0
+  if (delta <= -SWIPE_THRESHOLD) next()
+  else if (delta >= SWIPE_THRESHOLD) prev()
+  startTimer()
+}
+
+// 轨道 transform：拖动时叠加手指位移（按容器宽度百分比换算太重，直接用 px 偏移）
+const trackStyle = computed(() => ({
+  transform: dragOffset.value
+    ? `translateX(calc(-${current.value * 100}% + ${dragOffset.value}px))`
+    : `translateX(-${current.value * 100}%)`,
+  transition: dragging.value ? 'none' : undefined,
+}))
+
 // hover 模式下箭头随容器悬停淡入；禁用箭头保留低透明度提示「到头了」
-function arrowClass(enabled) {
+function arrowClass(enabled: boolean): string {
   if (props.arrow === 'hover') {
     return enabled
       ? 'opacity-0 group-hover:opacity-100'
@@ -101,15 +167,19 @@ function arrowClass(enabled) {
 
 <template>
   <div
-    class="group relative overflow-hidden rounded-xl bg-slate-100 dark:bg-white/[0.04]"
+    class="group relative touch-pan-y select-none overflow-hidden rounded-xl bg-slate-100 dark:bg-white/[0.04]"
     :class="heightClass"
     @mouseenter="handleEnter"
     @mouseleave="handleLeave"
+    @pointerdown="onPointerDown"
+    @pointermove="onPointerMove"
+    @pointerup="endDrag"
+    @pointercancel="endDrag"
   >
     <!-- 轨道：全部幻灯片横向排列，整体 translateX 切换 -->
     <div
       class="flex h-full transition-transform duration-500 ease-out"
-      :style="{ transform: `translateX(-${current * 100}%)` }"
+      :style="trackStyle"
     >
       <div v-for="(item, index) in items" :key="index" class="relative h-full w-full shrink-0">
         <template v-if="item.image">

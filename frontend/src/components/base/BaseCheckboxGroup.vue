@@ -5,23 +5,43 @@
  */
 import BaseCheckbox from './BaseCheckbox.vue'
 
-const props = defineProps({
-  modelValue: { type: Array, default: () => [] },
-  // { label, value, description?, disabled? }
-  options: { type: Array, default: () => [] },
-  label: { type: String, default: '' },
-  direction: { type: String, default: 'vertical' },
+export interface CheckboxGroupOption {
+  label: string
+  value: string | number
+  description?: string
+  disabled?: boolean
+}
+
+interface Props {
+  modelValue?: Array<string | number>
+  options?: CheckboxGroupOption[]
+  label?: string
+  direction?: 'vertical' | 'horizontal'
   // 最少保留的勾选数，0 表示不限制
-  min: { type: Number, default: 0 },
+  min?: number
   // 最多可勾选数，0 表示不限制
-  max: { type: Number, default: 0 },
-  disabled: { type: Boolean, default: false },
-  error: { type: Boolean, default: false },
+  max?: number
+  disabled?: boolean
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  options: () => [],
+  label: '',
+  direction: 'vertical',
+  min: 0,
+  max: 0,
+  disabled: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Array<string | number>): void
+  (e: 'change', value: Array<string | number>): void
+}>()
 
-function isOptionDisabled(option) {
+function isOptionDisabled(option: CheckboxGroupOption) {
   if (props.disabled || option.disabled) return true
   const checked = props.modelValue.includes(option.value)
   // 达到 max 后未勾选项不可再勾；降到 min 后已勾选项不可再取消
@@ -30,13 +50,13 @@ function isOptionDisabled(option) {
   return false
 }
 
-function toggleOption(option, checked) {
-  let next
+function toggleOption(option: CheckboxGroupOption, checked: boolean) {
+  let next: Array<string | number>
   if (checked) {
-    // 按 options 声明顺序重建数组，而不是按点击顺序追加，回显更稳定
-    next = props.options
-      .map(opt => opt.value)
-      .filter(value => props.modelValue.includes(value) || value === option.value)
+    // 在原值基础上追加，保留 modelValue 中不在 options 里的值
+    next = props.modelValue.includes(option.value)
+      ? [...props.modelValue]
+      : [...props.modelValue, option.value]
   } else {
     next = props.modelValue.filter(value => value !== option.value)
   }

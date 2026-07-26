@@ -3,14 +3,22 @@
  * BaseRibbon.vue
  * 缎带角标：包裹任意容器，在角上叠加一条斜向丝带，用于「推荐」「热门」等强调标记。
  */
-defineProps({
-  text: { type: String, default: '' },
-  tone: { type: String, default: 'accent' },
-  // top-right | top-left
-  placement: { type: String, default: 'top-right' },
+type RibbonTone = 'accent' | 'emerald' | 'amber' | 'rose' | 'blue'
+type RibbonPlacement = 'top-right' | 'top-left'
+
+interface Props {
+  text?: string
+  tone?: RibbonTone
+  placement?: RibbonPlacement
+}
+
+withDefaults(defineProps<Props>(), {
+  text: '',
+  tone: 'accent',
+  placement: 'top-right',
 })
 
-const toneClass = {
+const toneClass: Record<RibbonTone, string> = {
   accent: 'accent-bg',
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
@@ -18,13 +26,13 @@ const toneClass = {
   blue: 'bg-blue-500',
 }
 
-const cornerClass = {
+const cornerClass: Record<RibbonPlacement, string> = {
   'top-right': 'right-0 top-0',
   'top-left': 'left-0 top-0',
 }
 
 // 丝带宽 w-28，通过负偏移 + 45 度旋转斜穿角落，超出部分由外层 overflow-hidden 裁掉
-const bandClass = {
+const bandClass: Record<RibbonPlacement, string> = {
   'top-right': 'right-[-28px] top-[14px] rotate-45',
   'top-left': 'left-[-28px] top-[14px] -rotate-45',
 }

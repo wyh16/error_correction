@@ -15,6 +15,11 @@ OmniDocBench.json
 .python-version
 uv.lock
 
+# Node 依赖与构建产物
+node_modules/
+ui-showcase/dist/
+ui-showcase/package-lock.json
+
 # 前端构建产物
 frontend/dist/
 frontend/package-lock.json

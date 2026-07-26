@@ -1,0 +1,508 @@
+import type { ComponentApi } from '~/api-types'
+
+/**
+ * forms.ts
+ * 表单类基础组件的 API 数据，提取自 frontend/src/components/base/ 各 SFC 源码。
+ */
+export const FORMS_API: ComponentApi[] = [
+  {
+    component: 'BaseInput',
+    props: [
+      { name: 'modelValue', desc: '输入框绑定值', type: 'string | number', default: "''" },
+      { name: 'label', desc: '输入框上方的标签文本', type: 'string', default: "''" },
+      { name: 'type', desc: '原生 input 类型，password 时提供显隐切换', type: 'string', default: "'text'" },
+      { name: 'placeholder', desc: '占位提示文本', type: 'string', default: "''" },
+      { name: 'required', desc: '是否必填（原生校验）', type: 'boolean', default: 'false' },
+      { name: 'autocomplete', desc: '原生 autocomplete 属性', type: 'string', default: "'off'" },
+      { name: 'maxlength', desc: '最大输入长度，null 表示不限制', type: 'string | number | null', default: 'null' },
+      { name: 'inputmode', desc: '虚拟键盘类型提示', type: "'text' | 'none' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'", default: "'text'" },
+      { name: 'inputClass', desc: '附加到 input 元素的自定义类名', type: 'string', default: "''" },
+      { name: 'error', desc: '错误态：红色边框高亮', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用输入', type: 'boolean', default: 'false' },
+      { name: 'readonly', desc: '是否只读', type: 'boolean', default: 'false' },
+      { name: 'clearable', desc: '有内容时悬停显示清空按钮，点击后清空并回抛空字符串', type: 'boolean', default: 'false' },
+      { name: 'prefixIcon', desc: "前置图标，传 fa-* 类名，如 'fa-user'", type: 'string', default: "''" },
+      { name: 'suffixIcon', desc: '后置图标，传 fa-* 类名', type: 'string', default: "''" },
+      { name: 'spellcheck', desc: '是否启用浏览器拼写检查', type: 'boolean', default: 'true' },
+      { name: 'size', desc: '尺寸：sm | md（默认）| lg', type: "'sm' | 'md' | 'lg'", default: "'md'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '输入或清空时回抛最新值', payload: '(value: string)' },
+      { name: 'clear', desc: '点击清空按钮时触发', payload: '()' },
+    ],
+    slots: [
+      { name: 'append', desc: '输入框右侧附加元素（如按钮）' },
+    ],
+  },
+  {
+    component: 'BaseTextarea',
+    props: [
+      { name: 'modelValue', desc: '文本域绑定值', type: 'string', default: "''" },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '占位提示文本', type: 'string', default: "''" },
+      { name: 'hint', desc: '底部提示信息（无错误时显示）', type: 'string', default: "''" },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+      { name: 'name', desc: '原生 name 属性', type: 'string', default: "''" },
+      { name: 'rows', desc: '初始行数', type: 'number | string', default: '4' },
+      { name: 'maxlength', desc: '最大字数，设置后右上角显示字数统计', type: 'number | string | null', default: 'null' },
+      { name: 'required', desc: '是否必填，标签旁显示星号', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'readonly', desc: '是否只读', type: 'boolean', default: 'false' },
+      { name: 'resize', desc: '拖拽调整尺寸的方向', type: "'vertical' | 'horizontal' | 'none'", default: "'vertical'" },
+      { name: 'autosize', desc: '高度随内容自动增长（rows 决定最小高度）', type: 'boolean', default: 'false' },
+      { name: 'textareaClass', desc: '附加到 textarea 元素的自定义类名', type: 'string', default: "''" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '输入时回抛最新值', payload: '(value: string)' },
+    ],
+  },
+  {
+    component: 'BaseSelect',
+    props: [
+      { name: 'modelValue', desc: '选中项的 value', type: 'string', default: "''" },
+      { name: 'options', desc: '选项列表，字符串数组或 { label, value } 数组', type: 'string[] | SelectOption[]', default: '[]' },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '未选中时的占位文本，同时作为内置空值选项的文案', type: 'string', default: "'全部'" },
+      { name: 'icon', desc: '触发器图标渲染函数', type: '(() => unknown) | null', default: 'null' },
+      { name: 'widthClass', desc: '宽度类名，控制触发器宽度', type: 'string', default: "''" },
+      { name: 'disabled', desc: '是否禁用整个选择器', type: 'boolean', default: 'false' },
+      { name: 'clearable', desc: '是否渲染内置"全部/空值"选项；有选中值时悬停显示清空按钮', type: 'boolean', default: 'true' },
+      { name: 'size', desc: '尺寸：sm | md（默认）| lg', type: "'sm' | 'md' | 'lg'", default: "'md'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中或清空时回抛最新值', payload: '(value: string)' },
+    ],
+  },
+  {
+    component: 'BaseSearchableSelect',
+    props: [
+      { name: 'modelValue', desc: '选中值，多选时为字符串数组', type: 'string | string[]', default: "''" },
+      { name: 'options', desc: '选项列表（字符串数组）', type: 'string[]', default: '[]' },
+      { name: 'placeholder', desc: '未选中时的占位文本，同时作为面板中"全部"按钮文案', type: 'string', default: "'全部'" },
+      { name: 'searchPlaceholder', desc: '搜索输入框的占位文本', type: 'string', default: "'搜索...'" },
+      { name: 'widthClass', desc: '宽度类名，控制触发器宽度', type: 'string', default: "''" },
+      { name: 'emptyText', desc: '搜索无匹配时的提示文案', type: 'string', default: "'没有匹配项'" },
+      { name: 'multiple', desc: '是否多选', type: 'boolean', default: 'false' },
+      { name: 'dropdownAlign', desc: '弹层相对触发器的对齐方向', type: "'left' | 'right'", default: "'left'" },
+      { name: 'disabled', desc: '是否禁用整个选择器', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+      { name: 'size', desc: '尺寸：sm | md（默认）| lg', type: "'sm' | 'md' | 'lg'", default: "'md'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中或清空时回抛最新值', payload: '(value: string | string[])' },
+    ],
+  },
+  {
+    component: 'BaseCombobox',
+    props: [
+      { name: 'modelValue', desc: '选中项的值（经 valueKey 取出）', type: 'string | number | Record<string, unknown>', default: "''" },
+      { name: 'options', desc: '选项列表，原始值或对象数组', type: 'Array<string | number | ComboboxOption>', default: '[]' },
+      { name: 'placeholder', desc: '未选中时的占位文本', type: 'string', default: "'请选择'" },
+      { name: 'searchPlaceholder', desc: '搜索输入框的占位文本', type: 'string', default: "'搜索'" },
+      { name: 'labelKey', desc: '选项对象中作为显示文本的字段名', type: 'string', default: "'label'" },
+      { name: 'valueKey', desc: '选项对象中作为值的字段名', type: 'string', default: "'value'" },
+      { name: 'clearable', desc: '有选中值时显示清空按钮', type: 'boolean', default: 'true' },
+      { name: 'disabled', desc: '是否禁用整个选择器', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+      { name: 'size', desc: '尺寸：sm | md（默认）| lg', type: "'sm' | 'md' | 'lg'", default: "'md'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中或清空时回抛最新值', payload: '(value: string | number)' },
+      { name: 'change', desc: '选中变化时回抛值与完整选项对象', payload: '(value: string | number, option: ComboboxOption | null)' },
+    ],
+  },
+  {
+    component: 'BaseSearchInput',
+    props: [
+      { name: 'modelValue', desc: '搜索关键字绑定值', type: 'string', default: "''" },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '占位提示文本', type: 'string', default: "'搜索...'" },
+      { name: 'icon', desc: '左侧图标类名', type: 'string', default: "'fa-solid fa-magnifying-glass'" },
+      { name: 'disabled', desc: '是否禁用输入', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '输入或点击清空按钮时回抛最新值', payload: '(value: string)' },
+    ],
+  },
+  {
+    component: 'BaseNumberInput',
+    props: [
+      { name: 'modelValue', desc: '数值绑定值，空时为 null', type: 'number | string | null', default: 'null' },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '占位提示文本', type: 'string', default: "''" },
+      { name: 'hint', desc: '底部提示信息（无错误时显示）', type: 'string', default: "''" },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+      { name: 'min', desc: '最小值，失焦时收敛', type: 'number | null', default: 'null' },
+      { name: 'max', desc: '最大值，失焦时收敛', type: 'number | null', default: 'null' },
+      { name: 'step', desc: '步进按钮每次增减的步长', type: 'number', default: '1' },
+      { name: 'name', desc: '原生 name 属性', type: 'string', default: "''" },
+      { name: 'required', desc: '是否必填，标签旁显示星号', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'readonly', desc: '是否只读', type: 'boolean', default: 'false' },
+      { name: 'precision', desc: '小数位数：clamp / commit 时应用，null 表示不处理精度', type: 'number | null', default: 'null' },
+      { name: 'size', desc: '尺寸：sm | md（默认）| lg', type: "'sm' | 'md' | 'lg'", default: "'md'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '数值变化时回抛最新值', payload: '(value: number | null)' },
+      { name: 'change', desc: '输入、步进或失焦收敛时触发', payload: '(value: number | null, event?: Event)' },
+    ],
+  },
+  {
+    component: 'BaseCheckbox',
+    props: [
+      { name: 'modelValue', desc: '绑定值：布尔、自定义 true/false 值或数组（组模式）', type: 'boolean | CheckboxValue[] | string | number', default: 'false' },
+      { name: 'value', desc: '数组模式下本项对应的值', type: 'string | number | boolean', default: 'true' },
+      { name: 'trueValue', desc: '勾选时回抛的值', type: 'string | number | boolean', default: 'true' },
+      { name: 'falseValue', desc: '取消勾选时回抛的值', type: 'string | number | boolean', default: 'false' },
+      { name: 'label', desc: '标签文本', type: 'string', default: "''" },
+      { name: 'description', desc: '标签下方的描述文本', type: 'string', default: "''" },
+      { name: 'name', desc: '原生 name 属性', type: 'string', default: "''" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'required', desc: '是否必填（原生校验）', type: 'boolean', default: 'false' },
+      { name: 'indeterminate', desc: '半选状态，显示横线并同步原生 indeterminate', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '勾选状态变化时回抛最新值', payload: '(value: boolean | CheckboxValue | CheckboxValue[])' },
+      { name: 'change', desc: '勾选状态变化时触发，附带原生事件', payload: '(value: boolean | CheckboxValue | CheckboxValue[], event: Event)' },
+    ],
+    slots: [
+      { name: 'default', desc: '自定义标签内容，覆盖 label 文本' },
+    ],
+  },
+  {
+    component: 'BaseCheckboxGroup',
+    props: [
+      { name: 'modelValue', desc: '已勾选的值数组', type: 'Array<string | number>', default: '[]' },
+      { name: 'options', desc: '选项列表 { label, value, description?, disabled? }', type: 'CheckboxGroupOption[]', default: '[]' },
+      { name: 'label', desc: '组标题（legend）', type: 'string', default: "''" },
+      { name: 'direction', desc: '排列方向', type: "'vertical' | 'horizontal'", default: "'vertical'" },
+      { name: 'min', desc: '最少保留的勾选数，0 表示不限制', type: 'number', default: '0' },
+      { name: 'max', desc: '最多可勾选数，0 表示不限制', type: 'number', default: '0' },
+      { name: 'disabled', desc: '是否禁用全部选项', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：透传给每个复选框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '勾选集合变化时回抛最新数组', payload: '(value: Array<string | number>)' },
+      { name: 'change', desc: '勾选集合变化时触发', payload: '(value: Array<string | number>)' },
+    ],
+    slots: [
+      { name: 'default', desc: '附加的自定义复选框内容' },
+    ],
+  },
+  {
+    component: 'BaseRadio',
+    props: [
+      { name: 'modelValue', desc: '当前选中值，与 value 相等时为选中', type: 'string | number | boolean', default: "''" },
+      { name: 'value', desc: '本项对应的值（必填）', type: 'string | number | boolean' },
+      { name: 'label', desc: '标签文本', type: 'string', default: "''" },
+      { name: 'description', desc: '标签下方的描述文本', type: 'string', default: "''" },
+      { name: 'name', desc: '原生 name 属性，同组 radio 需一致', type: 'string', default: "''" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'required', desc: '是否必填（原生校验）', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中时回抛本项的 value', payload: '(value: RadioValue)' },
+      { name: 'change', desc: '选中时触发，附带原生事件', payload: '(value: RadioValue, event: Event)' },
+    ],
+    slots: [
+      { name: 'default', desc: '自定义标签内容，覆盖 label 文本' },
+    ],
+  },
+  {
+    component: 'BaseRadioGroup',
+    props: [
+      { name: 'modelValue', desc: '当前选中值', type: 'string | number | boolean', default: "''" },
+      { name: 'options', desc: '选项列表 { label, value, description?, disabled? }', type: 'RadioGroupOption[]', default: '[]' },
+      { name: 'label', desc: '组标题（legend）', type: 'string', default: "''" },
+      { name: 'description', desc: '组标题下方的描述文本', type: 'string', default: "''" },
+      { name: 'name', desc: '组内 radio 的 name，未传时自动生成唯一值', type: 'string', default: "''" },
+      { name: 'required', desc: '是否必填，标题旁显示星号', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用全部选项', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+      { name: 'direction', desc: '排列方向', type: "'vertical' | 'horizontal'", default: "'vertical'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中变化时回抛最新值', payload: '(value: RadioValue)' },
+      { name: 'change', desc: '选中变化时触发', payload: '(value: RadioValue, event?: Event)' },
+    ],
+    slots: [
+      { name: 'default', desc: '附加的自定义单选框内容' },
+    ],
+  },
+  {
+    component: 'BaseDatePicker',
+    props: [
+      { name: 'modelValue', desc: "选中日期，格式 'YYYY-MM-DD'", type: 'string', default: "''" },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '未选择时的占位文本', type: 'string', default: "''" },
+      { name: 'hint', desc: '底部提示信息（无错误时显示）', type: 'string', default: "''" },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+      { name: 'name', desc: '表单提交用的隐藏 input 名称', type: 'string', default: "''" },
+      { name: 'min', desc: '可选的最早日期', type: 'string', default: "''" },
+      { name: 'max', desc: '可选的最晚日期', type: 'string', default: "''" },
+      { name: 'required', desc: '是否必填，标签旁显示星号', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'clearable', desc: '有值时悬停显示清除按钮', type: 'boolean', default: 'true' },
+      { name: 'disabledDate', desc: '自定义禁用逻辑：返回 true 的日期格子不可点选并置灰', type: '((date: Date) => boolean) | null', default: 'null' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中或清除日期时回抛最新值', payload: '(value: string)' },
+      { name: 'change', desc: '选中或清除日期时触发，附带 Date 对象', payload: '(value: string, date: Date | null)' },
+    ],
+  },
+  {
+    component: 'BaseDateRangePicker',
+    props: [
+      { name: 'modelValue', desc: "起止日期 ['YYYY-MM-DD', 'YYYY-MM-DD'] 或空数组", type: 'string[]', default: '[]' },
+      { name: 'min', desc: '可选的最早日期', type: 'string', default: "''" },
+      { name: 'max', desc: '可选的最晚日期', type: 'string', default: "''" },
+      { name: 'placeholder', desc: '未选择时的占位文本', type: 'string', default: "'开始日期 → 结束日期'" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'clearable', desc: '有值时悬停显示清空按钮', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选定范围或清空时回抛最新数组', payload: '(value: string[])' },
+      { name: 'change', desc: '选定范围或清空时触发', payload: '(value: string[])' },
+    ],
+  },
+  {
+    component: 'BaseTimePicker',
+    props: [
+      { name: 'modelValue', desc: "选中时间，格式 'HH:mm'", type: 'string', default: "''" },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'hint', desc: '底部提示信息（无错误时显示）', type: 'string', default: "''" },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+      { name: 'name', desc: '原生 name 属性', type: 'string', default: "''" },
+      { name: 'min', desc: '可选的最早时间', type: 'string', default: "''" },
+      { name: 'max', desc: '可选的最晚时间', type: 'string', default: "''" },
+      { name: 'step', desc: '时间步长（秒）', type: 'number | string', default: '60' },
+      { name: 'required', desc: '是否必填，标签旁显示星号', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '时间变化时回抛最新值', payload: '(value: string)' },
+      { name: 'change', desc: '时间变化时触发，附带原生事件', payload: '(value: string, event: Event)' },
+    ],
+  },
+  {
+    component: 'BaseCascader',
+    props: [
+      { name: 'modelValue', desc: "选中值的完整路径，如 ['zhejiang', 'hangzhou', 'xihu']", type: 'Array<string | number>', default: '[]' },
+      { name: 'options', desc: '级联节点树 { label, value, children?, disabled? }', type: 'CascaderNode[]', default: '[]' },
+      { name: 'placeholder', desc: '未选择时的占位文本', type: 'string', default: "'请选择'" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'clearable', desc: '有选中值时悬停显示清空按钮，点击清空为 []', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '点击叶子节点或清空时回抛完整值路径', payload: '(value: Array<string | number>)' },
+      { name: 'change', desc: '选中变化时回抛值路径与对应节点链', payload: '(value: Array<string | number>, nodes: CascaderNode[])' },
+    ],
+  },
+  {
+    component: 'BaseTreeSelect',
+    props: [
+      { name: 'modelValue', desc: '选中节点的 value', type: 'string | number', default: "''" },
+      { name: 'items', desc: '树形节点数据 { label, value, icon?, children? }', type: 'TreeSelectItem[]', default: '[]' },
+      { name: 'placeholder', desc: '未选择时的占位文本', type: 'string', default: "'请选择'" },
+      { name: 'clearable', desc: "有选中值时悬停显示清空按钮，点击清空为 ''", type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中叶子节点或清空时回抛最新值', payload: '(value: string | number)' },
+      { name: 'change', desc: '选中叶子节点时回抛节点对象', payload: '(item: TreeSelectItem)' },
+    ],
+  },
+  {
+    component: 'BasePinInput',
+    props: [
+      { name: 'modelValue', desc: '各格字符拼接成的完整值', type: 'string', default: "''" },
+      { name: 'length', desc: '格子数量', type: 'number', default: '6' },
+      { name: 'type', desc: 'number 模式过滤非数字并唤起数字键盘，text 模式接受任意字符', type: "'number' | 'text'", default: "'number'" },
+      { name: 'masked', desc: '掩码显示（input type=password），用于安全码场景', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'error', desc: '错误态：红色边框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '任意格子变化时回抛拼接后的完整值', payload: '(value: string)' },
+      { name: 'complete', desc: '所有格子都有字符时触发', payload: '(value: string)' },
+    ],
+  },
+  {
+    component: 'BaseTagsInput',
+    props: [
+      { name: 'modelValue', desc: '标签数组（字符串）', type: 'string[]', default: '[]' },
+      { name: 'placeholder', desc: '无标签时的占位文本', type: 'string', default: "''" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'max', desc: '最大标签数，0 表示不限制；达到上限后隐藏内部输入框', type: 'number', default: '0' },
+      { name: 'allowDuplicates', desc: '是否允许重复标签，false 时重复输入只清空输入框', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '标签集合变化时回抛最新数组', payload: '(value: string[])' },
+      { name: 'add', desc: '新增标签时触发', payload: '(tag: string)' },
+      { name: 'remove', desc: '删除标签时触发', payload: '(tag: string)' },
+    ],
+  },
+  {
+    component: 'BaseMention',
+    props: [
+      { name: 'modelValue', desc: '文本内容绑定值', type: 'string', default: "''" },
+      { name: 'options', desc: '提及建议列表 { value, label }', type: 'MentionOption[]', default: '[]' },
+      { name: 'trigger', desc: "触发字符，如 '@' 或 '#'", type: 'string', default: "'@'" },
+      { name: 'placeholder', desc: '占位提示文本', type: 'string', default: "''" },
+      { name: 'rows', desc: 'textarea 行数', type: 'number', default: '3' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '输入或选择建议后回抛最新文本', payload: '(value: string)' },
+      { name: 'select', desc: '选中建议项时触发', payload: '(option: MentionOption)' },
+    ],
+  },
+  {
+    component: 'BaseColorPicker',
+    props: [
+      { name: 'modelValue', desc: "六位 hex，如 '#8173df'；空字符串表示未选择", type: 'string', default: "''" },
+      { name: 'presets', desc: '预设色板的 hex 颜色列表', type: 'string[]', default: "['#ef4444', '#f97316', ...]" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '拖拽或输入过程中实时回抛颜色', payload: '(value: string)' },
+      { name: 'change', desc: '拖拽松手、选预设或 hex 输入确认时触发', payload: '(value: string)' },
+    ],
+  },
+  {
+    component: 'BaseUpload',
+    props: [
+      { name: 'modelValue', desc: '已选文件列表', type: 'File[]', default: '[]' },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'description', desc: '拖放区内的说明文案，默认展示 accept', type: 'string', default: "''" },
+      { name: 'accept', desc: '可接受的文件类型（原生 accept）', type: 'string', default: "''" },
+      { name: 'multiple', desc: '是否支持多文件', type: 'boolean', default: 'true' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'maxSize', desc: '单文件大小上限（字节），0 表示不限制', type: 'number', default: '0' },
+      { name: 'maxCount', desc: '文件总数上限，0 表示不限制', type: 'number', default: '0' },
+      { name: 'error', desc: '错误信息，非空时红框并展示错误消息', type: 'string', default: "''" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '文件列表变化时回抛最新数组', payload: '(files: File[])' },
+      { name: 'change', desc: '选择、拖放或移除文件时触发', payload: '(files: File[], event?: Event)' },
+      { name: 'reject', desc: '文件因大小或数量被拒绝时触发', payload: '(rejected: UploadRejection[])' },
+    ],
+  },
+  {
+    component: 'BaseRate',
+    props: [
+      { name: 'modelValue', desc: '当前分值', type: 'number', default: '0' },
+      { name: 'max', desc: '星星总数', type: 'number', default: '5' },
+      { name: 'allowHalf', desc: '允许半星：根据鼠标位于图标左半 / 右半区域取 x.5 或整数', type: 'boolean', default: 'false' },
+      { name: 'readonly', desc: '只读，仅展示不可交互', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'icon', desc: "图标传 fa-* 类名，如 'fa-heart'", type: 'string', default: "'fa-star'" },
+      { name: 'tone', desc: '高亮配色', type: "'amber' | 'accent' | 'rose' | 'emerald' | 'blue'", default: "'amber'" },
+      { name: 'showValue', desc: '是否在星星后展示当前数字分值', type: 'boolean', default: 'false' },
+      { name: 'allowClear', desc: '再次点击当前分值时是否清零', type: 'boolean', default: 'true' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '分值变化时回抛最新值', payload: '(value: number)' },
+      { name: 'change', desc: '分值变化时触发', payload: '(value: number)' },
+    ],
+  },
+  {
+    component: 'BaseSlider',
+    props: [
+      { name: 'modelValue', desc: '当前数值', type: 'number', default: '0' },
+      { name: 'min', desc: '最小值', type: 'number', default: '0' },
+      { name: 'max', desc: '最大值', type: 'number', default: '100' },
+      { name: 'step', desc: '步长', type: 'number', default: '1' },
+      { name: 'label', desc: '上方标签文本', type: 'string', default: "''" },
+      { name: 'showValue', desc: '是否在右上角展示当前数值', type: 'boolean', default: 'true' },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '拖动或键盘调整时回抛最新值', payload: '(value: number)' },
+      { name: 'change', desc: '数值变化时触发，附带原生事件', payload: '(value: number, event: Event)' },
+    ],
+  },
+  {
+    component: 'BaseForm',
+    props: [
+      { name: 'disabled', desc: '禁用整个表单（fieldset 级）', type: 'boolean', default: 'false' },
+      { name: 'loading', desc: '加载中：显示遮罩并阻止提交', type: 'boolean', default: 'false' },
+      { name: 'layout', desc: '布局方向，经 provide 下发给 BaseFormItem', type: "'vertical' | 'horizontal'", default: "'vertical'" },
+      { name: 'gap', desc: '表单项间距类名', type: 'string', default: "'gap-4'" },
+      { name: 'model', desc: '校验的数据对象，字段名与 BaseFormItem 的 name 对应', type: 'Record<string, unknown> | null', default: 'null' },
+      { name: 'rules', desc: '每个字段的校验规则列表', type: 'Record<string, FormRule[]>', default: '{}' },
+    ],
+    emits: [
+      { name: 'submit', desc: '表单提交时触发（disabled / loading 时不触发）', payload: '(event: Event)' },
+    ],
+    slots: [
+      { name: 'default', desc: '表单内容（BaseFormItem 等）' },
+    ],
+    exposes: [
+      { name: 'validate', desc: '校验 rules 中声明的全部字段，全部通过才返回 true', signature: 'validate(): Promise<boolean>' },
+      { name: 'validateField', desc: '校验单个字段，遇到第一条失败规则即返回 false', signature: 'validateField(name: string): Promise<boolean>' },
+      { name: 'resetFields', desc: '将 model 还原为挂载时的初始值并清除全部校验状态', signature: 'resetFields(): void' },
+      { name: 'clearValidate', desc: '清除校验状态：传 name 只清除单个字段，不传清除全部', signature: 'clearValidate(name?: string): void' },
+    ],
+  },
+  {
+    component: 'BaseFormItem',
+    props: [
+      { name: 'label', desc: '字段标签文本', type: 'string', default: "''" },
+      { name: 'hint', desc: '提示信息（无错误时显示）', type: 'string', default: "''" },
+      { name: 'error', desc: '显式错误信息，优先于 BaseForm 校验产生的错误', type: 'string', default: "''" },
+      { name: 'required', desc: '是否显示必填星号（有 required 规则时自动显示）', type: 'boolean', default: 'false' },
+      { name: 'forId', desc: 'label 的 for 属性，关联控件 id', type: 'string', default: "''" },
+      { name: 'layout', desc: '布局方向，覆盖 BaseForm 下发的布局', type: "'' | 'vertical' | 'horizontal'", default: "''" },
+      { name: 'name', desc: '关联 BaseForm rules 的字段名；配合 model 使用时自动校验', type: 'string', default: "''" },
+    ],
+    slots: [
+      { name: 'default', desc: '表单控件内容，作用域参数 { invalid: boolean }' },
+    ],
+  },
+  {
+    component: 'BaseFieldMessage',
+    props: [
+      { name: 'message', desc: '消息文本', type: 'string', default: "''" },
+      { name: 'type', desc: '消息类型，决定颜色与图标', type: "'hint' | 'error' | 'success' | 'warning'", default: "'hint'" },
+    ],
+    slots: [
+      { name: 'default', desc: '自定义消息内容，覆盖 message 文本' },
+    ],
+  },
+  {
+    component: 'BaseSegmented',
+    props: [
+      { name: 'modelValue', desc: '当前选中项的 value', type: 'string | number | boolean', default: "''" },
+      { name: 'options', desc: '选项列表 { label, value, icon?, disabled? }', type: 'SegmentedOption[]', default: '[]' },
+      { name: 'size', desc: '尺寸：sm（默认）| md', type: "'sm' | 'md'", default: "'sm'" },
+      { name: 'fullWidth', desc: '是否撑满父容器宽度，选项均分', type: 'boolean', default: 'false' },
+      { name: 'disabled', desc: '整体禁用：所有选项不可点且整体降透明度', type: 'boolean', default: 'false' },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '选中变化时回抛最新值', payload: '(value: SegmentedValue)' },
+      { name: 'change', desc: '选中变化时触发，附带原生事件', payload: '(value: SegmentedValue, event: Event)' },
+    ],
+  },
+  {
+    component: 'BaseSwitch',
+    props: [
+      { name: 'modelValue', desc: '开关状态', type: 'boolean', default: 'false' },
+      { name: 'label', desc: '开关右侧的标签文本', type: 'string', default: "''" },
+      { name: 'disabled', desc: '是否禁用', type: 'boolean', default: 'false' },
+      { name: 'size', desc: 'sm 为原有默认尺寸，md 提供更大的可点击区域', type: "'sm' | 'md'", default: "'sm'" },
+    ],
+    emits: [
+      { name: 'update:modelValue', desc: '切换时回抛最新状态', payload: '(value: boolean)' },
+      { name: 'change', desc: '切换时触发', payload: '(value: boolean)' },
+    ],
+    slots: [
+      { name: 'default', desc: '标签后的附加内容' },
+    ],
+  },
+]

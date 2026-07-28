@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as echarts from 'echarts/core'
 import { TooltipComponent, LegendComponent, RadarComponent } from 'echarts/components'

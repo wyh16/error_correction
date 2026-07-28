@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * SplitLoading.vue
  * 分割加载动画

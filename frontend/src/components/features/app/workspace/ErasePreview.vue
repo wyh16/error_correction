@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErasePreview.vue
  * 擦除前后对比预览 — 拖拽滑块对比，单张显示 + 分页

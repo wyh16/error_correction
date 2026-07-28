@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 /**
  * AuthLayout.vue
  * 登录/注册共用认证布局，负责左右分栏、Tab 切换动画和品牌区动效。
  */
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTheme } from '@/composables/useTheme.js'
+import { useTheme } from '@/composables/useTheme'
 import HomePill from '@/components/features/home/HomePill.vue'
 import BaseLogo from '@/components/base/BaseLogo.vue'
 import BaseButton from '@/components/base/BaseButton.vue'

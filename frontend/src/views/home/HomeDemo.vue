@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * HomeDemo.vue
  * 落地页产品演示区

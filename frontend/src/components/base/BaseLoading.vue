@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseLoading.vue
  * 全局加载遮罩（BaseLogo + 进度条动画）

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * NoteToolbar.vue
  * 笔记库顶部筛选工具栏。

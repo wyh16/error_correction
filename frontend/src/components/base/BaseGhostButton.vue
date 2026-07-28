@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseGhostButton.vue
  * 毛玻璃风格按钮

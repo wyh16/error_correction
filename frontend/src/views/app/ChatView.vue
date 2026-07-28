@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ChatView.vue
  * 题目绑定的 AI 辅导对话页面，负责历史消息、流式回复和额度错误处理。
  */
 import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
-import { fetchMessages, streamChat } from '@/api/index.js'
-import { getQuestionSnippet, renderMarkdown, typesetMath } from '@/utils/index.js'
-import { useToast } from '@/composables/useToast.js'
-import { useSystemStatus } from '@/composables/useSystemStatus.js'
-import { useAuth } from '@/composables/useAuth.js'
-import { useChatSession } from '@/composables/useChatSession.js'
+import { fetchMessages, streamChat } from '@/api/index'
+import { getQuestionSnippet, renderMarkdown, typesetMath } from '@/utils/index'
+import { useToast } from '@/composables/useToast'
+import { useSystemStatus } from '@/composables/useSystemStatus'
+import { useAuth } from '@/composables/useAuth'
+import { useChatSession } from '@/composables/useChatSession'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
+import type { ChatMessage, ErrorBankQuestion } from '@/types/domain'
 
 const PAGE_SIZE = 30
 
@@ -29,27 +30,29 @@ const providerSource = computed(() => selectedLlmOption.value?.source || '')
 const providerId = computed(() => selectedLlmOption.value?.provider_id || '')
 const username = computed(() => currentUser.value?.username || '')
 
-const toMsg = (m) => ({ id: m.id, role: m.role, content: m.content })
+const toMsg = (m: ChatMessage): ChatMessage => ({ id: m.id, role: m.role, content: m.content })
 
-const messages = ref([])
+const messages = ref<ChatMessage[]>([])
 const inputText = ref('')
 const streaming = ref(false)
-const listEl = ref(null)
-const snippetEl = ref(null)
+const listEl = ref<HTMLElement | null>(null)
+const snippetEl = ref<HTMLElement | null>(null)
 const hasMore = ref(false)
 const loadingMore = ref(false)
 
-const snippet = computed(() => getQuestionSnippet(question.value, 0, '未知题目'))
+const snippet = computed(() => getQuestionSnippet(question.value as ErrorBankQuestion | null, 0, '未知题目'))
 
-let abortCtrl = null
-let scrollRafId = null
-const mdCache = new Map()
+let abortCtrl: AbortController | null = null
+let scrollRafId: number | null = null
+let scrollCheckRaf: number | null = null
+const mdCache = new Map<string, string>()
+
 /**
  * 缓存 Markdown 渲染结果，减少流式消息更新时的重复解析。
  */
-const cachedRenderMarkdown = (text) => {
+const cachedRenderMarkdown = (text: string): string => {
   if (!mdCache.has(text)) mdCache.set(text, renderMarkdown(text))
-  return mdCache.get(text)
+  return mdCache.get(text) || ''
 }
 /**
  * 等待 DOM 更新后滚动到消息底部。
@@ -115,7 +118,6 @@ const loadOlder = async () => {
   loadingMore.value = false
 }
 
-let scrollCheckRaf = null
 /**
  * 监听消息列表滚动，接近顶部时触发历史消息分页加载。
  */
@@ -172,7 +174,7 @@ const sendMessage = async () => {
       if (done) break
       buffer += decoder.decode(value, { stream: true })
       const lines = buffer.split('\n')
-      buffer = lines.pop()
+      buffer = lines.pop() || ''
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue
         try {
@@ -211,7 +213,7 @@ const sendMessage = async () => {
 /**
  * Enter 发送消息，Shift + Enter 保留换行。
  */
-const onKeydown = (e) => {
+const onKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
     sendMessage()

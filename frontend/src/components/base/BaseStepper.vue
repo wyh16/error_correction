@@ -1,8 +1,9 @@
-<script setup>
-defineProps({
+<script setup lang="ts">
+const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
   steps: { type: Array, default: () => [] },
   direction: { type: String, default: 'horizontal' },
+  clickable: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
@@ -16,7 +17,7 @@ function statusOf(step, index, steps, modelValue) {
 }
 
 function select(step) {
-  if (step.disabled) return
+  if (!props.clickable || step.disabled) return
   emit('update:modelValue', step.value)
   emit('change', step.value, step)
 }
@@ -36,7 +37,7 @@ function select(step) {
       <button
         type="button"
         class="group flex w-full items-start gap-3 rounded-xl p-2 text-left transition-colors"
-        :class="step.disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-100 dark:hover:bg-white/[0.05]'"
+        :class="step.disabled ? 'cursor-not-allowed opacity-50' : clickable ? 'hover:bg-slate-100 dark:hover:bg-white/[0.05]' : 'cursor-default'"
         @click="select(step)"
       >
         <span

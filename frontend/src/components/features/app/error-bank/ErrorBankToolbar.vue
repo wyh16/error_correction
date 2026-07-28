@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorBankToolbar.vue
  * 错题库顶部筛选与视图操作栏。

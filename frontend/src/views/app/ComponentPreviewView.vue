@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
@@ -71,7 +71,7 @@ import {
   BASE_COMPONENT_COUNT,
   BASE_COMPONENT_GROUPS,
   BASE_COMPONENT_GROUP_SUMMARY,
-} from '@/components/base/registry.js'
+} from '@/components/base/registry'
 
 const activeGroup = ref('overview')
 const catalogSearch = ref('')

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   keys: { type: [String, Array], default: '' },
 })

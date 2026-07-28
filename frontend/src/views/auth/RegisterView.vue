@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RegisterView.vue
  * 注册表单页面，负责邮箱验证码、密码校验、注册并进入工作台。
  */
 import { ref, reactive, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
-import { useToast } from '@/composables/useToast.js'
+import { useAuth } from '@/composables/useAuth'
+import { useToast } from '@/composables/useToast'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseInput from '@/components/base/BaseInput.vue'
 

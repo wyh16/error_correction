@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * FileUploader.vue
  * 文件上传拖拽区

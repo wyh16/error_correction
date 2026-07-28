@@ -1,13 +1,13 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorQuestionFinderAside.vue
  * Natural-language question finder for the error bank.
  */
 import { onBeforeUnmount, ref, watch } from 'vue'
-import * as api from '@/api/index.js'
+import * as api from '@/api/index'
 import BasePanel from '@/components/base/BasePanel.vue'
 import BaseSearchInput from '@/components/base/BaseSearchInput.vue'
-import { getQuestionSnippet } from '@/utils/index.js'
+import { getQuestionSnippet } from '@/utils/index'
 
 const props = defineProps({
   projectId: { type: [String, Number, null], default: null },

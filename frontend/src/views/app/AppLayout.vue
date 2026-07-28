@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * AppLayout.vue
  * App 布局容器 — 侧边栏导航 + 内容区视图切换
@@ -6,17 +6,17 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, provide } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
-import { usePageTransition } from '@/composables/usePageTransition.js'
-import { useTheme } from '@/composables/useTheme.js'
-import { useImageModal } from '@/composables/useImageModal.js'
-import { useSystemStatus } from '@/composables/useSystemStatus.js'
-import { useSidebarIndicator } from '@/composables/useSidebarIndicator.js'
-import { useAiChatSessions } from '@/composables/useAiChatSessions.js'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
-import { useChatSession } from '@/composables/useChatSession.js'
-import { useToast } from '@/composables/useToast.js'
-import { useProjects } from '@/composables/useProjects.js'
+import { useAuth } from '@/composables/useAuth'
+import { usePageTransition } from '@/composables/usePageTransition'
+import { useTheme } from '@/composables/useTheme'
+import { useImageModal } from '@/composables/useImageModal'
+import { useSystemStatus } from '@/composables/useSystemStatus'
+import { useSidebarIndicator } from '@/composables/useSidebarIndicator'
+import { useAiChatSessions } from '@/composables/useAiChatSessions'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
+import { useChatSession } from '@/composables/useChatSession'
+import { useToast } from '@/composables/useToast'
+import { useProjects } from '@/composables/useProjects'
 import SidebarNav from '@/components/features/app/layout/SidebarNav.vue'
 import ChatSearchDialog from '@/components/features/app/layout/ChatSearchDialog.vue'
 import ImageModal from '@/components/base/ImageModal.vue'

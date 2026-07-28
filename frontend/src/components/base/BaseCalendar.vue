@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -81,9 +81,9 @@ function select(day) {
         class="flex aspect-square items-center justify-center rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-30"
         :class="[
           day.selected
-            ? 'accent-bg text-white'
+            ? 'accent-bg font-bold text-white shadow-sm'
             : day.today
-              ? 'accent-bg-soft accent-text'
+              ? 'accent-bg-soft accent-text font-bold'
               : day.muted
                 ? 'text-slate-300 hover:bg-slate-100 dark:text-[#4d535c] dark:hover:bg-white/[0.04]'
                 : 'text-slate-700 hover:bg-slate-100 dark:text-[#d0d6e0] dark:hover:bg-white/[0.05]',

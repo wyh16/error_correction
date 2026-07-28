@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ErrorBankView.vue
  * 閿欓搴撳伐浣滃彴锛氬乏渚ч鐩垪琛?+ 涓棿棰樼洰璇︽儏 + 鍙充晶瀛︿範鍒嗘瀽銆?
@@ -8,11 +8,11 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import {
   typesetMath as _typesetMath,
-} from '@/utils/index.js'
-import { useSelectableList } from '@/composables/useSelectableList.js'
-import { useErrorBankActions } from '@/composables/useErrorBankActions.js'
-import { useErrorBankQuery } from '@/composables/useErrorBankQuery.js'
-import { useErrorBankStats } from '@/composables/useErrorBankStats.js'
+} from '@/utils/index'
+import { useSelectableList } from '@/composables/useSelectableList'
+import { useErrorBankActions } from '@/composables/useErrorBankActions'
+import { useErrorBankQuery } from '@/composables/useErrorBankQuery'
+import { useErrorBankStats } from '@/composables/useErrorBankStats'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseStat from '@/components/base/BaseStat.vue'
@@ -23,11 +23,12 @@ import ErrorQuestionListPanel from '@/components/features/app/error-bank/ErrorQu
 import EditNoteDialog from '@/components/features/app/question/EditNoteDialog.vue'
 import QuestionDetailModal from '@/components/features/app/question/QuestionDetailModal.vue'
 import SelectionPanel from '@/components/features/app/workspace/SelectionPanel.vue'
-import { useToast } from '@/composables/useToast.js'
-import { useImageModal } from '@/composables/useImageModal.js'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
-import { useChatSession } from '@/composables/useChatSession.js'
-import { useProjects } from '@/composables/useProjects.js'
+import { useToast } from '@/composables/useToast'
+import { useImageModal } from '@/composables/useImageModal'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
+import { useChatSession } from '@/composables/useChatSession'
+import { useProjects } from '@/composables/useProjects'
+import type { ErrorBankQuestion } from '@/types/domain'
 
 defineProps({
   embedded: { type: Boolean, default: false },
@@ -50,7 +51,7 @@ const detailTabs = [
   { value: 'analysis', label: 'AI 解析', icon: 'fa-wand-magic-sparkles' },
   { value: 'answer', label: '答案解析', icon: 'fa-circle-check' },
   { value: 'note', label: '作答记录', icon: 'fa-camera' },
-]
+] as const
 
 const typesetMath = async () => {
   await nextTick()
@@ -137,7 +138,7 @@ const errorPatternRows = computed(() => {
 /**
  * 閫夋嫨棰樼洰鍚庡悓姝ヨ鎯呭拰鍒嗘瀽鍖哄煙銆?
  */
-const selectQuestion = async (q) => {
+const selectQuestion = async (q: ErrorBankQuestion | null | undefined) => {
   if (!q) return
   activeQuestionId.value = q.id
   activeTab.value = 'analysis'
@@ -146,7 +147,7 @@ const selectQuestion = async (q) => {
   await typesetMath()
 }
 
-const handleQuestionClick = async (q) => {
+const handleQuestionClick = async (q: ErrorBankQuestion) => {
   if (selectMode.value) toggleSelect(q.id)
   else {
     workbenchView.value = 'detail'
@@ -154,7 +155,7 @@ const handleQuestionClick = async (q) => {
   }
 }
 
-const handleFinderSelect = async (q) => {
+const handleFinderSelect = async (q: ErrorBankQuestion) => {
   workbenchView.value = 'detail'
   await selectQuestion(q)
 }

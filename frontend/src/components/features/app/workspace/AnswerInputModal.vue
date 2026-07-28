@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * AnswerInputModal.vue
  * AI 辅导前置 — 答案录入弹窗

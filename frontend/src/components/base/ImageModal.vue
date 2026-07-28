@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ImageModal.vue
  * 图片预览弹窗（缩放 + 拖拽）
  */
-import { clampScale } from '@/utils/index.js'
+import { clampScale } from '@/utils/index'
 
 const props = defineProps({
   open: { type: Boolean, default: false },

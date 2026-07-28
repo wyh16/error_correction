@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseStatusPill.vue
  * 通用状态徽标，用统一视觉表达加载中、正常、异常、占位等状态。

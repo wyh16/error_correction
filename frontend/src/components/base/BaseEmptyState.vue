@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseEmptyState.vue
  * Linear 风格空状态组件 — 居中图标 + 标题 + 描述 + 操作按钮

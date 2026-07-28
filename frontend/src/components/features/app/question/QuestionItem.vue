@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * QuestionItem.vue
  * 题目条目（分割结果列表项）
  */
 import { ref, watch, nextTick } from 'vue'
-import { getQuestionSnippet, typesetMath } from '@/utils/index.js'
+import { getQuestionSnippet, typesetMath } from '@/utils/index'
 import BaseCard from '@/components/base/BaseCard.vue'
 
 const props = defineProps({

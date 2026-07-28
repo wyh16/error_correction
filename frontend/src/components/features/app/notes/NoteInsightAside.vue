@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * NoteInsightAside.vue
  * 笔记库右侧知识点、元信息与原图预览栏。

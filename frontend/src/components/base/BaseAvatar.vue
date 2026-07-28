@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -7,6 +7,10 @@ const props = defineProps({
   icon: { type: String, default: '' },
   size: { type: String, default: 'md' },
   tone: { type: String, default: 'accent' },
+  // 形状：circle（默认圆形）| square（圆角方形）
+  shape: { type: String, default: 'circle' },
+  // 状态点：online | offline | busy，空字符串不显示
+  status: { type: String, default: '' },
 })
 
 const initials = computed(() => {
@@ -31,16 +35,36 @@ const toneClass = {
   emerald: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300',
   rose: 'bg-rose-500/10 text-rose-600 dark:text-rose-300',
 }
+
+const statusClass = {
+  online: 'bg-emerald-500',
+  offline: 'bg-slate-400 dark:bg-slate-500',
+  busy: 'bg-rose-500',
+}
+
+// 状态点需要溢出到头像边缘之外，因此有状态点时根节点不再裁剪，改由图片自行裁圆角。
+const shapeClass = computed(() => (props.shape === 'square' ? 'rounded-lg' : 'rounded-full'))
 </script>
 
 <template>
   <span
-    class="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
-    :class="[sizeClass[size] || sizeClass.md, toneClass[tone] || toneClass.accent]"
+    class="inline-flex shrink-0 items-center justify-center font-bold ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
+    :class="[
+      sizeClass[size] || sizeClass.md,
+      toneClass[tone] || toneClass.accent,
+      shapeClass,
+      status ? 'relative' : 'overflow-hidden',
+    ]"
     :title="name"
   >
-    <img v-if="src" :src="src" :alt="name || 'avatar'" class="h-full w-full object-cover" />
+    <img v-if="src" :src="src" :alt="name || 'avatar'" class="h-full w-full object-cover" :class="shapeClass" />
     <i v-else-if="icon" class="fa-solid" :class="icon"></i>
     <span v-else>{{ initials || '?' }}</span>
+    <!-- 右下角状态点：白色描边把点从头像背景中分离出来 -->
+    <span
+      v-if="status && statusClass[status]"
+      class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-[#1b1b1d]"
+      :class="statusClass[status]"
+    ></span>
   </span>
 </template>

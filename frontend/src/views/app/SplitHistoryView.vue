@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 /**
  * SplitHistoryView.vue
  * 分割历史页面，展示历史分割记录，并支持把历史题目重新载入工作台。
  */
 import { ref, watch, nextTick } from 'vue'
-import * as api from '@/api/index.js'
-import { isHtml, sanitizeHtml, typesetMath as _typesetMath } from '@/utils/index.js'
+import * as api from '@/api/index'
+import { isHtml, sanitizeHtml, typesetMath as _typesetMath } from '@/utils/index'
 
 const props = defineProps({
   theme: { type: String, default: 'light' },

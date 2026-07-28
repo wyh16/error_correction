@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 工作台顶部状态栏。
  *

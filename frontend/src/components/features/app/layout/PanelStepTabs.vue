@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * PanelStepTabs.vue
  * 内容面板顶部的小型步骤切换条。

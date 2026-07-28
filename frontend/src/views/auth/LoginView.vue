@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 /**
  * LoginView.vue
  * 登录表单页面，负责提交账号密码、写入登录用户并进入工作台。
  */
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuth } from '@/composables/useAuth'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseInput from '@/components/base/BaseInput.vue'
 import ForgotPasswordModal from '@/components/features/auth/ForgotPasswordModal.vue'

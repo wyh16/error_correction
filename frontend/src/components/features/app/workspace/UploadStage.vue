@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * UploadStage.vue
  * 工作台第一页：上传与分析（模式切换 + 擦除开关 + 流程步骤 + 文件上传）

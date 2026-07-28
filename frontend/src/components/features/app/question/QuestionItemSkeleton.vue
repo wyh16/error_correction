@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * QuestionItemSkeleton.vue
  * 题目条目骨架屏

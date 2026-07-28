@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 编辑题目/答案/笔记弹窗。
  *
  * field 决定当前编辑模式：题目会显示 HTML/公式预览，答案和笔记走普通文本编辑。
  */
 import { onBeforeUnmount, ref, watch, nextTick } from 'vue'
-import { typesetMath, isHtml, sanitizeHtml } from '@/utils/index.js'
+import { typesetMath, isHtml, sanitizeHtml } from '@/utils/index'
 import BaseModal from '@/components/base/BaseModal.vue'
 import BaseButton from '@/components/base/BaseButton.vue'
 

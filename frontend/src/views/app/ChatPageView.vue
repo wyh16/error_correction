@@ -1,20 +1,21 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ChatPageView.vue
  * 独立 AI 对话页面，支持多轮流式对话、深度思考展示和错题上下文引用。
  */
 import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { MessageSquarePlus } from 'lucide-vue-next'
-import * as api from '@/api/index.js'
-import { getQuestionSnippet, renderMarkdown, typesetMath } from '@/utils/index.js'
+import * as api from '@/api/index'
+import { getQuestionSnippet, renderMarkdown, typesetMath } from '@/utils/index'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
 import BaseModal from '@/components/base/BaseModal.vue'
-import { useToast } from '@/composables/useToast.js'
-import { useSystemStatus } from '@/composables/useSystemStatus.js'
-import { useAuth } from '@/composables/useAuth.js'
-import { useAiChatSessions } from '@/composables/useAiChatSessions.js'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
-import { useProjects } from '@/composables/useProjects.js'
+import { useToast } from '@/composables/useToast'
+import { useSystemStatus } from '@/composables/useSystemStatus'
+import { useAuth } from '@/composables/useAuth'
+import { useAiChatSessions } from '@/composables/useAiChatSessions'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
+import { useProjects } from '@/composables/useProjects'
+import type { ChatMessage, ErrorBankQuestion, Id } from '@/types/domain'
 import deepseekLogo from '@/assets/deepseek.svg'
 import ernieLogo from '@/assets/ernie.svg'
 
@@ -43,20 +44,20 @@ const providerId = computed(() => selectedLlmOption.value?.provider_id || '')
 const username = computed(() => currentUser.value?.username || '')
 
 // ---- 对话消息 ----
-const messages = ref([])
+const messages = ref<ChatMessage[]>([])
 const inputText = ref('')
 const streaming = ref(false)
 const modelMenuOpen = ref(false)
-const messagesContainer = ref(null)
-const contextQuestionsEl = ref(null)
-const streamRenderTimer = ref(null)
+const messagesContainer = ref<HTMLElement | null>(null)
+const contextQuestionsEl = ref<HTMLElement | null>(null)
+const streamRenderTimer = ref<number | null>(null)
 const streamRenderRunning = ref(false)
 const deepThink = ref(false)
 const contextDialogOpen = ref(false)
-const contextProjectId = ref(null)
-const selectedContextQuestionIds = ref([])
-const contextQuestionCache = ref({})
-const loadingContextProjectId = ref(null)
+const contextProjectId = ref<Id | null>(null)
+const selectedContextQuestionIds = ref<Id[]>([])
+const contextQuestionCache = ref<Record<string, ErrorBankQuestion[]>>({})
+const loadingContextProjectId = ref<Id | null>(null)
 const contextLoadError = ref('')
 const hasConversationContent = computed(() => messages.value.length > 0 || streaming.value)
 const AUTO_SCROLL_THRESHOLD = 80
@@ -201,14 +202,14 @@ function scrollToBottomIfNeeded(shouldScroll) {
   if (shouldScroll) scrollToBottom()
 }
 
-function getStreamingAssistantEl() {
+function getStreamingAssistantEl(): Element | null {
   return messagesContainer.value?.querySelector('[data-streaming-assistant="true"]') || null
 }
 
 /**
  * 把流式缓存内容刷入消息正文，并对当前助手消息重新渲染公式。
  */
-async function flushStreamingMessage(msg) {
+async function flushStreamingMessage(msg?: ChatMessage) {
   if (!msg || streamRenderRunning.value) return
   const shouldScroll = isNearBottom()
   streamRenderRunning.value = true
@@ -227,7 +228,7 @@ async function flushStreamingMessage(msg) {
 /**
  * 对流式渲染做节流，避免每个 token 都触发 Markdown/MathJax 重排。
  */
-function scheduleStreamRender(msg, delay = 260) {
+function scheduleStreamRender(msg: ChatMessage, delay = 260) {
   if (streamRenderTimer.value) return
   streamRenderTimer.value = window.setTimeout(async () => {
     streamRenderTimer.value = null
@@ -360,12 +361,12 @@ async function sendMessage() {
 }
 
 
-const textareaRef = ref(null)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 /**
  * Enter 发送消息，Shift + Enter 保留换行。
  */
-function handleKeydown(e) {
+function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
     sendMessage()
@@ -385,7 +386,7 @@ function autoResize() {
 /**
  * 切换上下文题目所属的错题库，并懒加载该项目题目。
  */
-async function openContextProject(project) {
+async function openContextProject(project?: { id?: Id | null } | null) {
   const nextId = project?.id || null
   if (!nextId) return
   if (String(contextProjectId.value) !== String(nextId)) {
@@ -408,7 +409,7 @@ async function openContextDialog() {
 /**
  * 加载某个错题库下可作为对话上下文的题目列表。
  */
-async function loadContextQuestions(projectId) {
+async function loadContextQuestions(projectId: Id) {
   const key = String(projectId)
   if (contextQuestionCache.value[key]) return
   loadingContextProjectId.value = projectId

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * WorkspaceBackground.vue
  * 工作台全局背景装饰（Linear 风格光圈 + 噪点 + 闪烁星星）

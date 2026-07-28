@@ -1,18 +1,18 @@
-<script setup>
+<script setup lang="ts">
 /**
  * WorkspaceView.vue
  * 录入工作台 — 上传/擦除/OCR/分割/导出 全流程
  */
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useToast } from '@/composables/useToast.js'
-import { useSystemStatus } from '@/composables/useSystemStatus.js'
-import { useImageModal } from '@/composables/useImageModal.js'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
-import { useQuestionList } from '@/composables/useQuestionList.js'
-import { useFileUpload } from '@/composables/useFileUpload.js'
-import { useSplitPipeline } from '@/composables/useSplitPipeline.js'
-import { useProjects } from '@/composables/useProjects.js'
+import { useToast } from '@/composables/useToast'
+import { useSystemStatus } from '@/composables/useSystemStatus'
+import { useImageModal } from '@/composables/useImageModal'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
+import { useQuestionList } from '@/composables/useQuestionList'
+import { useFileUpload } from '@/composables/useFileUpload'
+import { useSplitPipeline } from '@/composables/useSplitPipeline'
+import { useProjects } from '@/composables/useProjects'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
 import SelectionPanel from '@/components/features/app/workspace/SelectionPanel.vue'
 import UploadStage from '@/components/features/app/workspace/UploadStage.vue'

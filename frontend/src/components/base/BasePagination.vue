@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BasePagination.vue
  * 通用分页组件，内部计算页码窗口和省略号。
@@ -8,6 +8,10 @@ import { computed } from 'vue'
 const props = defineProps({
   page: { type: Number, default: 1 },
   totalPages: { type: Number, default: 0 },
+  // 数据总条数，大于 0 时在左侧显示「共 N 条」
+  showTotal: { type: Number, default: 0 },
+  // 当前页两侧各显示多少个相邻页码
+  siblingCount: { type: Number, default: 1 },
 })
 
 const emit = defineEmits(['update:page', 'change'])
@@ -15,10 +19,12 @@ const emit = defineEmits(['update:page', 'change'])
 const pageButtons = computed(() => {
   const total = props.totalPages
   const current = props.page
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const siblings = Math.max(0, props.siblingCount)
+  // 页数不多于「首尾 + 相邻窗口 + 两个省略号占位」时直接全量展示。
+  if (total <= siblings * 2 + 5) return Array.from({ length: total }, (_, i) => i + 1)
   const pages = [1]
-  const start = Math.max(2, current - 1)
-  const end = Math.min(total - 1, current + 1)
+  const start = Math.max(2, current - siblings)
+  const end = Math.min(total - 1, current + siblings)
   if (start > 2) pages.push('...')
   for (let i = start; i <= end; i++) pages.push(i)
   if (end < total - 1) pages.push('...')
@@ -35,6 +41,7 @@ const setPage = (value) => {
 
 <template>
   <nav v-if="totalPages > 1" class="flex items-center justify-center gap-2">
+    <span v-if="showTotal > 0" class="mr-1 text-sm text-gray-500 dark:text-[#8a8f98]">共 {{ showTotal }} 条</span>
     <button class="pager-btn" :disabled="page <= 1" @click="setPage(page - 1)">
       <i class="fa-solid fa-chevron-left"></i>
     </button>

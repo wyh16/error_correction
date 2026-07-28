@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseListGroup
  * 类 Linear 设置项分组容器

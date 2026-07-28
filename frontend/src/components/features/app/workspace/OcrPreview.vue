@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * OcrPreview.vue
  * OCR 结果预览 — 图片 + bbox 标注叠加

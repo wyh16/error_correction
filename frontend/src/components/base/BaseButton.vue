@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseButton.vue
  * 通用品牌按钮。
@@ -25,14 +25,20 @@ import { computed } from 'vue'
  * - size: 决定按钮高度、字号和圆角
  * - to / href: 决定按钮是否退化为导航入口
  * - type / disabled: 仅在渲染为原生 button 时生效
+ * - loading: 加载中展示旋转图标并禁止点击
+ * - icon: 在文本前渲染一个 fa-* 图标
+ * - block: 占满父容器宽度，常用于表单提交按钮
  */
 const props = defineProps({
   variant: { type: String, default: 'primary' },   // primary | secondary | cta | ghost
-  size: { type: String, default: 'md' },            // sm | md
+  size: { type: String, default: 'md' },            // sm | md | lg
   to: { type: String, default: '' },                // RouterLink 目标
   href: { type: String, default: '' },              // 普通链接
   type: { type: String, default: 'button' },        // button | submit
   disabled: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },       // 加载中：显示 spinner 并禁用点击
+  icon: { type: String, default: '' },              // 前置图标，如 'fa-plus'
+  block: { type: Boolean, default: false },         // 是否占满整行
 })
 
 /**
@@ -64,7 +70,8 @@ const tag = computed(() => {
 const bindProps = computed(() => {
   if (props.to) return { to: props.to }
   if (props.href) return { href: props.href }
-  return { type: props.type, disabled: props.disabled }
+  // loading 期间同样禁用按钮，避免重复触发提交类操作。
+  return { type: props.type, disabled: props.disabled || props.loading }
 })
 </script>
 
@@ -79,7 +86,10 @@ const bindProps = computed(() => {
       // - disabled 样式: 统一禁用态反馈
       'base-button relative overflow-hidden inline-flex items-center justify-center font-medium gap-2 disabled:opacity-50 disabled:cursor-not-allowed',
       // 尺寸层只负责几何信息，不掺杂颜色或品牌风格。
-      size === 'sm' ? 'h-8 px-4 text-xs rounded-md' : 'h-10 px-6 text-sm rounded-lg',
+      size === 'sm' ? 'h-8 px-4 text-xs rounded-md' : size === 'lg' ? 'h-12 px-8 text-base rounded-lg' : 'h-10 px-6 text-sm rounded-lg',
+      // block 模式下占满整行；链接形态没有原生 disabled，用 pointer-events 拦截 loading 点击。
+      block ? 'w-full' : '',
+      loading ? 'pointer-events-none opacity-70' : '',
       {
         'base-button--primary': variant === 'primary',
         'base-button--secondary': variant === 'secondary',
@@ -100,6 +110,9 @@ const bindProps = computed(() => {
       调用方传入的图标、文字、slot 内容都放在这里。
     -->
     <span class="base-button__content">
+      <!-- loading 优先于 icon：加载中只显示 spinner，避免两个图标挤在一起。 -->
+      <i v-if="loading" class="fa-solid fa-circle-notch fa-spin"></i>
+      <i v-else-if="icon" class="fa-solid" :class="icon"></i>
       <slot />
     </span>
   </component>

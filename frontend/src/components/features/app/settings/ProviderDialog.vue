@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ProviderDialog.vue
  * API Provider 配置弹窗
  */
 import { ref, computed, watch } from 'vue'
-import { useToast } from '@/composables/useToast.js'
+import { useToast } from '@/composables/useToast'
 import BaseModal from '@/components/base/BaseModal.vue'
 import BaseInput from '@/components/base/BaseInput.vue'
 import BaseButton from '@/components/base/BaseButton.vue'

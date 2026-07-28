@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * 通用 Tooltip 组件。
  *
@@ -12,6 +12,8 @@ const props = defineProps({
   align: { type: String, default: 'center' },
   offset: { type: Number, default: 8 },
   disabled: { type: Boolean, default: false },
+  // 悬停多少毫秒后再显示；默认 null 表示跟随 Provider 配置（无 Provider 时立即显示）
+  delay: { type: Number, default: null },
 })
 
 const provider = inject('baseTooltipProvider', null)
@@ -86,18 +88,32 @@ const updatePosition = async () => {
 
 const isTouch = ref(false)
 
-/** 显示 Tooltip，并在 DOM 更新后重新计算位置。 */
-const show = async () => {
-  if (props.disabled || isTouch.value) return
-  if (provider?.disabled) return
-  // 如果设备不支持 hover（如移动端），则不显示 tooltip，防止点击后残留
-  if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover)').matches) return
+// 组件级 delay 优先于 Provider 的全局 delay。
+const effectiveDelay = computed(() => props.delay ?? provider?.delay ?? 0)
+let showTimer = null
+
+const reveal = async () => {
   visible.value = true
   await updatePosition()
 }
 
-/** 隐藏 Tooltip。 */
+/** 显示 Tooltip：按 delay 延迟触发，并在 DOM 更新后重新计算位置。 */
+const show = () => {
+  if (props.disabled || isTouch.value) return
+  if (provider?.disabled) return
+  // 如果设备不支持 hover（如移动端），则不显示 tooltip，防止点击后残留
+  if (typeof window !== 'undefined' && !window.matchMedia('(hover: hover)').matches) return
+  clearTimeout(showTimer)
+  if (effectiveDelay.value > 0) {
+    showTimer = setTimeout(reveal, effectiveDelay.value)
+  } else {
+    reveal()
+  }
+}
+
+/** 隐藏 Tooltip，并取消尚未触发的延迟显示。 */
 const hide = () => {
+  clearTimeout(showTimer)
   visible.value = false
 }
 
@@ -118,6 +134,7 @@ if (typeof window !== 'undefined') {
 }
 
 onBeforeUnmount(() => {
+  clearTimeout(showTimer)
   if (typeof window !== 'undefined') {
     window.removeEventListener('resize', onViewportChange)
     window.removeEventListener('scroll', onViewportChange, true)

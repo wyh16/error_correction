@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * DashboardView.vue
  * 纯前端 mock 数据面板，不依赖后端接口。
@@ -14,7 +14,7 @@ import PriorityBarCard from '@/components/features/app/dashboard/PriorityBarCard
 import LearningTrendCard from '@/components/features/app/dashboard/LearningTrendCard.vue'
 import KnowledgeCompareCard from '@/components/features/app/dashboard/KnowledgeCompareCard.vue'
 import SummaryStatsChartCard from '@/components/features/app/dashboard/SummaryStatsChartCard.vue'
-import { useToast } from '@/composables/useToast.js'
+import { useToast } from '@/composables/useToast'
 
 const subjectOptions = ['数学', '物理']
 const selectedSubject = ref('数学')

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseToolbarButton.vue
  * 通用小型工具栏按钮，适合图标按钮或“图标 + 文本”的局部操作。

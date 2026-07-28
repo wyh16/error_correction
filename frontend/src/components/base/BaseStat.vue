@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BaseStat.vue
  * 通用统计卡片组件，用于展示数值、单位、说明和图标。

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * BasePanel.vue
  * 带 header / body / footer 插槽的工作台面板容器。

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * SettingsView.vue
  * 设置页面，包含用户资料、免费额度、外观主题、个人 API 和系统 API 配置。
@@ -8,12 +8,12 @@ import * as echarts from 'echarts/core'
 import { TooltipComponent, LegendComponent, GridComponent } from 'echarts/components'
 import { BarChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
-import { fetchAppConfig, updateAppConfig, fetchAdminSystemConfig, updateAdminSystemConfig, updateProfile, uploadProfileAvatar, deleteProfileAvatar } from '@/api/index.js'
-import { genId } from '@/utils/index.js'
-import { useAuth } from '@/composables/useAuth.js'
-import { useToast } from '@/composables/useToast.js'
-import { useSystemStatus } from '@/composables/useSystemStatus.js'
-import { useTheme } from '@/composables/useTheme.js'
+import { fetchAppConfig, updateAppConfig, fetchAdminSystemConfig, updateAdminSystemConfig, updateProfile, uploadProfileAvatar, deleteProfileAvatar } from '@/api/index'
+import { genId } from '@/utils/index'
+import { useAuth } from '@/composables/useAuth'
+import { useToast } from '@/composables/useToast'
+import { useSystemStatus } from '@/composables/useSystemStatus'
+import { useTheme } from '@/composables/useTheme'
 import ContentPanel from '@/components/features/app/layout/ContentPanel.vue'
 import ProviderDialog from '@/components/features/app/settings/ProviderDialog.vue'
 import ProviderSection from '@/components/features/app/settings/ProviderSection.vue'

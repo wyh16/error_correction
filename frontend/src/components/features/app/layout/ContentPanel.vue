@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * ContentPanel.vue
  * Workspace content shell: title bar, optional step tabs, tool slots, main content,
@@ -6,7 +6,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, useSlots } from 'vue'
 import { PanelLeft } from 'lucide-vue-next'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
 import BaseBreadcrumb from '@/components/base/BaseBreadcrumb.vue'
 import PanelStepTabs from '@/components/features/app/layout/PanelStepTabs.vue'
 

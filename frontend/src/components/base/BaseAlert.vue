@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   tone: { type: String, default: 'info' },
   title: { type: String, default: '' },

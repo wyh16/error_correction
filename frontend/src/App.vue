@@ -1,14 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, provide } from 'vue'
 
 import BaseLoading from '@/components/base/BaseLoading.vue'
 import BaseToastContainer from '@/components/base/BaseToastContainer.vue'
 
-import { usePageTransition } from '@/composables/usePageTransition.js'
-import { useTheme } from '@/composables/useTheme.js'
-import { useWorkspaceToast } from '@/composables/useWorkspaceToast.js'
-import { TOAST_INJECTION_KEY } from '@/composables/useToast.js'
-import { useWorkspaceNav } from '@/composables/useWorkspaceNav.js'
+import { usePageTransition } from '@/composables/usePageTransition'
+import { useTheme } from '@/composables/useTheme'
+import { useWorkspaceToast } from '@/composables/useWorkspaceToast'
+import { TOAST_INJECTION_KEY } from '@/composables/useToast'
+import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
 
 const { loading, notifyEnterCompleted } = usePageTransition()
 const { initTheme } = useTheme()

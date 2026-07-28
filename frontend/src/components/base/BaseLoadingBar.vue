@@ -4,22 +4,30 @@
  * 顶部加载进度条：start / finish / error 方法驱动，模拟真实请求的推进节奏。
  */
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { Z_LOADING_BAR } from '@/composables/useOverlay'
 
-const props = defineProps({
-  // 进度条高度（px）
-  height: { type: Number, default: 3 },
-  // accent | emerald | amber | rose | blue；error() 时固定切 rose
-  tone: { type: String, default: 'accent' },
+type LoadingBarTone = 'accent' | 'emerald' | 'amber' | 'rose' | 'blue'
+
+interface Props {
+  /** 进度条高度（px） */
+  height?: number
+  /** accent | emerald | amber | rose | blue；error() 时固定切 rose */
+  tone?: LoadingBarTone
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  height: 3,
+  tone: 'accent',
 })
 
-const toneClass = {
+const toneClass: Partial<Record<LoadingBarTone, string>> = {
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
   rose: 'bg-rose-500',
   blue: 'bg-blue-500',
 }
 
-const barRef = ref(null)
+const barRef = ref<HTMLElement | null>(null)
 const width = ref(0)
 const visible = ref(false)
 // 渐隐阶段：宽度保持 100%，透明度过渡到 0
@@ -28,9 +36,9 @@ const failed = ref(false)
 // 重置宽度时临时关闭过渡，避免从上次残留值倒退动画
 const noTransition = ref(false)
 
-let tickTimer = null
-let fadeTimer = null
-let resetTimer = null
+let tickTimer: ReturnType<typeof setInterval> | null = null
+let fadeTimer: ReturnType<typeof setTimeout> | null = null
+let resetTimer: ReturnType<typeof setTimeout> | null = null
 
 const barClass = computed(() => {
   if (failed.value) return 'bg-rose-500'
@@ -49,9 +57,9 @@ const barStyle = computed(() => ({
 }))
 
 function clearTimers() {
-  clearInterval(tickTimer)
-  clearTimeout(fadeTimer)
-  clearTimeout(resetTimer)
+  if (tickTimer !== null) clearInterval(tickTimer)
+  if (fadeTimer !== null) clearTimeout(fadeTimer)
+  if (resetTimer !== null) clearTimeout(resetTimer)
   tickTimer = null
   fadeTimer = null
   resetTimer = null
@@ -116,7 +124,7 @@ defineExpose({ start, finish, error })
 
 <template>
   <Teleport to="body">
-    <div v-show="visible" class="pointer-events-none fixed left-0 right-0 top-0 z-[10000]">
+    <div v-show="visible" class="pointer-events-none fixed left-0 right-0 top-0" :style="{ zIndex: Z_LOADING_BAR }">
       <div ref="barRef" class="rounded-r-full" :class="barClass" :style="barStyle"></div>
     </div>
   </Teleport>

@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { provide } from 'vue'
+import { Z_TOOLTIP } from '@/composables/useOverlay'
 
-const props = defineProps({
-  delay: { type: Number, default: 0 },
-  offset: { type: Number, default: 8 },
-  zIndex: { type: Number, default: 9999 },
-  disabled: { type: Boolean, default: false },
+interface Props {
+  delay?: number
+  offset?: number
+  zIndex?: number
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  delay: 0,
+  offset: 8,
+  zIndex: Z_TOOLTIP,
+  disabled: false,
 })
 
 provide('baseTooltipProvider', props)

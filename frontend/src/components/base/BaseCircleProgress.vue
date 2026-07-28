@@ -5,16 +5,27 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps({
-  // 0-100，超出范围自动收敛
-  value: { type: Number, default: 0 },
-  // 直径（px）
-  size: { type: Number, default: 96 },
-  strokeWidth: { type: Number, default: 8 },
-  tone: { type: String, default: 'accent' },
-  showValue: { type: Boolean, default: true },
-  // 不确定态：固定弧长 + 整体旋转，用于进度未知的加载
-  indeterminate: { type: Boolean, default: false },
+type CircleProgressTone = 'accent' | 'emerald' | 'amber' | 'rose' | 'blue'
+
+interface Props {
+  /** 0-100，超出范围自动收敛 */
+  value?: number
+  /** 直径（px） */
+  size?: number
+  strokeWidth?: number
+  tone?: CircleProgressTone
+  showValue?: boolean
+  /** 不确定态：固定弧长 + 整体旋转，用于进度未知的加载 */
+  indeterminate?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: 0,
+  size: 96,
+  strokeWidth: 8,
+  tone: 'accent',
+  showValue: true,
+  indeterminate: false,
 })
 
 const clamped = computed(() => Math.min(100, Math.max(0, props.value)))
@@ -30,7 +41,7 @@ const dashOffset = computed(() => {
 })
 
 // accent 需要跟随主题色 CSS 变量，只能走 style；其余固定色用静态类
-const strokeClass = {
+const strokeClass: Partial<Record<CircleProgressTone, string>> = {
   emerald: 'stroke-emerald-500',
   amber: 'stroke-amber-500',
   rose: 'stroke-rose-500',

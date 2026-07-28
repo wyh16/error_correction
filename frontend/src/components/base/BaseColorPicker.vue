@@ -4,25 +4,37 @@
  * 颜色选择器：饱和度/明度面板 + 色相条 + hex 输入 + 预设色板（不含 alpha 通道）
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
+interface Props {
   // 六位 hex，如 '#8173df'；空字符串表示未选择
-  modelValue: { type: String, default: '' },
-  presets: {
-    type: Array,
-    default: () => ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8173df', '#a855f7', '#ec4899'],
-  },
-  disabled: { type: Boolean, default: false },
+  modelValue?: string
+  presets?: string[]
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  presets: () => ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8173df', '#a855f7', '#ec4899'],
+  disabled: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'change', value: string): void
+}>()
 
 const HEX_RE = /^#?[0-9a-fA-F]{6}$/
 
-const rootRef = ref(null)
-const svRef = ref(null)
-const hueRef = ref(null)
+const rootRef = ref<HTMLElement | null>(null)
+const triggerRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
+const svRef = ref<HTMLElement | null>(null)
+const hueRef = ref<HTMLElement | null>(null)
 const open = ref(false)
+
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪
+const { panelStyle, isOutside } = useDropdownPosition(open, triggerRef, panelRef)
 
 // 内部工作色采用 HSV：面板拖拽天然对应 s/v 两轴，色相条对应 h
 const hue = ref(0)
@@ -32,12 +44,12 @@ const bright = ref(1)
 // hex 输入框的草稿值，回车/失焦校验通过才提交
 const hexDraft = ref('')
 
-function clamp01(value) {
+function clamp01(value: number) {
   return Math.min(1, Math.max(0, value))
 }
 
-function hsvToHex(h, s, v) {
-  const channel = n => {
+function hsvToHex(h: number, s: number, v: number) {
+  const channel = (n: number) => {
     const k = (n + h / 60) % 6
     return v - v * s * Math.max(0, Math.min(k, 4 - k, 1))
   }
@@ -46,7 +58,7 @@ function hsvToHex(h, s, v) {
     .join('')
 }
 
-function hexToHsv(hex) {
+function hexToHsv(hex: string) {
   const value = hex.replace('#', '')
   const r = parseInt(value.slice(0, 2), 16) / 255
   const g = parseInt(value.slice(2, 4), 16) / 255
@@ -67,7 +79,7 @@ function hexToHsv(hex) {
 const currentHex = computed(() => hsvToHex(hue.value, sat.value, bright.value))
 
 // 灰色（s=0）或黑色（v=0）时 hex 里不携带色相信息，保留当前 h/s 避免手柄跳变
-function syncFromHex(hex) {
+function syncFromHex(hex: string) {
   const parsed = hexToHsv(hex)
   if (parsed.s > 0 && parsed.v > 0) hue.value = parsed.h
   if (parsed.v > 0) sat.value = parsed.s
@@ -88,7 +100,7 @@ watch(currentHex, value => {
 // ── 拖拽：pointer capture 保证移出面板后仍持续跟踪，松手才提交 change ──
 let activeArea = ''
 
-function applyPointer(area, event) {
+function applyPointer(area: string, event: PointerEvent) {
   const el = area === 'sv' ? svRef.value : hueRef.value
   if (!el) return
   const rect = el.getBoundingClientRect()
@@ -104,31 +116,31 @@ function applyPointer(area, event) {
   emit('update:modelValue', currentHex.value)
 }
 
-function onPointerDown(area, event) {
+function onPointerDown(area: string, event: PointerEvent) {
   if (props.disabled) return
   activeArea = area
   event.preventDefault()
-  event.currentTarget.setPointerCapture(event.pointerId)
+  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
   applyPointer(area, event)
 }
 
-function onPointerMove(area, event) {
+function onPointerMove(area: string, event: PointerEvent) {
   if (activeArea !== area) return
   applyPointer(area, event)
 }
 
-function onPointerUp(area) {
+function onPointerUp(area: string) {
   if (activeArea !== area) return
   activeArea = ''
   emit('change', currentHex.value)
 }
 
-function commit(hex) {
+function commit(hex: string) {
   emit('update:modelValue', hex)
   emit('change', hex)
 }
 
-function pickPreset(preset) {
+function pickPreset(preset: string) {
   const hex = '#' + preset.replace('#', '').toLowerCase()
   syncFromHex(hex)
   commit(hex)
@@ -147,7 +159,7 @@ function confirmHexInput() {
   }
 }
 
-function isPresetActive(preset) {
+function isPresetActive(preset: string) {
   return Boolean(props.modelValue) && preset.toLowerCase() === props.modelValue.toLowerCase()
 }
 
@@ -169,14 +181,13 @@ const hueBarStyle = {
   background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)',
 }
 
-// 点击组件外部时收起弹层（触发器与弹层都在 rootRef 内）
-function onDocPointerDown(event) {
+// 点击触发器与弹层之外时收起（弹层已 Teleport，需同时排除两者）
+function onDocPointerDown(event: PointerEvent) {
   if (!open.value) return
-  const target = event.target
-  if (rootRef.value && target && !rootRef.value.contains(target)) open.value = false
+  if (isOutside(event.target)) open.value = false
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') open.value = false
 }
 
@@ -192,6 +203,7 @@ onBeforeUnmount(() => {
 <template>
   <div ref="rootRef" class="relative" @keydown="onKeydown">
     <button
+      ref="triggerRef"
       type="button"
       :disabled="disabled"
       aria-haspopup="dialog"
@@ -219,19 +231,23 @@ onBeforeUnmount(() => {
       ></i>
     </button>
 
-    <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="-translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-100 ease-in"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="-translate-y-1 opacity-0"
-    >
-      <div
-        v-if="open"
-        role="dialog"
-        class="absolute left-0 top-full z-50 mt-1 grid w-64 select-none gap-3 rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-150 ease-out"
+        enter-from-class="-translate-y-1 opacity-0"
+        enter-to-class="translate-y-0 opacity-100"
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="translate-y-0 opacity-100"
+        leave-to-class="-translate-y-1 opacity-0"
       >
+        <div
+          v-if="open"
+          ref="panelRef"
+          role="dialog"
+          :style="panelStyle"
+          class="grid w-64 select-none gap-3 rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+          @keydown="onKeydown"
+        >
         <!-- 饱和度（横轴）/ 明度（纵轴）面板 -->
         <div
           ref="svRef"
@@ -294,6 +310,7 @@ onBeforeUnmount(() => {
           ></button>
         </div>
       </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>

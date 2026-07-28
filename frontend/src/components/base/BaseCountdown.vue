@@ -5,17 +5,26 @@
  */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
-const props = defineProps({
-  // > 1e12 视为目标时间戳（ms），否则视为剩余秒数
-  value: { type: Number, default: 0 },
-  // 支持 DD / HH / mm / ss 占位符，如 'DD 天 HH:mm:ss'
-  format: { type: String, default: 'HH:mm:ss' },
-  autoStart: { type: Boolean, default: true },
+interface Props {
+  /** > 1e12 视为目标时间戳（ms），否则视为剩余秒数 */
+  value?: number
+  /** 支持 DD / HH / mm / ss 占位符，如 'DD 天 HH:mm:ss' */
+  format?: string
+  autoStart?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: 0,
+  format: 'HH:mm:ss',
+  autoStart: true,
 })
 
-const emit = defineEmits(['change', 'finish'])
+const emit = defineEmits<{
+  change: [remainingMs: number]
+  finish: []
+}>()
 
-function computeInitial() {
+function computeInitial(): number {
   if (props.value > 1e12) return Math.max(0, props.value - Date.now())
   return Math.max(0, props.value * 1000)
 }
@@ -24,7 +33,7 @@ const remaining = ref(computeInitial())
 const running = ref(false)
 
 let deadline = 0
-let timer = null
+let timer: ReturnType<typeof setInterval> | null = null
 
 function stopTimer() {
   if (timer) {
@@ -75,7 +84,7 @@ if (props.autoStart) start()
 
 onBeforeUnmount(stopTimer)
 
-function pad(value) {
+function pad(value: number): string {
   return String(value).padStart(2, '0')
 }
 

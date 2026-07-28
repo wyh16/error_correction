@@ -2,32 +2,63 @@
 import { computed } from 'vue'
 import { useOverlay } from '@/composables/useOverlay'
 
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  title: { type: String, default: '' },
-  description: { type: String, default: '' },
-  placement: { type: String, default: 'right' },
-  widthClass: { type: String, default: 'w-full max-w-md' },
-  closeOnBackdrop: { type: Boolean, default: true },
-  persistent: { type: Boolean, default: false },
-  showClose: { type: Boolean, default: true },
+interface Props {
+  open?: boolean
+  title?: string
+  description?: string
+  placement?: 'left' | 'right' | 'top' | 'bottom'
+  widthClass?: string
+  /** 数值型宽/高（如 '480px'）：left/right 作用于宽度并覆盖 widthClass，top/bottom 作用于高度 */
+  size?: string
+  closeOnBackdrop?: boolean
+  persistent?: boolean
+  showClose?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  open: false,
+  title: '',
+  description: '',
+  placement: 'right',
+  widthClass: 'w-full max-w-md',
+  size: '',
+  closeOnBackdrop: true,
+  persistent: false,
+  showClose: true,
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 const close = () => emit('close')
 const { overlayRef, overlayStyle, backdropStyle } = useOverlay(
   computed(() => props.open),
   { onClose: close },
 )
 
+const isVertical = computed(() => props.placement === 'top' || props.placement === 'bottom')
+
 const panelClass = computed(() => {
-  if (props.placement === 'left') return `left-0 top-0 h-full ${props.widthClass}`
+  if (props.placement === 'left') return `left-0 top-0 h-full ${props.size ? 'w-full' : props.widthClass}`
+  if (props.placement === 'top') return 'top-0 left-0 w-full max-h-[85vh]'
   if (props.placement === 'bottom') return 'bottom-0 left-0 w-full max-h-[85vh]'
-  return `right-0 top-0 h-full ${props.widthClass}`
+  return `right-0 top-0 h-full ${props.size ? 'w-full' : props.widthClass}`
+})
+
+// size 数值型尺寸：水平方向覆盖 widthClass 限宽，垂直方向直接指定高度
+const panelSizeStyle = computed(() => {
+  if (!props.size) return {}
+  return isVertical.value ? { height: props.size } : { maxWidth: props.size }
+})
+
+const borderClass = computed(() => {
+  if (props.placement === 'top') return 'rounded-b-2xl border-b'
+  if (props.placement === 'bottom') return 'rounded-t-2xl border-t'
+  if (props.placement === 'left') return 'border-r'
+  return 'border-l'
 })
 
 const enterFrom = computed(() => {
   if (props.placement === 'left') return '-translate-x-full'
+  if (props.placement === 'top') return '-translate-y-full'
   if (props.placement === 'bottom') return 'translate-y-full'
   return 'translate-x-full'
 })
@@ -56,8 +87,8 @@ function closeFromBackdrop() {
         ref="overlayRef"
         tabindex="-1"
         class="fixed flex flex-col overflow-hidden border-slate-200 bg-white shadow-2xl dark:border-white/[0.08] dark:bg-[#17171a]"
-        :class="[panelClass, placement === 'bottom' ? 'rounded-t-2xl border-t' : placement === 'left' ? 'border-r' : 'border-l']"
-        :style="overlayStyle"
+        :class="[panelClass, borderClass]"
+        :style="[overlayStyle, panelSizeStyle]"
       >
         <header class="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200/70 px-5 py-4 dark:border-white/[0.06]">
           <div class="min-w-0">

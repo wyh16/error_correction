@@ -1,19 +1,28 @@
 <script setup lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, type PropType } from 'vue'
 import { Popover, PopoverButton, PopoverPanel, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps({
-  modelValue: { type: Boolean, default: false },
-  placement: { type: String, default: 'bottom' },
-  align: { type: String, default: 'left' },
-  widthClass: { type: String, default: 'w-80' },
-  panelClass: {
-    type: String,
-    default: 'rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-black/10 dark:border-white/[0.08] dark:bg-[#1b1b1f] dark:shadow-black/40',
-  },
+interface Props {
+  modelValue?: boolean
+  placement?: 'top' | 'bottom'
+  align?: 'left' | 'center' | 'right'
+  widthClass?: string
+  panelClass?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  placement: 'bottom',
+  align: 'left',
+  widthClass: 'w-80',
+  panelClass: 'rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-black/10 dark:border-white/[0.08] dark:bg-[#1b1b1f] dark:shadow-black/40',
 })
 
-const emit = defineEmits(['update:modelValue', 'open', 'close'])
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  open: []
+  close: []
+}>()
 
 type CloseFn = ((focusableElement?: HTMLElement | null) => void) | null
 
@@ -25,7 +34,7 @@ const OpenStateSync = defineComponent({
   name: 'BasePopoverOpenStateSync',
   props: {
     open: { type: Boolean, required: true },
-    closeFn: { type: Function, default: null },
+    closeFn: { type: Function as PropType<NonNullable<CloseFn>>, default: null },
   },
   emits: ['sync'],
   setup(syncProps, { emit: syncEmit }) {
@@ -54,7 +63,8 @@ function syncOpenState(value: boolean, closeFn: CloseFn) {
   if (value === internalOpen.value) return
   internalOpen.value = value
   emit('update:modelValue', value)
-  emit(value ? 'open' : 'close')
+  if (value) emit('open')
+  else emit('close')
 }
 
 watch(

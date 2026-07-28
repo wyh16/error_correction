@@ -5,15 +5,23 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
+interface Props {
   // 单条文本或多条消息数组
-  text: { type: [String, Array], default: '' },
+  text?: string | string[]
   // 滚动速度（px/s）：按内容宽度换算动画周期，内容长短不同速度保持一致
-  speed: { type: Number, default: 50 },
-  direction: { type: String, default: 'left' },
-  pauseOnHover: { type: Boolean, default: true },
+  speed?: number
+  direction?: 'left' | 'right'
+  pauseOnHover?: boolean
   // 左侧固定图标（不参与滚动），传 fa-* 类名
-  icon: { type: String, default: '' },
+  icon?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  text: '',
+  speed: 50,
+  direction: 'left',
+  pauseOnHover: true,
+  icon: '',
 })
 
 const items = computed(() => {
@@ -21,8 +29,8 @@ const items = computed(() => {
   return list.map(item => String(item)).filter(Boolean)
 })
 
-const wrapRef = ref(null)
-const trackRef = ref(null)
+const wrapRef = ref<HTMLElement | null>(null)
+const trackRef = ref<HTMLElement | null>(null)
 // 测量前的兜底周期，挂载后立即被真实值覆盖
 const duration = ref(20)
 // 内容比容器短时，把每份拷贝撑到容器宽，避免循环中出现大段空白
@@ -36,15 +44,27 @@ function measure() {
   duration.value = half / Math.max(1, props.speed)
 }
 
-let observer = null
+let observer: ResizeObserver | null = null
 
 onMounted(() => {
   measure()
   // 字体加载、内容与容器尺寸变化都会改变轨道宽度，监听后重算周期
   observer = new ResizeObserver(measure)
+  // 初始渲染的 ref 变化早于 observer 创建，这里补上首次 observe
   if (wrapRef.value) observer.observe(wrapRef.value)
   if (trackRef.value) observer.observe(trackRef.value)
 })
+
+// wrap/track 受 v-if 控制（text 为空时不渲染），元素出现/消失时同步 observe/unobserve，
+// 避免初始为空时 ResizeObserver 从未观察到元素、后续失去 resize 跟踪
+watch([wrapRef, trackRef], ([wrap, track], [oldWrap, oldTrack]) => {
+  if (!observer) return
+  if (oldWrap) observer.unobserve(oldWrap)
+  if (oldTrack) observer.unobserve(oldTrack)
+  if (wrap) observer.observe(wrap)
+  if (track) observer.observe(track)
+  if (wrap || track) measure()
+}, { flush: 'post' })
 
 onBeforeUnmount(() => {
   observer?.disconnect()

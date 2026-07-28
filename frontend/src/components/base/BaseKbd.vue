@@ -1,6 +1,10 @@
 <script setup lang="ts">
-defineProps({
-  keys: { type: [String, Array], default: '' },
+interface Props {
+  keys?: string | string[]
+}
+
+withDefaults(defineProps<Props>(), {
+  keys: '',
 })
 </script>
 

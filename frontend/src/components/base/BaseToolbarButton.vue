@@ -3,15 +3,23 @@
  * BaseToolbarButton.vue
  * 通用小型工具栏按钮，适合图标按钮或“图标 + 文本”的局部操作。
  */
-defineProps({
-  icon: { type: String, default: '' },
-  variant: { type: String, default: 'neutral' },
-  active: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  title: { type: String, default: '' },
+interface Props {
+  icon?: string
+  variant?: 'neutral' | 'primary' | 'danger'
+  active?: boolean
+  disabled?: boolean
+  title?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  icon: '',
+  variant: 'neutral',
+  active: false,
+  disabled: false,
+  title: '',
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ click: [event: MouseEvent] }>()
 </script>
 
 <template>

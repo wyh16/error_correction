@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
 
-const props = defineProps({
-  modelValue: { type: Number, default: 0 },
-  min: { type: Number, default: 0 },
-  max: { type: Number, default: 100 },
-  step: { type: Number, default: 1 },
-  label: { type: String, default: '' },
-  showValue: { type: Boolean, default: true },
-  disabled: { type: Boolean, default: false },
+interface Props {
+  modelValue?: number
+  min?: number
+  max?: number
+  step?: number
+  label?: string
+  showValue?: boolean
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: 0,
+  min: 0,
+  max: 100,
+  step: 1,
+  label: '',
+  showValue: true,
+  disabled: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number): void
+  (e: 'change', value: number, event: Event): void
+}>()
 
 const percent = computed(() => {
   if (props.max === props.min) return 0
@@ -55,8 +68,8 @@ onUnmounted(() => {
   window.removeEventListener('pointerup', onPointerUp)
 })
 
-function update(event) {
-  const value = Number(event.target.value)
+function update(event: Event) {
+  const value = Number((event.target as HTMLInputElement).value)
   emit('update:modelValue', value)
   emit('change', value, event)
 }

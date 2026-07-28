@@ -1,11 +1,23 @@
+<script lang="ts">
+/** 列表项：对象时可带 id / label，也允许原始值（字符串等）直接渲染 */
+export type VirtualListItem = { id?: string | number; label?: string; [key: string]: unknown } | string | number
+</script>
+
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-const props = defineProps({
-  items: { type: Array, default: () => [] },
-  itemHeight: { type: Number, default: 44 },
-  height: { type: Number, default: 280 },
-  overscan: { type: Number, default: 4 },
+interface Props {
+  items?: VirtualListItem[]
+  itemHeight?: number
+  height?: number
+  overscan?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  itemHeight: 44,
+  height: 280,
+  overscan: 4,
 })
 
 const scrollTop = ref(0)
@@ -24,8 +36,18 @@ const visibleItems = computed(() =>
   })),
 )
 
-function onScroll(event) {
-  scrollTop.value = event.target.scrollTop
+function itemKey(item: VirtualListItem, index: number): string | number {
+  if (typeof item === 'object' && item !== null && item.id !== undefined) return item.id
+  return index
+}
+
+function itemLabel(item: VirtualListItem): unknown {
+  if (typeof item === 'object' && item !== null) return item.label ?? item
+  return item
+}
+
+function onScroll(event: Event) {
+  scrollTop.value = (event.target as HTMLElement).scrollTop
 }
 </script>
 
@@ -34,13 +56,13 @@ function onScroll(event) {
     <div class="relative" :style="{ height: `${items.length * itemHeight}px` }">
       <div
         v-for="{ item, index } in visibleItems"
-        :key="item.id ?? index"
+        :key="itemKey(item, index)"
         class="absolute left-0 right-0"
         :style="{ height: `${itemHeight}px`, transform: `translateY(${index * itemHeight}px)` }"
       >
         <slot :item="item" :index="index">
           <div class="flex h-full items-center border-b border-slate-100 px-4 text-sm text-slate-700 dark:border-white/[0.05] dark:text-[#d0d6e0]">
-            {{ item.label || item }}
+            {{ itemLabel(item) }}
           </div>
         </slot>
       </div>

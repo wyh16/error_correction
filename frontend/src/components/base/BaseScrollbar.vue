@@ -7,15 +7,20 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-const props = defineProps({
+interface Props {
   // 容器最大高度，数字按 px 处理
-  maxHeight: { type: [String, Number], default: '' },
+  maxHeight?: string | number
   // true 常显 thumb；false 仅 hover 或滚动时显示
-  always: { type: Boolean, default: false },
+  always?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  maxHeight: '',
+  always: false,
 })
 
-const wrapRef = ref(null)
-const contentRef = ref(null)
+const wrapRef = ref<HTMLElement | null>(null)
+const contentRef = ref<HTMLElement | null>(null)
 const thumbHeight = ref(0)
 const thumbTop = ref(0)
 const hasOverflow = ref(false)
@@ -23,8 +28,8 @@ const hasOverflow = ref(false)
 const scrolling = ref(false)
 const dragging = ref(false)
 
-let hideTimer = null
-let resizeObserver = null
+let hideTimer: ReturnType<typeof setTimeout> | null = null
+let resizeObserver: ResizeObserver | null = null
 // 拖拽起点：按下时的指针 Y 与 scrollTop
 let dragStartY = 0
 let dragStartScrollTop = 0
@@ -56,23 +61,23 @@ function updateThumb() {
 function onScroll() {
   updateThumb()
   scrolling.value = true
-  clearTimeout(hideTimer)
+  if (hideTimer) clearTimeout(hideTimer)
   hideTimer = setTimeout(() => {
     scrolling.value = false
   }, 400)
 }
 
-function onThumbPointerDown(event) {
+function onThumbPointerDown(event: PointerEvent) {
   const el = wrapRef.value
   if (!el) return
   dragging.value = true
   dragStartY = event.clientY
   dragStartScrollTop = el.scrollTop
   // 捕获指针：拖拽移出 thumb 甚至组件区域时仍持续接收 move 事件
-  event.currentTarget.setPointerCapture(event.pointerId)
+  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
 }
 
-function onThumbPointerMove(event) {
+function onThumbPointerMove(event: PointerEvent) {
   if (!dragging.value) return
   const el = wrapRef.value
   if (!el) return
@@ -96,7 +101,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  clearTimeout(hideTimer)
+  if (hideTimer) clearTimeout(hideTimer)
   resizeObserver?.disconnect()
   resizeObserver = null
 })

@@ -5,15 +5,23 @@
  */
 import { computed } from 'vue'
 
-const props = defineProps({
-  status: { type: String, default: 'info' }, // success | error | warning | info
-  title: { type: String, required: true },
-  description: { type: String, default: '' },
-  // 自定义图标，传 fa-* 类名时覆盖 status 的默认图标
-  icon: { type: String, default: '' },
+type ResultStatus = 'success' | 'error' | 'warning' | 'info'
+
+interface Props {
+  status?: ResultStatus
+  title: string
+  description?: string
+  /** 自定义图标，传 fa-* 类名时覆盖 status 的默认图标 */
+  icon?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  status: 'info',
+  description: '',
+  icon: '',
 })
 
-const statusMap = {
+const statusMap: Record<ResultStatus, { icon: string; circle: string }> = {
   success: { icon: 'fa-circle-check', circle: 'bg-emerald-500/10 text-emerald-500' },
   error: { icon: 'fa-circle-xmark', circle: 'bg-rose-500/10 text-rose-500' },
   warning: { icon: 'fa-triangle-exclamation', circle: 'bg-amber-500/10 text-amber-500' },

@@ -3,11 +3,18 @@
  * BasePanel.vue
  * 带 header / body / footer 插槽的工作台面板容器。
  */
-defineProps({
-  bodyClass: { type: String, default: 'p-4' },
-  headerClass: { type: String, default: 'flex h-16 items-center px-4 py-3' },
-  footerClass: { type: String, default: 'p-3' },
-  scrollBody: { type: Boolean, default: true },
+interface Props {
+  bodyClass?: string
+  headerClass?: string
+  footerClass?: string
+  scrollBody?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  bodyClass: 'p-4',
+  headerClass: 'flex h-16 items-center px-4 py-3',
+  footerClass: 'p-3',
+  scrollBody: true,
 })
 </script>
 

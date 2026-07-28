@@ -5,20 +5,32 @@
  */
 import { ref, computed } from 'vue'
 
-const props = defineProps({
+interface Props {
   // 标签数组（字符串）
-  modelValue: { type: Array, default: () => [] },
-  placeholder: { type: String, default: '' },
-  disabled: { type: Boolean, default: false },
+  modelValue?: string[]
+  placeholder?: string
+  disabled?: boolean
   // 最大标签数，0 表示不限制；达到上限后隐藏内部输入框
-  max: { type: Number, default: 0 },
+  max?: number
   // 是否允许重复标签，false 时重复输入只清空输入框
-  allowDuplicates: { type: Boolean, default: false },
+  allowDuplicates?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  placeholder: '',
+  disabled: false,
+  max: 0,
+  allowDuplicates: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'add', 'remove'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string[]): void
+  (e: 'add', tag: string): void
+  (e: 'remove', tag: string): void
+}>()
 
-const inputEl = ref(null)
+const inputEl = ref<HTMLInputElement | null>(null)
 const inputText = ref('')
 
 /** 达到 max 上限后隐藏输入框，只保留已有标签的删除能力。 */
@@ -39,7 +51,7 @@ function commitInput() {
   emit('add', tag)
 }
 
-function removeTag(tag) {
+function removeTag(tag: string) {
   if (props.disabled) return
   const index = props.modelValue.indexOf(tag)
   if (index === -1) return
@@ -50,7 +62,7 @@ function removeTag(tag) {
 }
 
 /** 回车/逗号提交标签；输入框为空时按退格删除最后一个标签。 */
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' || event.key === ',') {
     event.preventDefault()
     commitInput()

@@ -3,22 +3,33 @@
  * BaseStat.vue
  * 通用统计卡片组件，用于展示数值、单位、说明和图标。
  */
-const props = defineProps({
-  label: { type: String, required: true },
-  value: { type: [String, Number], default: 0 },
-  suffix: { type: String, default: '' },
-  hint: { type: String, default: '' },
-  icon: { type: String, default: '' },
-  tone: { type: String, default: 'accent' },
+type StatTone = 'accent' | 'blue' | 'rose' | 'amber' | 'emerald' | 'orange'
+
+interface Props {
+  label: string
+  value?: string | number
+  suffix?: string
+  hint?: string
+  icon?: string
+  tone?: StatTone
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: 0,
+  suffix: '',
+  hint: '',
+  icon: '',
+  tone: 'accent',
 })
 
-const toneClass = {
+// 亮色模式用深色文字（*-600）保证对比度，暗色模式沿用浅色文字（*-300）
+const toneClass: Record<StatTone, string> = {
   accent: 'accent-bg-soft accent-text',
-  blue: 'bg-blue-500/20 text-blue-300',
-  rose: 'bg-rose-500/20 text-rose-300',
-  amber: 'bg-amber-500/20 text-amber-300',
-  emerald: 'bg-emerald-500/20 text-emerald-300',
-  orange: 'bg-orange-500/20 text-orange-300',
+  blue: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300',
+  rose: 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300',
+  amber: 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300',
+  emerald: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300',
+  orange: 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-300',
 }
 </script>
 

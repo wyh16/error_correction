@@ -4,16 +4,21 @@
  * 全局加载遮罩（BaseLogo + 进度条动画）
  */
 import BaseLogo from '@/components/base/BaseLogo.vue'
+import { Z_PAGE_LOADING } from '@/composables/useOverlay'
 
-defineProps({
-  visible: { type: Boolean, default: true },
+interface Props {
+  visible?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  visible: true,
 })
-const emit = defineEmits(['after-enter'])
+const emit = defineEmits<{ 'after-enter': [] }>()
 </script>
 
 <template>
   <Transition name="loading-fade" @after-enter="emit('after-enter')">
-    <div v-if="visible" class="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-8 bg-white dark:bg-[#0A0A0F] transition-colors duration-200">
+    <div v-if="visible" class="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-white dark:bg-[#0A0A0F] transition-colors duration-200" :style="{ zIndex: Z_PAGE_LOADING }">
       <BaseLogo size="lg" breathe />
       <div class="w-48">
         <div class="h-0.5 w-full rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden transition-colors">

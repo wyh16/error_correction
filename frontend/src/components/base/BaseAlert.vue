@@ -1,15 +1,34 @@
 <script setup lang="ts">
-const props = defineProps({
-  tone: { type: String, default: 'info' },
-  title: { type: String, default: '' },
-  description: { type: String, default: '' },
-  icon: { type: String, default: '' },
-  closable: { type: Boolean, default: false },
+type AlertTone = 'info' | 'success' | 'warning' | 'danger'
+
+interface Props {
+  tone?: AlertTone
+  title?: string
+  description?: string
+  icon?: string
+  closable?: boolean
+  /** 是否显示左侧图标 */
+  showIcon?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  tone: 'info',
+  title: '',
+  description: '',
+  icon: '',
+  closable: false,
+  showIcon: true,
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 
-const toneClass = {
+interface ToneConfig {
+  wrap: string
+  icon: string
+  defaultIcon: string
+}
+
+const toneClass: Record<AlertTone, ToneConfig> = {
   info: {
     wrap: 'border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-200',
     icon: 'text-blue-500 dark:text-blue-300',
@@ -32,7 +51,7 @@ const toneClass = {
   },
 }
 
-const config = () => toneClass[props.tone] || toneClass.info
+const config = (): ToneConfig => toneClass[props.tone] || toneClass.info
 </script>
 
 <template>
@@ -41,7 +60,7 @@ const config = () => toneClass[props.tone] || toneClass.info
     class="flex gap-3 rounded-xl border px-4 py-3"
     :class="config().wrap"
   >
-    <i class="fa-solid mt-0.5 shrink-0 text-sm" :class="[icon || config().defaultIcon, config().icon]"></i>
+    <i v-if="showIcon" class="fa-solid mt-0.5 shrink-0 text-sm" :class="[icon || config().defaultIcon, config().icon]"></i>
     <div class="min-w-0 flex-1">
       <p v-if="title" class="text-sm font-bold">{{ title }}</p>
       <p v-if="description" class="mt-1 text-sm leading-5 opacity-80">{{ description }}</p>

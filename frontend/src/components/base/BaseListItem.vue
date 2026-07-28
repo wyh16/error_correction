@@ -3,18 +3,36 @@
  * BaseListItem.vue
  * 列表/设置项条目
  */
-defineProps({
-  label: { type: String, default: '' },
-  description: { type: String, default: '' },
-  value: { type: String, default: '' },
-  interactive: { type: Boolean, default: false },
-  danger: { type: Boolean, default: false },
-  showArrow: { type: Boolean, default: false },
-  layout: { type: String, default: 'horizontal' }, // 'horizontal' | 'vertical'
-  skeleton: { type: Boolean, default: false }, // 新增骨架屏模式
-  card: { type: Boolean, default: false },
-  unwrapSlot: { type: Boolean, default: false },
+interface Props {
+  label?: string
+  description?: string
+  value?: string
+  interactive?: boolean
+  danger?: boolean
+  showArrow?: boolean
+  layout?: 'horizontal' | 'vertical'
+  /** 骨架屏模式 */
+  skeleton?: boolean
+  card?: boolean
+  unwrapSlot?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  label: '',
+  description: '',
+  value: '',
+  interactive: false,
+  danger: false,
+  showArrow: false,
+  layout: 'horizontal',
+  skeleton: false,
+  card: false,
+  unwrapSlot: false,
 })
+
+defineEmits<{
+  click: []
+}>()
 </script>
 
 <template>

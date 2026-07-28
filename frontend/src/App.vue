@@ -12,7 +12,7 @@ import { useWorkspaceNav } from '@/composables/useWorkspaceNav'
 
 const { loading, notifyEnterCompleted } = usePageTransition()
 const { initTheme } = useTheme()
-const { toasts, pushToast, dismissToast } = useWorkspaceToast()
+const { toasts, pushToast, dismissToast, pauseToastTimers, resumeToastTimers } = useWorkspaceToast()
 const { sidebarOffset } = useWorkspaceNav()
 
 // Provide the global toast API to app pages and nested components.
@@ -27,7 +27,14 @@ onMounted(() => {
 <template>
   <RouterView />
 
-  <BaseToastContainer :toasts="toasts" :sidebar-offset="sidebarOffset" @dismiss="dismissToast" />
+  <BaseToastContainer
+    :toasts="toasts"
+    :sidebar-offset="sidebarOffset"
+    pause-on-hover
+    @dismiss="dismissToast"
+    @pause="pauseToastTimers"
+    @resume="resumeToastTimers"
+  />
 
   <BaseLoading :visible="loading" @after-enter="notifyEnterCompleted" />
 </template>

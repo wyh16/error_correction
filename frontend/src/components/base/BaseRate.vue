@@ -5,23 +5,40 @@
  */
 import { computed, ref } from 'vue'
 
-const props = defineProps({
-  modelValue: { type: Number, default: 0 },
-  max: { type: Number, default: 5 },
+interface Props {
+  modelValue?: number
+  max?: number
   // 允许半星：根据鼠标位于图标左半 / 右半区域取 x.5 或整数
-  allowHalf: { type: Boolean, default: false },
-  readonly: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
+  allowHalf?: boolean
+  readonly?: boolean
+  disabled?: boolean
   // 图标传 fa-* 类名，如 'fa-heart'
-  icon: { type: String, default: 'fa-star' },
-  tone: { type: String, default: 'amber' },
+  icon?: string
+  tone?: 'amber' | 'accent' | 'rose' | 'emerald' | 'blue'
   // 是否在星星后展示当前数字分值
-  showValue: { type: Boolean, default: false },
+  showValue?: boolean
+  // 再次点击当前分值时是否清零（默认 true 保持现行为）
+  allowClear?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: 0,
+  max: 5,
+  allowHalf: false,
+  readonly: false,
+  disabled: false,
+  icon: 'fa-star',
+  tone: 'amber',
+  showValue: false,
+  allowClear: true,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number): void
+  (e: 'change', value: number): void
+}>()
 
-const toneClass = {
+const toneClass: Record<string, string> = {
   amber: 'text-amber-400',
   accent: 'accent-text',
   rose: 'text-rose-500',
@@ -57,8 +74,8 @@ function handleClick(index: number, event: MouseEvent) {
   if (!interactive.value) return
   // 键盘触发的 click 没有坐标（detail 为 0），直接取整星
   const next = event.detail === 0 ? index : valueFromEvent(index, event)
-  // 再次点击当前分值时清零，方便取消评分
-  const value = next === props.modelValue ? 0 : next
+  // 再次点击当前分值时清零，方便取消评分（allowClear 为 false 时保持原值）
+  const value = next === props.modelValue ? (props.allowClear ? 0 : next) : next
   emit('update:modelValue', value)
   emit('change', value)
 }

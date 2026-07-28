@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -9,25 +9,51 @@ import {
 } from '@headlessui/vue'
 import { useOverlay } from '@/composables/useOverlay'
 
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  title: { type: String, required: true },
-  icon: { type: String, default: '' },
-  iconClass: { type: String, default: 'text-blue-600 dark:text-blue-400' },
-  iconBg: { type: String, default: 'bg-blue-50 dark:bg-blue-500/10' },
-  maxWidth: { type: String, default: 'max-w-md' },
-  bodyClass: { type: String, default: 'px-6 py-5' },
-  blurBackdrop: { type: Boolean, default: true },
-  sidebarOffset: { type: Number, default: null },
-  // 持久模式：点击遮罩不关闭，只轻微晃动面板提示用户需要显式操作
-  persistent: { type: Boolean, default: false },
-  // 是否显示默认头部右上角的关闭按钮
-  showClose: { type: Boolean, default: true },
+interface Props {
+  open?: boolean
+  title: string
+  icon?: string
+  iconClass?: string
+  iconBg?: string
+  maxWidth?: string
+  /** 数值型宽度（如 '640px'），传入后覆盖 maxWidth 类 */
+  width?: string
+  bodyClass?: string
+  blurBackdrop?: boolean
+  sidebarOffset?: number | null
+  /** 持久模式：点击遮罩 / ESC 不关闭，只轻微晃动面板提示用户需要显式操作 */
+  persistent?: boolean
+  /** 点击遮罩是否关闭；显式传入时优先级高于 persistent */
+  maskClosable?: boolean
+  /** 按 ESC 是否关闭；显式传入时优先级高于 persistent */
+  closeOnEsc?: boolean
+  /** 是否显示默认头部右上角的关闭按钮 */
+  showClose?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  open: false,
+  icon: '',
+  iconClass: 'text-blue-600 dark:text-blue-400',
+  iconBg: 'bg-blue-50 dark:bg-blue-500/10',
+  maxWidth: 'max-w-md',
+  width: '',
+  bodyClass: 'px-6 py-5',
+  blurBackdrop: true,
+  sidebarOffset: null,
+  persistent: false,
+  maskClosable: undefined,
+  closeOnEsc: undefined,
+  showClose: true,
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 
 const close = () => emit('close')
+
+// 显式传入的单项开关优先于 persistent；两者都缺省时默认允许关闭
+const maskClosableEffective = computed(() => props.maskClosable ?? !props.persistent)
+const closeOnEscEffective = computed(() => props.closeOnEsc ?? !props.persistent)
 
 // persistent 时的晃动反馈：短暂加上 shake 类再移除，让动画可以重复触发。
 const shaking = ref(false)
@@ -40,9 +66,34 @@ const shake = () => {
   }, 350)
 }
 
-/** Headless UI 的 Dialog 在点击遮罩/按下 Esc 时触发，persistent 模式下拦截为晃动提示。 */
+// Headless UI Dialog 的 @close 无法区分「点击遮罩」和「按下 ESC」，
+// 这里用 document 捕获阶段的 keydown 监听先行标记 ESC，requestClose 内按来源分别判定开关。
+let closingViaEsc = false
+const markEsc = (event: KeyboardEvent) => {
+  if (event.key !== 'Escape') return
+  closingViaEsc = true
+  // @close 在同一轮事件派发中同步触发，微任务后复位即可
+  setTimeout(() => {
+    closingViaEsc = false
+  }, 0)
+}
+
+watch(() => props.open, (open) => {
+  if (typeof document === 'undefined') return
+  if (open) document.addEventListener('keydown', markEsc, true)
+  else document.removeEventListener('keydown', markEsc, true)
+}, { immediate: true })
+
+// 卸载时清理晃动定时器与 ESC 标记监听，避免悬空回调
+onBeforeUnmount(() => {
+  clearTimeout(shakeTimer)
+  if (typeof document !== 'undefined') document.removeEventListener('keydown', markEsc, true)
+})
+
+/** Headless UI 的 Dialog 在点击遮罩/按下 Esc 时触发，按对应开关决定关闭或晃动提示。 */
 const requestClose = () => {
-  if (props.persistent) {
+  const allowed = closingViaEsc ? closeOnEscEffective.value : maskClosableEffective.value
+  if (!allowed) {
     shake()
     return
   }
@@ -62,11 +113,21 @@ const backdropStyle = computed(() => ({
 const panelStyle = computed(() => ({
   ...overlayStyle.value,
 }))
+
+// 数值型宽度：覆盖 maxWidth 类，直接以内联样式限定面板宽度
+const panelWidthStyle = computed(() => (props.width ? { maxWidth: props.width } : {}))
+
+// Dialog 根节点自身形成层叠上下文，z-index 必须动态取自 useOverlay，
+// 否则先开 Drawer（动态层级更高）再开 Modal 时 Modal 会被盖住。
+const dialogRootStyle = computed(() => ({
+  position: 'relative' as const,
+  ...overlayStyle.value,
+}))
 </script>
 
 <template>
   <TransitionRoot appear as="template" :show="open">
-    <Dialog as="div" class="relative z-[100]" @close="requestClose">
+    <Dialog as="div" :style="dialogRootStyle" @close="requestClose">
       <TransitionChild
         as="template"
         enter="transition duration-300 ease-out"
@@ -96,7 +157,8 @@ const panelStyle = computed(() => ({
             <DialogPanel
               ref="overlayRef"
               class="relative w-full rounded-xl border border-slate-200/60 bg-white shadow-2xl dark:border-[#2f3336] dark:bg-[#1b1b1d]"
-              :class="[maxWidth, shaking ? 'modal-shake' : '']"
+              :class="[width ? '' : maxWidth, shaking ? 'modal-shake' : '']"
+              :style="panelWidthStyle"
             >
               <DialogTitle v-if="$slots.header" class="sr-only">
                 {{ title }}

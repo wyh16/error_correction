@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  value: { type: Number, default: 0 },
-  max: { type: Number, default: 100 },
-  label: { type: String, default: '' },
-  showValue: { type: Boolean, default: false },
-  tone: { type: String, default: 'accent' },
-  size: { type: String, default: 'md' },
-  // 不确定进度：忽略 value，循环播放扫掠动画，用于耗时未知的任务
-  indeterminate: { type: Boolean, default: false },
-  // 斜向条纹动画，强调「任务进行中」的动态感
-  striped: { type: Boolean, default: false },
+type ProgressTone = 'accent' | 'blue' | 'emerald' | 'amber' | 'rose'
+
+interface Props {
+  value?: number
+  max?: number
+  label?: string
+  showValue?: boolean
+  tone?: ProgressTone
+  size?: 'sm' | 'md' | 'lg'
+  /** 不确定进度：忽略 value，循环播放扫掠动画，用于耗时未知的任务 */
+  indeterminate?: boolean
+  /** 斜向条纹动画，强调「任务进行中」的动态感 */
+  striped?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: 0,
+  max: 100,
+  label: '',
+  showValue: false,
+  tone: 'accent',
+  size: 'md',
+  indeterminate: false,
+  striped: false,
 })
 
 const percent = computed(() => {
@@ -19,7 +32,7 @@ const percent = computed(() => {
   return Math.min(100, Math.max(0, Math.round((props.value / props.max) * 100)))
 })
 
-const barClass = {
+const barClass: Record<ProgressTone, string> = {
   accent: 'accent-gradient-bg',
   blue: 'bg-blue-500',
   emerald: 'bg-emerald-500',

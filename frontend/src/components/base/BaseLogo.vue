@@ -3,9 +3,14 @@
  * BaseLogo.vue
  * 品牌 Logo（支持呼吸动画、多尺寸）
  */
-defineProps({
-  size: { type: String, default: 'md' }, // sm | md | lg
-  breathe: { type: Boolean, default: false },
+interface Props {
+  size?: 'sm' | 'md' | 'lg'
+  breathe?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  size: 'md',
+  breathe: false,
 })
 </script>
 

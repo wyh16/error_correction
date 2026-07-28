@@ -7,9 +7,14 @@ defineOptions({
   inheritAttrs: false,
 })
 
-defineProps({
-  as: { type: String, default: 'div' },
-  hoverable: { type: Boolean, default: true },
+interface Props {
+  as?: string
+  hoverable?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  as: 'div',
+  hoverable: true,
 })
 </script>
 

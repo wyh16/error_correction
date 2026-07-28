@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = defineProps({
-  text: { type: String, default: '' },
-  label: { type: String, default: '复制' },
-  copiedLabel: { type: String, default: '已复制' },
+interface Props {
+  text?: string
+  label?: string
+  copiedLabel?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  text: '',
+  label: '复制',
+  copiedLabel: '已复制',
 })
 
-const emit = defineEmits(['copy', 'error'])
+const emit = defineEmits<{
+  copy: [text: string]
+  error: [error: unknown]
+}>()
 const copied = ref(false)
 
 async function copy() {

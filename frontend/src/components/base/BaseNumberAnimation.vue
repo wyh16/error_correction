@@ -5,26 +5,36 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
-  from: { type: Number, default: 0 },
-  to: { type: Number, required: true },
-  duration: { type: Number, default: 1500 },
-  // 保留的小数位数
-  precision: { type: Number, default: 0 },
-  // 千分位分隔符，空串表示不分组
-  separator: { type: String, default: ',' },
-  prefix: { type: String, default: '' },
-  suffix: { type: String, default: '' },
-  autoplay: { type: Boolean, default: true },
+interface Props {
+  from?: number
+  to: number
+  duration?: number
+  /** 保留的小数位数 */
+  precision?: number
+  /** 千分位分隔符，空串表示不分组 */
+  separator?: string
+  prefix?: string
+  suffix?: string
+  autoplay?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  from: 0,
+  duration: 1500,
+  precision: 0,
+  separator: ',',
+  prefix: '',
+  suffix: '',
+  autoplay: true,
 })
 
 const display = ref(props.from)
-let raf = null
+let raf: number | null = null
 
-function animate(start, end) {
+function animate(start: number, end: number) {
   if (raf) cancelAnimationFrame(raf)
   const startedAt = performance.now()
-  const step = now => {
+  const step = (now: number) => {
     const t = Math.min(1, (now - startedAt) / Math.max(1, props.duration))
     // easeOutCubic：先快后慢，数字滚动更有「冲上去再稳住」的质感
     const eased = 1 - Math.pow(1 - t, 3)

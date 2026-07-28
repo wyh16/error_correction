@@ -2,29 +2,49 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import BaseFieldMessage from './BaseFieldMessage.vue'
 
-const props = defineProps({
-  modelValue: { type: String, default: '' },
-  label: { type: String, default: '' },
-  placeholder: { type: String, default: '' },
-  hint: { type: String, default: '' },
-  error: { type: String, default: '' },
-  name: { type: String, default: '' },
-  rows: { type: [Number, String], default: 4 },
-  maxlength: { type: [Number, String], default: null },
-  required: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  resize: { type: String, default: 'vertical' },
-  autosize: { type: Boolean, default: false },
-  textareaClass: { type: String, default: '' },
+interface Props {
+  modelValue?: string
+  label?: string
+  placeholder?: string
+  hint?: string
+  error?: string
+  name?: string
+  rows?: number | string
+  maxlength?: number | string | null
+  required?: boolean
+  disabled?: boolean
+  readonly?: boolean
+  resize?: 'vertical' | 'horizontal' | 'none'
+  autosize?: boolean
+  textareaClass?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  placeholder: '',
+  hint: '',
+  error: '',
+  name: '',
+  rows: 4,
+  maxlength: null,
+  required: false,
+  disabled: false,
+  readonly: false,
+  resize: 'vertical',
+  autosize: false,
+  textareaClass: '',
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+}>()
 const countText = computed(() => {
   if (!props.maxlength) return ''
   return `${String(props.modelValue || '').length}/${props.maxlength}`
 })
 
-const textareaRef = ref(null)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 // autosize：先重置为 auto 再取 scrollHeight，rows 决定的初始高度即最小高度
 function resizeToContent() {
@@ -34,8 +54,8 @@ function resizeToContent() {
   el.style.height = `${el.scrollHeight}px`
 }
 
-function onInput(event) {
-  emit('update:modelValue', event.target.value)
+function onInput(event: Event) {
+  emit('update:modelValue', (event.target as HTMLTextAreaElement).value)
   resizeToContent()
 }
 
@@ -61,9 +81,10 @@ watch(() => props.autosize, (value) => {
       :name="name"
       :rows="rows"
       :placeholder="placeholder"
-      :maxlength="maxlength"
+      :maxlength="maxlength ?? undefined"
       :required="required"
       :disabled="disabled"
+      :readonly="readonly"
       :aria-invalid="Boolean(error) || undefined"
       class="w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white/[0.03] dark:text-white dark:placeholder-white/25"
       :class="[

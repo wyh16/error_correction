@@ -454,3 +454,26 @@ aside {
     scroll-behavior: auto;
   }
 }
+
+/* ============================================================
+   全局微交互：统一键盘焦点环
+   仅 :focus-visible（键盘聚焦）触发，鼠标点击不出现；
+   置于文件末尾以覆盖 utilities 层的 focus:outline-none。
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent-rgb));
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   文档站（ui-showcase）正文排版：#doc-main 只存在于展示站
+   ============================================================ */
+#doc-main h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+#doc-main p {
+  line-height: 1.7;
+}

@@ -1,12 +1,21 @@
 <script setup lang="ts">
-defineProps({
-  label: { type: String, default: '' },
-  icon: { type: String, default: '' },
-  current: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
+interface Props {
+  label?: string
+  icon?: string
+  current?: boolean
+  disabled?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  label: '',
+  icon: '',
+  current: false,
+  disabled: false,
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
 </script>
 
 <template>

@@ -1,17 +1,33 @@
+<script lang="ts">
+export type TimelineTone = 'accent' | 'emerald' | 'amber' | 'rose' | 'blue'
+
+export interface TimelineItem {
+  label: string
+  description?: string
+  time?: string
+  icon?: string
+  tone?: TimelineTone
+}
+</script>
+
 <script setup lang="ts">
 /**
  * BaseTimeline.vue
  * 垂直时间轴组件，用于展示按时间排列的事件流（如学习记录、订单状态）。
  */
-const props = defineProps({
-  // 节点数组，元素结构：{ label, description?, time?, icon?, tone? }
-  items: { type: Array, default: () => [] },
-  // 末尾追加一个脉冲占位节点，表示时间轴还在继续
-  pending: { type: Boolean, default: false },
+interface Props {
+  items?: TimelineItem[]
+  /** 末尾追加一个脉冲占位节点，表示时间轴还在继续 */
+  pending?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  pending: false,
 })
 
 // 纯色圆点配色，与 BaseTag 的 tone 色板保持一致，默认 accent
-const dotClass = {
+const dotClass: Record<TimelineTone, string> = {
   accent: 'accent-bg',
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
@@ -20,7 +36,7 @@ const dotClass = {
 }
 
 // 图标节点改用柔和底色圆 + 同色系图标，视觉重量略高于纯色圆点
-const iconCircleClass = {
+const iconCircleClass: Record<TimelineTone, string> = {
   accent: 'accent-bg-soft accent-text',
   emerald: 'bg-emerald-500/10 text-emerald-500',
   amber: 'bg-amber-500/10 text-amber-500',
@@ -37,11 +53,11 @@ const iconCircleClass = {
         <span
           v-if="item.icon"
           class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          :class="iconCircleClass[item.tone] || iconCircleClass.accent"
+          :class="iconCircleClass[item.tone ?? 'accent'] || iconCircleClass.accent"
         >
           <i class="fa-solid text-xs" :class="item.icon"></i>
         </span>
-        <span v-else class="my-2 h-2.5 w-2.5 shrink-0 rounded-full" :class="dotClass[item.tone] || dotClass.accent"></span>
+        <span v-else class="my-2 h-2.5 w-2.5 shrink-0 rounded-full" :class="dotClass[item.tone ?? 'accent'] || dotClass.accent"></span>
         <span
           v-if="index < props.items.length - 1 || props.pending"
           class="mt-1 w-px flex-1 bg-slate-200 dark:bg-white/[0.08]"

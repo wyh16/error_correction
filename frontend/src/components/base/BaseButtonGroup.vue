@@ -6,9 +6,13 @@
  * 取舍：不通过 provide 向 BaseButton 注入尺寸/变体（避免改动 BaseButton 源码），
  * 组内按钮的 size / variant 一致性由使用者自行保证，推荐统一使用 secondary 变体。
  */
-const props = defineProps({
-  // true 拼接为一体；false 仅做 gap-2 松散排列
-  attached: { type: Boolean, default: true },
+interface Props {
+  /** true 拼接为一体；false 仅做 gap-2 松散排列 */
+  attached?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  attached: true,
 })
 </script>
 

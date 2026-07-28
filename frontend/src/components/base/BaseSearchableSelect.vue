@@ -12,20 +12,49 @@ import {
   ComboboxOptions,
   TransitionRoot,
 } from '@headlessui/vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
-  modelValue: { type: [String, Array], default: '' },
-  options: { type: Array, default: () => [] },
-  placeholder: { type: String, default: '全部' },
-  searchPlaceholder: { type: String, default: '搜索...' },
-  widthClass: { type: String, default: '' },
-  emptyText: { type: String, default: '没有匹配项' },
-  multiple: { type: Boolean, default: false },
-  dropdownAlign: { type: String, default: 'left' },
+interface Props {
+  modelValue?: string | string[]
+  options?: string[]
+  placeholder?: string
+  searchPlaceholder?: string
+  widthClass?: string
+  emptyText?: string
+  multiple?: boolean
+  dropdownAlign?: 'left' | 'right'
+  // 是否禁用整个选择器
+  disabled?: boolean
+  // 错误态：红色边框
+  error?: boolean
+  // 尺寸：sm | md（默认）| lg
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  options: () => [],
+  placeholder: '全部',
+  searchPlaceholder: '搜索...',
+  widthClass: '',
+  emptyText: '没有匹配项',
+  multiple: false,
+  dropdownAlign: 'left',
+  disabled: false,
+  error: false,
+  size: 'md',
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string | string[]): void
+}>()
 const keyword = ref('')
+
+const sizeClass = computed(() => {
+  if (props.size === 'sm') return 'h-8 px-2.5 text-xs'
+  if (props.size === 'lg') return 'h-11 px-3.5 text-base'
+  return 'h-9 px-3 text-sm'
+})
 
 const normalizedOptions = computed(() =>
   props.options
@@ -66,8 +95,17 @@ function handleSelect(value: string | string[] | null) {
 }
 
 function clear() {
+  if (props.disabled) return
   emit('update:modelValue', props.multiple ? [] : '')
 }
+
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪；open 状态经 TransitionRoot 钩子同步
+const triggerRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
+const panelOpen = ref(false)
+const { panelStyle } = useDropdownPosition(panelOpen, triggerRef, panelRef, {
+  align: props.dropdownAlign === 'right' ? 'end' : 'start',
+})
 </script>
 
 <template>
@@ -78,16 +116,23 @@ function clear() {
     :class="widthClass"
     :model-value="multiple ? selectedValues : (selectedValues[0] || '')"
     :multiple="multiple"
+    :disabled="disabled"
     nullable
     @update:model-value="handleSelect"
   >
-    <div class="relative">
+    <div ref="triggerRef" class="relative">
       <ComboboxButton
-        class="flex h-9 w-full items-center justify-between gap-2 rounded-md bg-white/80 px-3 text-left text-sm font-medium ring-1 ring-inset ring-transparent transition-colors hover:bg-white dark:bg-white/[0.045] dark:hover:bg-white/[0.07]"
+        class="flex w-full items-center justify-between gap-2 rounded-md bg-white/80 text-left font-medium ring-1 ring-inset transition-colors dark:bg-white/[0.045]"
         :class="[
-          open ? 'bg-white ring-[rgb(var(--accent-rgb)/0.24)] dark:bg-white/[0.08] dark:ring-[rgb(var(--accent-rgb)/0.35)]' : '',
+          sizeClass,
+          error ? 'ring-rose-500/50' : 'ring-transparent',
+          disabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'hover:bg-white dark:hover:bg-white/[0.07]',
+          open && !disabled ? 'bg-white ring-[rgb(var(--accent-rgb)/0.24)] dark:bg-white/[0.08] dark:ring-[rgb(var(--accent-rgb)/0.35)]' : '',
           selectedValues.length ? 'text-slate-800 dark:text-[#d0d6e0]' : 'text-slate-500 dark:text-[#62666d]',
         ]"
+        :disabled="disabled"
         @click="keyword = ''"
       >
         <span class="min-w-0 flex-1 truncate" :class="selectedValues.length ? 'pr-5' : ''">{{ displayValue }}</span>
@@ -98,7 +143,7 @@ function clear() {
       </ComboboxButton>
 
       <button
-        v-if="selectedValues.length"
+        v-if="selectedValues.length && !disabled"
         type="button"
         class="absolute right-7 top-2 flex h-5 w-5 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/[0.06] dark:hover:text-[#d0d6e0]"
         title="清空"
@@ -108,20 +153,23 @@ function clear() {
       </button>
     </div>
 
-    <TransitionRoot
-      :show="open"
-      enter="transition duration-150 ease-out"
-      enter-from="opacity-0 -translate-y-1"
-      enter-to="opacity-100 translate-y-0"
-      leave="transition duration-100 ease-in"
-      leave-from="opacity-100 translate-y-0"
-      leave-to="opacity-0 -translate-y-1"
-    >
-      <ComboboxOptions
-        static
-        class="absolute top-full z-50 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-md bg-white/95 shadow-lg shadow-slate-200/60 ring-1 ring-inset ring-black/[0.04] focus:outline-none dark:bg-[#1c1c20] dark:shadow-black/40 dark:ring-white/[0.06]"
-        :class="dropdownAlign === 'right' ? 'right-0' : 'left-0'"
+    <Teleport to="body">
+      <TransitionRoot
+        :show="open"
+        enter="transition duration-150 ease-out"
+        enter-from="opacity-0 -translate-y-1"
+        enter-to="opacity-100 translate-y-0"
+        leave="transition duration-100 ease-in"
+        leave-from="opacity-100 translate-y-0"
+        leave-to="opacity-0 -translate-y-1"
+        @before-enter="panelOpen = true"
+        @after-leave="panelOpen = false"
       >
+        <div ref="panelRef" :style="panelStyle">
+          <ComboboxOptions
+            static
+            class="w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-md bg-white/95 shadow-lg shadow-slate-200/60 ring-1 ring-inset ring-black/[0.04] focus:outline-none dark:bg-[#1c1c20] dark:shadow-black/40 dark:ring-white/[0.06]"
+          >
         <div class="border-b border-gray-200 p-2 dark:border-white/[0.06]">
           <div class="flex h-8 items-center gap-2 rounded-md bg-gray-100 px-2 text-sm dark:bg-white/[0.045]">
             <i class="fa-solid fa-magnifying-glass shrink-0 text-xs text-gray-400 dark:text-[#62666d]"></i>
@@ -176,7 +224,9 @@ function clear() {
         <div class="border-t border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/[0.06] dark:text-[#62666d]">
           {{ filteredOptions.length }} / {{ normalizedOptions.length }} 项
         </div>
-      </ComboboxOptions>
-    </TransitionRoot>
+          </ComboboxOptions>
+        </div>
+      </TransitionRoot>
+    </Teleport>
   </Combobox>
 </template>

@@ -5,30 +5,44 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps({
+export interface AnchorLink {
+  href: string
+  title: string
+  children?: AnchorLink[]
+}
+
+interface Props {
   // 锚点项：{ href: '#id', title, children? }，children 只支持一层
-  items: { type: Array, default: () => [] },
+  items?: AnchorLink[]
   // 激活判定与点击滚动的顶部偏移（px）
-  offset: { type: Number, default: 0 },
+  offset?: number
   // 滚动容器选择器，为空时监听 window
-  target: { type: String, default: '' },
+  target?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  offset: 0,
+  target: '',
 })
 
-const emit = defineEmits(['change'])
+const emit = defineEmits<{
+  (e: 'change', href: string): void
+}>()
 
-const navRef = ref(null)
+const navRef = ref<HTMLElement | null>(null)
 const activeHref = ref('')
 // 左侧墨条位置：跟随激活项按钮的实测 offsetTop / offsetHeight
 const inkStyle = ref({ top: '0px', height: '0px', opacity: '0' })
 
 // 当前监听的滚动目标：HTMLElement 或 window
-let scrollTarget = null
+let scrollTarget: HTMLElement | Window | null = null
 // 点击平滑滚动期间暂停 scroll 联动，避免中途扫过的章节抢走高亮
 let suppressUntil = 0
 
 // 展平父子两级并保持文档顺序，激活判定统一处理
 const flatItems = computed(() => {
-  const list = []
+  const list: AnchorLink[] = []
   for (const item of props.items) {
     list.push(item)
     for (const child of item.children || []) list.push(child)
@@ -37,16 +51,24 @@ const flatItems = computed(() => {
 })
 
 function getScrollTop() {
-  return scrollTarget === window ? window.scrollY : scrollTarget.scrollTop
+  if (!scrollTarget) return 0
+  return scrollTarget === window ? window.scrollY : (scrollTarget as HTMLElement).scrollTop
 }
 
 /** 计算 href 目标元素相对滚动容器内容顶部的距离。 */
-function topOf(href) {
-  const el = href ? document.querySelector(href) : null
+function topOf(href: string): number | null {
+  let el: Element | null = null
+  try {
+    // href 含特殊字符（如中文 id、非法选择器）时 querySelector 会抛异常，视为找不到目标
+    el = href ? document.querySelector(href) : null
+  } catch {
+    return null
+  }
   if (!el) return null
   if (scrollTarget === window) return el.getBoundingClientRect().top + window.scrollY
+  const container = scrollTarget as HTMLElement
   // 容器模式：视口坐标差 + 容器已滚距离 = 元素在容器内容中的位置
-  return el.getBoundingClientRect().top - scrollTarget.getBoundingClientRect().top + scrollTarget.scrollTop
+  return el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop
 }
 
 /** 激活项 = 最后一个已滚过顶部（含 offset 与 2px 容差）的锚点，无命中时取第一项。 */
@@ -62,7 +84,7 @@ function update() {
   setActive(current)
 }
 
-function setActive(href) {
+function setActive(href: string) {
   if (activeHref.value !== href) {
     activeHref.value = href
     emit('change', href)
@@ -70,10 +92,20 @@ function setActive(href) {
   moveInk()
 }
 
+// rAF 节流：滚动事件只置脏标记，下一帧统一执行 update，避免高频强制布局
+let rafId = 0
+function scheduleUpdate() {
+  if (rafId) return
+  rafId = requestAnimationFrame(() => {
+    rafId = 0
+    update()
+  })
+}
+
 /** 墨条对齐当前激活按钮；没有可对齐目标时收起。 */
 async function moveInk() {
   await nextTick()
-  const el = navRef.value?.querySelector(`[data-href="${activeHref.value}"]`)
+  const el = navRef.value?.querySelector<HTMLElement>(`[data-href="${activeHref.value}"]`)
   if (!el) {
     inkStyle.value = { top: '0px', height: '0px', opacity: '0' }
     return
@@ -81,7 +113,7 @@ async function moveInk() {
   inkStyle.value = { top: `${el.offsetTop}px`, height: `${el.offsetHeight}px`, opacity: '1' }
 }
 
-function handleClick(href) {
+function handleClick(href: string) {
   if (!scrollTarget) return
   const top = topOf(href)
   if (top === null) return
@@ -92,15 +124,15 @@ function handleClick(href) {
 }
 
 function detach() {
-  scrollTarget?.removeEventListener('scroll', update)
+  scrollTarget?.removeEventListener('scroll', scheduleUpdate)
   scrollTarget = null
 }
 
 /** 解析滚动容器并挂监听；target 选择器找不到元素时退回 window。 */
 function attach() {
   detach()
-  scrollTarget = props.target ? document.querySelector(props.target) || window : window
-  scrollTarget.addEventListener('scroll', update, { passive: true })
+  scrollTarget = props.target ? (document.querySelector<HTMLElement>(props.target) || window) : window
+  scrollTarget.addEventListener('scroll', scheduleUpdate, { passive: true })
   update()
 }
 
@@ -108,7 +140,7 @@ onMounted(async () => {
   // 等一帧再查询，确保同页面渲染出的容器和锚点目标已经挂载
   await nextTick()
   attach()
-  window.addEventListener('resize', update)
+  window.addEventListener('resize', scheduleUpdate)
 })
 
 watch(() => props.target, async () => {
@@ -124,7 +156,8 @@ watch(() => props.items, async () => {
 
 onBeforeUnmount(() => {
   detach()
-  window.removeEventListener('resize', update)
+  window.removeEventListener('resize', scheduleUpdate)
+  if (rafId) cancelAnimationFrame(rafId)
 })
 </script>
 

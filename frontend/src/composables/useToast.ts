@@ -1,14 +1,17 @@
 import { inject } from 'vue'
+import type { ToastMessage, ToastOptions } from '@/composables/useWorkspaceToast'
+
+export type PushToastFn = (type: string, message: ToastMessage, timeout?: number, options?: ToastOptions) => void
 
 const TOAST_KEY = 'pushToast'
-const noopToast = (type, msg) => { console.warn(`[Toast:${type}] ${msg}`) }
+const noopToast: PushToastFn = (type, msg) => { console.warn(`[Toast:${type}] ${typeof msg === 'string' ? msg : msg.title || msg.message || ''}`) }
 
 /**
  * useToast — 注入 pushToast，带安全 fallback
  * 用于子组件中，替代手写 inject('pushToast', fallback)
  */
-export function useToast() {
-  const pushToast = inject(TOAST_KEY, noopToast)
+export function useToast(): { pushToast: PushToastFn } {
+  const pushToast = inject<PushToastFn>(TOAST_KEY, noopToast)
   return { pushToast }
 }
 

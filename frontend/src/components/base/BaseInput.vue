@@ -5,74 +5,56 @@
  */
 import { ref, computed } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-    default: ''
-  },
-  label: {
-    type: String,
-    default: ''
-  },
-  type: {
-    type: String,
-    default: 'text'
-  },
-  placeholder: {
-    type: String,
-    default: ''
-  },
-  required: {
-    type: Boolean,
-    default: false
-  },
-  autocomplete: {
-    type: String,
-    default: 'off'
-  },
-  maxlength: {
-    type: [String, Number],
-    default: null
-  },
-  inputmode: {
-    type: String,
-    default: 'text'
-  },
-  inputClass: {
-    type: String,
-    default: ''
-  },
-  error: {
-    type: Boolean,
-    default: false
-  },
+interface Props {
+  modelValue?: string | number
+  label?: string
+  type?: string
+  placeholder?: string
+  required?: boolean
+  autocomplete?: string
+  maxlength?: string | number | null
+  inputmode?: 'text' | 'none' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'
+  inputClass?: string
+  error?: boolean
   // 是否禁用输入
-  disabled: {
-    type: Boolean,
-    default: false
-  },
+  disabled?: boolean
+  // 是否只读
+  readonly?: boolean
   // 有内容时悬停显示清空按钮，点击后清空并回抛空字符串
-  clearable: {
-    type: Boolean,
-    default: false
-  },
+  clearable?: boolean
   // 前置 / 后置图标，传 fa-* 类名，如 'fa-user'
-  prefixIcon: {
-    type: String,
-    default: ''
-  },
-  suffixIcon: {
-    type: String,
-    default: ''
-  },
-  // 尺寸：sm | md（默认）
-  size: {
-    type: String,
-    default: 'md'
-  }
+  prefixIcon?: string
+  suffixIcon?: string
+  // 是否启用浏览器拼写检查
+  spellcheck?: boolean
+  // 尺寸：sm | md（默认）| lg
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  type: 'text',
+  placeholder: '',
+  required: false,
+  autocomplete: 'off',
+  maxlength: null,
+  inputmode: 'text',
+  inputClass: '',
+  error: false,
+  disabled: false,
+  readonly: false,
+  clearable: false,
+  prefixIcon: '',
+  suffixIcon: '',
+  spellcheck: true,
+  size: 'md',
 })
 
-const emit = defineEmits(['update:modelValue', 'clear'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'clear'): void
+}>()
 
 const showPwd = ref(false)
 
@@ -90,7 +72,9 @@ const showClear = computed(() => {
 
 /** 尺寸层只控制几何信息，颜色和状态样式保持共用。 */
 const sizeClass = computed(() => {
-  return props.size === 'sm' ? 'h-8 px-3 rounded-md text-xs' : 'h-10 px-4 rounded-lg text-sm'
+  if (props.size === 'sm') return 'h-8 px-3 rounded-md text-xs'
+  if (props.size === 'lg') return 'h-12 px-5 rounded-lg text-base'
+  return 'h-10 px-4 rounded-lg text-sm'
 })
 
 /**
@@ -126,14 +110,15 @@ const clearValue = () => {
         ></i>
         <input
           :value="modelValue"
-          @input="$emit('update:modelValue', $event.target.value)"
+          @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
           :type="inputType"
           :required="required"
           :autocomplete="autocomplete"
           :placeholder="placeholder"
-          :maxlength="maxlength"
+          :maxlength="maxlength ?? undefined"
           :inputmode="inputmode"
           :disabled="disabled"
+          :readonly="readonly"
           :spellcheck="spellcheck"
           data-gramm="false"
           :class="[

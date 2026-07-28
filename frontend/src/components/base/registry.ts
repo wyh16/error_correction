@@ -120,7 +120,6 @@ export const BASE_COMPONENT_GROUPS = [
       'BaseCopyButton',
       'BaseDropdown',
       'BaseFloatButton',
-      'BaseGhostButton',
       'BaseLink',
       'BaseMenu',
       'BasePagination',

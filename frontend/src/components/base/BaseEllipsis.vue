@@ -6,24 +6,31 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 import BaseTooltip from './BaseTooltip.vue'
 
-const props = defineProps({
-  content: { type: String, default: '' },
-  lineClamp: { type: Number, default: 1 },
-  // 截断时在文本后显示「展开 / 收起」按钮
-  expandable: { type: Boolean, default: false },
-  // 截断时悬停显示完整内容（仅 content 文本模式支持）
-  tooltip: { type: Boolean, default: false },
+interface Props {
+  content?: string
+  lineClamp?: number
+  /** 截断时在文本后显示「展开 / 收起」按钮 */
+  expandable?: boolean
+  /** 截断时悬停显示完整内容（仅 content 文本模式支持） */
+  tooltip?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  content: '',
+  lineClamp: 1,
+  expandable: false,
+  tooltip: false,
 })
 
 const slots = useSlots()
 // 有默认 slot 时优先渲染 slot；此时拿不到可靠的纯文本，tooltip 自动失效
 const hasSlot = computed(() => !!slots.default)
 
-const textRef = ref(null)
+const textRef = ref<HTMLElement | null>(null)
 const expanded = ref(false)
 const truncated = ref(false)
 
-const clampStyle = computed(() => {
+const clampStyle = computed<Record<string, string> | null>(() => {
   if (expanded.value) return null
   return {
     display: '-webkit-box',
@@ -40,7 +47,7 @@ function measure() {
   truncated.value = textRef.value.scrollHeight > textRef.value.clientHeight + 1
 }
 
-let observer = null
+let observer: ResizeObserver | null = null
 
 onMounted(() => {
   measure()

@@ -5,28 +5,40 @@
  */
 import { nextTick, ref, watch } from 'vue'
 
-const props = defineProps({
-  modelValue: { type: String, default: '' },
-  length: { type: Number, default: 6 },
+interface Props {
+  modelValue?: string
+  length?: number
   // number 模式过滤非数字并唤起数字键盘，text 模式接受任意字符
-  type: { type: String, default: 'number' },
+  type?: 'number' | 'text'
   // 掩码显示（input type=password），用于安全码场景
-  masked: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  error: { type: Boolean, default: false },
+  masked?: boolean
+  disabled?: boolean
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  length: 6,
+  type: 'number',
+  masked: false,
+  disabled: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'complete'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'complete', value: string): void
+}>()
 
 // 每格一个字符作为内部状态，modelValue 由各格拼接而来
 const chars = ref(Array.from({ length: props.length }, () => ''))
-const inputRefs = ref([])
+const inputRefs = ref<HTMLInputElement[]>([])
 
-function setInputRef(el, index) {
-  if (el) inputRefs.value[index] = el
+function setInputRef(el: unknown, index: number) {
+  if (el) inputRefs.value[index] = el as HTMLInputElement
 }
 
-function sanitize(text) {
+function sanitize(text: unknown) {
   const raw = String(text || '')
   return props.type === 'number' ? raw.replace(/\D/g, '') : raw
 }
@@ -49,7 +61,7 @@ function commit() {
   if (chars.value.every(char => char !== '')) emit('complete', value)
 }
 
-function focusAt(index) {
+function focusAt(index: number) {
   const el = inputRefs.value[Math.min(Math.max(index, 0), props.length - 1)]
   if (!el) return
   el.focus()
@@ -57,25 +69,27 @@ function focusAt(index) {
   nextTick(() => el.select())
 }
 
-function onInput(index, event) {
-  const raw = event.target.value
+function onInput(index: number, event: Event) {
+  const target = event.target as HTMLInputElement
+  const raw = target.value
   const clean = sanitize(raw)
   if (raw && !clean) {
     // 输入的全是非法字符（number 模式下的字母等）：还原当前格，不改动状态
-    event.target.value = chars.value[index]
+    target.value = chars.value[index]
     return
   }
   // 优先取 event.data（本次敲入的字符）：光标落在旧字符前输入时，
   // 单看 DOM 值的末位会误取旧字符；没有 data（删除等）再回退到末位
-  const typed = event.data ? sanitize(event.data) : ''
+  const data = (event as InputEvent).data
+  const typed = data ? sanitize(data) : ''
   const char = typed ? typed.slice(-1) : clean.slice(-1)
   chars.value[index] = char
-  event.target.value = char
+  target.value = char
   if (char && index < props.length - 1) focusAt(index + 1)
   commit()
 }
 
-function onKeydown(index, event) {
+function onKeydown(index: number, event: KeyboardEvent) {
   if (event.key === 'Backspace') {
     event.preventDefault()
     if (chars.value[index]) {
@@ -95,14 +109,14 @@ function onKeydown(index, event) {
   }
 }
 
-function onPaste(index, event) {
+function onPaste(index: number, event: ClipboardEvent) {
   event.preventDefault()
   const text = sanitize(event.clipboardData ? event.clipboardData.getData('text') : '')
   if (!text) return
   // 从当前格开始逐格分配，超出的字符直接丢弃
   const source = text.split('')
   for (let i = index; i < props.length && source.length; i += 1) {
-    chars.value[i] = source.shift()
+    chars.value[i] = source.shift()!
   }
   focusAt(index + text.length)
   commit()

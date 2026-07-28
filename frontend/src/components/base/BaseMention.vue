@@ -3,23 +3,41 @@
  * BaseMention.vue
  * @ 提及输入：textarea 中输入触发字符后弹出建议面板，支持键盘选择。
  */
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, type Ref } from 'vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
-  modelValue: { type: String, default: '' },
-  // { value, label }
-  options: { type: Array, default: () => [] },
+export interface MentionOption {
+  value: string | number
+  label: string
+}
+
+interface Props {
+  modelValue?: string
+  options?: MentionOption[]
   // 触发字符，如 '@' 或 '#'
-  trigger: { type: String, default: '@' },
-  placeholder: { type: String, default: '' },
-  rows: { type: Number, default: 3 },
-  disabled: { type: Boolean, default: false },
+  trigger?: string
+  placeholder?: string
+  rows?: number
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  options: () => [],
+  trigger: '@',
+  placeholder: '',
+  rows: 3,
+  disabled: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'select'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'select', option: MentionOption): void
+}>()
 
-const textareaRef = ref(null)
-const itemRefs = ref([])
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const panelElRef = ref<HTMLElement | null>(null)
+const itemRefs = ref<HTMLElement[]>([])
 const panelOpen = ref(false)
 const queryText = ref('')
 // 当前提及片段中 trigger 字符的位置，选中时用于替换文本
@@ -27,7 +45,7 @@ const triggerStart = ref(0)
 const activeIndex = ref(0)
 // Escape 主动关闭后置位；避免紧随的 keyup 重新触发检测把面板弹回来
 const dismissed = ref(false)
-let blurTimer = null
+let blurTimer: number | null = null
 
 const filteredOptions = computed(() => {
   const query = queryText.value.toLowerCase()
@@ -40,8 +58,15 @@ const filteredOptions = computed(() => {
 // 无匹配时直接隐藏面板
 const panelVisible = computed(() => panelOpen.value && filteredOptions.value.length > 0)
 
-function setItemRef(el, index) {
-  if (el) itemRefs.value[index] = el
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪；定位在 textarea 正下方
+const { panelStyle } = useDropdownPosition(
+  panelVisible,
+  textareaRef as Ref<HTMLElement | null>,
+  panelElRef,
+)
+
+function setItemRef(el: unknown, index: number) {
+  if (el) itemRefs.value[index] = el as HTMLElement
 }
 
 function closePanel() {
@@ -72,9 +97,9 @@ function detectMention() {
   panelOpen.value = true
 }
 
-function onInput(event) {
+function onInput(event: Event) {
   dismissed.value = false
-  emit('update:modelValue', event.target.value)
+  emit('update:modelValue', (event.target as HTMLTextAreaElement).value)
   detectMention()
 }
 
@@ -83,7 +108,7 @@ function onClick() {
   detectMention()
 }
 
-function moveActive(delta) {
+function moveActive(delta: number) {
   const total = filteredOptions.value.length
   if (!total) return
   activeIndex.value = (activeIndex.value + delta + total) % total
@@ -93,7 +118,7 @@ function moveActive(delta) {
   })
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (!panelVisible.value) return
   if (event.key === 'ArrowDown') {
     event.preventDefault()
@@ -112,7 +137,7 @@ function onKeydown(event) {
 }
 
 // 把 trigger+query 替换为 trigger+label+空格，并把光标移到插入内容之后
-function selectOption(option) {
+function selectOption(option: MentionOption) {
   const el = textareaRef.value
   if (!el) return
   const caret = el.selectionStart == null ? el.value.length : el.selectionStart
@@ -167,10 +192,13 @@ onBeforeUnmount(() => {
       @focus="onFocus"
     ></textarea>
 
-    <div
-      v-if="panelVisible"
-      class="absolute left-0 top-full z-50 mt-1 min-w-48 rounded-lg border border-slate-200 bg-white/95 p-1.5 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
-    >
+    <Teleport to="body">
+      <div
+        v-if="panelVisible"
+        ref="panelElRef"
+        :style="panelStyle"
+        class="min-w-48 rounded-lg border border-slate-200 bg-white/95 p-1.5 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+      >
       <ul class="no-scrollbar max-h-56 space-y-0.5 overflow-y-auto">
         <li v-for="(option, index) in filteredOptions" :key="option.value">
           <button
@@ -190,6 +218,7 @@ onBeforeUnmount(() => {
           </button>
         </li>
       </ul>
-    </div>
+      </div>
+    </Teleport>
   </div>
 </template>

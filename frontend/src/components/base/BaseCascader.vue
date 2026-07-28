@@ -4,28 +4,53 @@
  * 级联选择器：多列平铺面板逐级展开，点击叶子节点回传完整值路径
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useDropdownPosition } from '@/composables/useDropdownPosition'
 
-const props = defineProps({
+export interface CascaderNode {
+  label: string
+  value: string | number
+  children?: CascaderNode[]
+  disabled?: boolean
+}
+
+interface Props {
   // 选中值的完整路径，如 ['zhejiang', 'hangzhou', 'xihu']
-  modelValue: { type: Array, default: () => [] },
-  // 节点结构 { label, value, children?, disabled? }
-  options: { type: Array, default: () => [] },
-  placeholder: { type: String, default: '请选择' },
-  disabled: { type: Boolean, default: false },
+  modelValue?: Array<string | number>
+  options?: CascaderNode[]
+  placeholder?: string
+  disabled?: boolean
   // 有选中值时悬停显示清空按钮，点击清空为 []
-  clearable: { type: Boolean, default: false },
+  clearable?: boolean
+  // 错误态：红色边框
+  error?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  options: () => [],
+  placeholder: '请选择',
+  disabled: false,
+  clearable: false,
+  error: false,
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Array<string | number>): void
+  (e: 'change', value: Array<string | number>, nodes: CascaderNode[]): void
+}>()
 
-const rootRef = ref(null)
+const rootRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
 const open = ref(false)
 
+// 弹层 Teleport 到 body，避免被祖先 overflow 裁剪
+const { panelStyle, isOutside } = useDropdownPosition(open, rootRef, panelRef)
+
 // 面板中逐列点开的节点链。区别于 modelValue：点开非叶子只改激活路径，不提交选中
-const activePath = ref([])
+const activePath = ref<Array<string | number>>([])
 
 // 第 0 列固定是根 options，之后每列取上一列激活项的 children
-const columns = computed(() => {
+const columns = computed<CascaderNode[][]>(() => {
   const cols = [props.options]
   let current = props.options
   for (const value of activePath.value) {
@@ -38,8 +63,8 @@ const columns = computed(() => {
 })
 
 // 由值路径逐层反查节点对象；路径断裂（数据变化）时返回空，触发器回退为占位符
-function resolvePath(values) {
-  const nodes = []
+function resolvePath(values: Array<string | number>): CascaderNode[] {
+  const nodes: CascaderNode[] = []
   let current = props.options
   for (const value of values) {
     const node = current.find(item => item.value === value)
@@ -61,22 +86,22 @@ function toggle() {
   if (open.value) activePath.value = selectedNodes.value.length ? [...props.modelValue] : []
 }
 
-function hasChildren(node) {
+function hasChildren(node: CascaderNode) {
   return Boolean(node.children && node.children.length)
 }
 
-function isActive(depth, node) {
+function isActive(depth: number, node: CascaderNode) {
   return activePath.value[depth] === node.value
 }
 
 // 叶子行的选中对勾：所在列的前缀路径与 modelValue 完全一致时才显示，
 // 避免不同分支下恰好同名的 value 被误标记
-function isSelected(depth, node) {
+function isSelected(depth: number, node: CascaderNode) {
   if (props.modelValue.length !== depth + 1 || props.modelValue[depth] !== node.value) return false
   return activePath.value.slice(0, depth).every((value, index) => value === props.modelValue[index])
 }
 
-function handleClick(depth, node) {
+function handleClick(depth: number, node: CascaderNode) {
   if (node.disabled) return
   const path = [...activePath.value.slice(0, depth), node.value]
   activePath.value = path
@@ -93,14 +118,13 @@ function clearValue() {
   emit('change', [], [])
 }
 
-// 点击组件外部时收起弹层（触发器与弹层都在 rootRef 内）
-function onPointerDown(event) {
+// 点击触发器与弹层之外时收起（弹层已 Teleport，需同时排除两者）
+function onPointerDown(event: PointerEvent) {
   if (!open.value) return
-  const target = event.target
-  if (rootRef.value && target && !rootRef.value.contains(target)) open.value = false
+  if (isOutside(event.target)) open.value = false
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') open.value = false
 }
 
@@ -120,8 +144,9 @@ onBeforeUnmount(() => {
       :disabled="disabled"
       aria-haspopup="listbox"
       :aria-expanded="open"
-      class="group flex h-9 w-full items-center justify-between rounded-md bg-white/80 px-3 text-left text-sm font-medium ring-1 ring-inset ring-transparent transition-colors hover:bg-white dark:bg-white/[0.045] dark:hover:bg-white/[0.07]"
+      class="group flex h-9 w-full items-center justify-between rounded-md bg-white/80 px-3 text-left text-sm font-medium ring-1 ring-inset transition-colors hover:bg-white dark:bg-white/[0.045] dark:hover:bg-white/[0.07]"
       :class="[
+        error ? 'ring-rose-500/50' : 'ring-transparent',
         open ? 'bg-white ring-[rgb(var(--accent-rgb)/0.24)] dark:bg-white/[0.08] dark:ring-[rgb(var(--accent-rgb)/0.35)]' : '',
         displayLabel ? 'text-slate-800 dark:text-[#d0d6e0]' : 'text-slate-500 dark:text-[#62666d]',
         disabled ? 'cursor-not-allowed opacity-50 hover:bg-white/80 dark:hover:bg-white/[0.045]' : '',
@@ -144,18 +169,22 @@ onBeforeUnmount(() => {
       ></i>
     </button>
 
-    <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="-translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-100 ease-in"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="-translate-y-1 opacity-0"
-    >
-      <div
-        v-if="open"
-        class="absolute left-0 top-full z-50 mt-1 flex overflow-hidden rounded-lg border border-slate-200 bg-white/95 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-150 ease-out"
+        enter-from-class="-translate-y-1 opacity-0"
+        enter-to-class="translate-y-0 opacity-100"
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="translate-y-0 opacity-100"
+        leave-to-class="-translate-y-1 opacity-0"
       >
+        <div
+          v-if="open"
+          ref="panelRef"
+          :style="panelStyle"
+          class="flex overflow-hidden rounded-lg border border-slate-200 bg-white/95 shadow-lg shadow-slate-200/60 dark:border-white/[0.08] dark:bg-[#1f1f22] dark:shadow-black/40"
+          @keydown="onKeydown"
+        >
         <div
           v-for="(column, depth) in columns"
           :key="depth"
@@ -185,7 +214,8 @@ onBeforeUnmount(() => {
             <i v-else-if="isSelected(depth, node)" class="fa-solid fa-check shrink-0 text-[10px] accent-text"></i>
           </button>
         </div>
-      </div>
-    </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>

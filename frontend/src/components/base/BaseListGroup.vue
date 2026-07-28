@@ -5,10 +5,16 @@
  */
 import BaseSurface from './BaseSurface.vue'
 
-defineProps({
-  title: { type: String, default: '' },
-  description: { type: String, default: '' },
-  borderless: { type: Boolean, default: false },
+interface Props {
+  title?: string
+  description?: string
+  borderless?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  title: '',
+  description: '',
+  borderless: false,
 })
 </script>
 

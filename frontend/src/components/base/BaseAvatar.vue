@@ -1,16 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-const props = defineProps({
-  src: { type: String, default: '' },
-  name: { type: String, default: '' },
-  icon: { type: String, default: '' },
-  size: { type: String, default: 'md' },
-  tone: { type: String, default: 'accent' },
-  // 形状：circle（默认圆形）| square（圆角方形）
-  shape: { type: String, default: 'circle' },
-  // 状态点：online | offline | busy，空字符串不显示
-  status: { type: String, default: '' },
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg'
+type AvatarTone = 'accent' | 'neutral' | 'blue' | 'emerald' | 'rose'
+
+interface Props {
+  src?: string
+  name?: string
+  icon?: string
+  size?: AvatarSize
+  tone?: AvatarTone
+  /** 形状：circle（默认圆形）| square（圆角方形） */
+  shape?: 'circle' | 'square'
+  /** 状态点：online | offline | busy，空字符串不显示 */
+  status?: 'online' | 'offline' | 'busy' | ''
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  src: '',
+  name: '',
+  icon: '',
+  size: 'md',
+  tone: 'accent',
+  shape: 'circle',
+  status: '',
 })
 
 const initials = computed(() => {
@@ -21,14 +34,14 @@ const initials = computed(() => {
   return text.slice(0, 2).toUpperCase()
 })
 
-const sizeClass = {
+const sizeClass: Record<AvatarSize, string> = {
   xs: 'h-6 w-6 text-[10px]',
   sm: 'h-8 w-8 text-xs',
   md: 'h-10 w-10 text-sm',
   lg: 'h-12 w-12 text-base',
 }
 
-const toneClass = {
+const toneClass: Record<AvatarTone, string> = {
   accent: 'accent-bg-soft accent-text',
   neutral: 'bg-slate-100 text-slate-600 dark:bg-white/[0.08] dark:text-[#d0d6e0]',
   blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-300',
@@ -36,7 +49,7 @@ const toneClass = {
   rose: 'bg-rose-500/10 text-rose-600 dark:text-rose-300',
 }
 
-const statusClass = {
+const statusClass: Record<string, string> = {
   online: 'bg-emerald-500',
   offline: 'bg-slate-400 dark:bg-slate-500',
   busy: 'bg-rose-500',
@@ -44,6 +57,12 @@ const statusClass = {
 
 // 状态点需要溢出到头像边缘之外，因此有状态点时根节点不再裁剪，改由图片自行裁圆角。
 const shapeClass = computed(() => (props.shape === 'square' ? 'rounded-lg' : 'rounded-full'))
+
+// 图片加载失败时回退到 initials / icon，避免显示破图；src 变化后重试加载
+const imgError = ref(false)
+watch(() => props.src, () => {
+  imgError.value = false
+})
 </script>
 
 <template>
@@ -57,7 +76,7 @@ const shapeClass = computed(() => (props.shape === 'square' ? 'rounded-lg' : 'ro
     ]"
     :title="name"
   >
-    <img v-if="src" :src="src" :alt="name || 'avatar'" class="h-full w-full object-cover" :class="shapeClass" />
+    <img v-if="src && !imgError" :src="src" :alt="name || 'avatar'" class="h-full w-full object-cover" :class="shapeClass" @error="imgError = true" />
     <i v-else-if="icon" class="fa-solid" :class="icon"></i>
     <span v-else>{{ initials || '?' }}</span>
     <!-- 右下角状态点：白色描边把点从头像背景中分离出来 -->
